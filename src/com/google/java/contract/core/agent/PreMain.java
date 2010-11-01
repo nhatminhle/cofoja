@@ -109,11 +109,17 @@ public class PreMain {
 
   public static void main(String[] args)
       throws IllegalClassFormatException, IOException {
+    String classout =
+      System.getProperty("com.google.java.contract.classoutput");
+    instrument(args, classout);
+  }
+
+  public static void instrument(String[] args, String classout)
+      throws IllegalClassFormatException, IOException {
     ContractClassFileTransformer transformer =
         new ContractClassFileTransformer();
     configure();
 
-    String classout = System.getProperty("com.google.java.contract.classoutput");
     for (String arg : args) {
       String baseName = arg;
       if (arg.endsWith(Kind.CLASS.extension)) {

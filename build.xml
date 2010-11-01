@@ -1,0 +1,168 @@
+<project name="Cofoja" default="dist" basedir=".">
+  <!-- Override to build a release. -->
+  <property name="version" value="current" />
+
+  <!-- Override to bootstrap from a different JAR file. -->
+  <property name="bootjar" location="build/bootstrap.jar" />
+
+  <property name="src" location="src" />
+  <property name="test" location="test" />
+  <property name="build" location="build" />
+
+  <property name="obj" location="obj" />
+  <property name="dist" location="dist" />
+
+  <property name="apt"
+            value="com.google.java.contract.core.apt.AnnotationProcessor" />
+  <property name="distjar" location="${dist}/lib/cofoja-${version}.jar" />
+  <property name="cdistjar"
+            location="${dist}/lib/cofoja-contracted-${version}.jar" />
+
+  <!-- Simple build. -->
+
+  <target name="build"
+          description="build class files">
+    <mkdir dir="${obj}/bare" />
+    <javac srcdir="${src}" destdir="${obj}/bare" includeantruntime="false">
+      <classpath path="${java.class.path}" />
+    </javac>
+  </target>
+
+  <target name="dist" depends="build"
+          description="build JAR file for distribution">
+    <mkdir dir="${dist}/lib" />
+    <jar jarfile="${distjar}" basedir="${obj}/bare"
+         manifest="${src}/META-INF/MANIFEST.MF" />
+  </target>
+
+  <!-- Bootstrap. -->
+
+  <target name="copybootstrap" depends="dist"
+          description="copy bootstrap JAR file from a normal build">
+    <copy file="${distjar}" tofile="${bootjar}" />
+  </target>
+
+  <target name="init">
+    <mkdir dir="${obj}/build" />
+    <javac srcdir="${build}" destdir="${obj}/build"
+           debug="true" includeantruntime="false">
+      <classpath>
+        <pathelement path="${java.class.path}" />
+        <pathelement path="${bootjar}" />
+      </classpath>
+    </javac>
+    <taskdef name="cofojab" classname="PreAgentAntTask"
+             classpath="${obj}/build:${bootjar}" />
+  </target>
+
+  <target name="stage0" depends="init">
+    <mkdir dir="${obj}/tmp0" />
+    <mkdir dir="${obj}/stage0" />
+    <javac srcdir="${src}" destdir="${obj}/tmp0"
+           debug="true" includeantruntime="false">
+      <classpath>
+        <pathelement path="${java.class.path}" />
+        <pathelement path="${bootjar}" />
+      </classpath>
+      <compilerarg value="-processor" />
+      <compilerarg value="${apt}" />
+    </javac>
+    <cofojab srcdir="${obj}/tmp0" destdir="${obj}/stage0" />
+  </target>
+
+  <target name="stage1" depends="stage0">
+    <mkdir dir="${obj}/tmp1" />
+    <mkdir dir="${obj}/stage1" />
+    <javac srcdir="${src}" destdir="${obj}/tmp1"
+           debug="true" includeantruntime="false">
+      <classpath>
+        <pathelement path="${java.class.path}" />
+        <pathelement path="${obj}/stage0" />
+      </classpath>
+      <compilerarg value="-processor" />
+      <compilerarg value="${apt}" />
+    </javac>
+    <cofojab srcdir="${obj}/tmp1" destdir="${obj}/stage1" />
+  </target>
+
+  <target name="stage2" depends="stage1">
+    <mkdir dir="${obj}/tmp2" />
+    <mkdir dir="${obj}/stage2" />
+    <javac srcdir="${src}" destdir="${obj}/tmp2"
+           debug="true" includeantruntime="false">
+      <classpath>
+        <pathelement path="${java.class.path}" />
+        <pathelement path="${obj}/stage1" />
+      </classpath>
+      <compilerarg value="-processor" />
+      <compilerarg value="${apt}" />
+    </javac>
+    <cofojab srcdir="${obj}/tmp2" destdir="${obj}/stage2" />
+  </target>
+
+  <target name="bootstrap" depends="stage2"
+          description="build bootstrap-contracted JAR file">
+    <mkdir dir="${dist}/lib" />
+    <jar jarfile="${cdistjar}"
+         basedir="${obj}/stage2" manifest="${src}/META-INF/MANIFEST.MF" />
+  </target>
+
+  <!-- Tests. -->
+
+  <target name="buildtest1" depends="stage2">
+    <mkdir dir="${obj}/test" />
+    <javac srcdir="${test}" destdir="${obj}/test"
+           debug="true" includeantruntime="false">
+      <classpath>
+        <pathelement path="${java.class.path}" />
+        <pathelement path="${obj}/stage2" />
+      </classpath>
+      <compilerarg value="-processor" />
+      <compilerarg value="${apt}" />
+      <include name="**/SeparateGenericSuperclass.java" />
+      <include name="**/SeparateInterface.java" />
+    </javac>
+  </target>
+
+  <target name="buildtest2" depends="buildtest1,stage2">
+    <javac srcdir="${test}" destdir="${obj}/test"
+           debug="true" includeantruntime="false">
+      <classpath>
+        <pathelement path="${java.class.path}" />
+        <pathelement path="${obj}/stage2" />
+        <pathelement path="${obj}/test" />
+      </classpath>
+      <compilerarg value="-processor" />
+      <compilerarg value="${apt}" />
+      <exclude name="**/SeparateGenericSuperclass.java" />
+      <exclude name="**/SeparateInterface.java" />
+    </javac>
+  </target>
+
+  <target name="test" depends="buildtest2,bootstrap"
+          description="run tests">
+    <junit printsummary="yes" haltonfailure="yes">
+      <classpath>
+        <pathelement path="${java.class.path}"/>
+        <pathelement path="${obj}/stage2" />
+        <pathelement location="${obj}/test"/>
+      </classpath>
+      <jvmarg value="-javaagent:${cdistjar}" />
+      <jvmarg value="-Dcom.google.java.contract.configurator=com.google.java.contract.tests.Cofoja" />
+      <formatter type="plain" />
+      <batchtest fork="yes" todir="${obj}/test">
+        <fileset dir="${obj}/test">
+          <include name="**/*Test.class"/>
+        </fileset>
+      </batchtest>
+    </junit>
+  </target>
+
+  <!-- Book-keeping. -->
+
+  <target name="clean"
+          description="remove generated files">
+    <delete dir="${obj}" />
+    <delete dir="${dist}" />
+  </target>
+</project>

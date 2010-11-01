@@ -1,0 +1,2 @@
+Manifest-Version: 1.0
+Premain-Class: com.google.java.contract.core.agent.PreMain
