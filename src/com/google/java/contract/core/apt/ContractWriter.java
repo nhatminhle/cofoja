@@ -254,7 +254,7 @@ public class ContractWriter extends ElementScanner {
     }
     append(")");
 
-    Set<? extends ClassName> exceptions = method.getExceptions();
+    Set<? extends TypeName> exceptions = method.getExceptions();
     if (exceptions.size() != 0) {
       append(" throws ");
       appendJoin(exceptions, ", ");

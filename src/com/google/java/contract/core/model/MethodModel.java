@@ -43,7 +43,7 @@ public class MethodModel extends GenericElementModel {
   /**
    * The list of exceptions that can be thrown by this method.
    */
-  protected Set<ClassName> exceptions;
+  protected Set<TypeName> exceptions;
 
   /**
    * The return type of this method, or {@code null} if this is a
@@ -64,7 +64,7 @@ public class MethodModel extends GenericElementModel {
   })
   public MethodModel(ElementKind kind, String name, TypeName returnType) {
     super(kind, name);
-    exceptions = new HashSet<ClassName>();
+    exceptions = new HashSet<TypeName>();
     this.returnType = returnType;
   }
 
@@ -76,7 +76,7 @@ public class MethodModel extends GenericElementModel {
   @Ensures("getEnclosingElement() == null")
   public MethodModel(MethodModel that) {
     super(that);
-    exceptions = new HashSet<ClassName>(that.exceptions);
+    exceptions = new HashSet<TypeName>(that.exceptions);
     returnType = that.returnType;
   }
 
@@ -90,24 +90,24 @@ public class MethodModel extends GenericElementModel {
    */
   public MethodModel() {
     super(ElementKind.CONSTRUCTOR, "<init>");
-    exceptions = new HashSet<ClassName>();
+    exceptions = new HashSet<TypeName>();
     returnType = null;
   }
 
   @Ensures("result != null")
-  public Set<? extends ClassName> getExceptions() {
+  public Set<? extends TypeName> getExceptions() {
     return Collections.unmodifiableSet(exceptions);
   }
 
   @Requires("exception != null")
   @Ensures("getExceptions().contains(exception)")
-  public void addException(ClassName exception) {
+  public void addException(TypeName exception) {
     exceptions.add(exception);
   }
 
   @Requires("exception != null")
   @Ensures("!getExceptions().contains(exception)")
-  public void removeException(ClassName exception) {
+  public void removeException(TypeName exception) {
     exceptions.remove(exception);
   }
 

@@ -606,7 +606,7 @@ class TypeFactory {
 
       /* Add throws list. */
       for (TypeMirror tt : e.getThrownTypes()) {
-        exec.addException(getClassNameForType(tt));
+        exec.addException(getTypeNameForType(tt));
       }
 
       /* Add annotations. */
