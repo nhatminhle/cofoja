@@ -111,6 +111,21 @@ public class GenericsTest extends TestCase {
     }
   }
 
+  private static class T<X extends Throwable> {
+    /* Test ability to contract methods that throw type parameters. */
+    @Requires("true")
+    public void f(X x) throws X {
+      throw x;
+    }
+  }
+
+  private static class Npe extends T<NullPointerException> {
+    @Ensures("true")
+    public void f(NullPointerException x) throws NullPointerException {
+      throw x;
+    }
+  }
+
   protected void setUp() {
     Cofoja.contractEnv.assertLoadedClassesContracted();
   }
@@ -181,6 +196,16 @@ public class GenericsTest extends TestCase {
       fail();
     } catch (PreconditionError expected) {
       assertEquals("[x.toString().length() >= 2]", expected.getMessages().toString());
+    }
+  }
+
+  public void testT() {
+    Npe npe = new Npe();
+    try {
+      npe.f(new NullPointerException());
+      fail();
+    } catch (NullPointerException e) {
+      /* Expected exception. */
     }
   }
 }
