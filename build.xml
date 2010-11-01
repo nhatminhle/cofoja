@@ -59,7 +59,8 @@
     <mkdir dir="${obj}/tmp0" />
     <mkdir dir="${obj}/stage0" />
     <javac srcdir="${src}" destdir="${obj}/tmp0"
-           debug="true" includeantruntime="false">
+           debug="true" includeantruntime="false"
+           includedestclasses="false">
       <classpath>
         <pathelement path="${java.class.path}" />
         <pathelement path="${bootjar}" />
@@ -74,7 +75,8 @@
     <mkdir dir="${obj}/tmp1" />
     <mkdir dir="${obj}/stage1" />
     <javac srcdir="${src}" destdir="${obj}/tmp1"
-           debug="true" includeantruntime="false">
+           debug="true" includeantruntime="false"
+           includedestclasses="false">
       <classpath>
         <pathelement path="${java.class.path}" />
         <pathelement path="${obj}/stage0" />
@@ -89,7 +91,8 @@
     <mkdir dir="${obj}/tmp2" />
     <mkdir dir="${obj}/stage2" />
     <javac srcdir="${src}" destdir="${obj}/tmp2"
-           debug="true" includeantruntime="false">
+           debug="true" includeantruntime="false"
+           includedestclasses="false">
       <classpath>
         <pathelement path="${java.class.path}" />
         <pathelement path="${obj}/stage1" />
