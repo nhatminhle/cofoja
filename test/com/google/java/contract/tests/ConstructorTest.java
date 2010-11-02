@@ -61,6 +61,34 @@ public class ConstructorTest extends TestCase {
     }
   }
 
+  /* double super argument. */
+  private static class D {
+    @Requires("x >= 0")
+    public D(double x) {
+    }
+  }
+
+  @Contracted
+  private static class Dx extends D {
+    public Dx(double x) {
+      super(x);
+    }
+  }
+
+  /* char super argument. */
+  private static class Ch {
+    @Requires("x != '\0'")
+    public Ch(char x) {
+    }
+  }
+
+  @Contracted
+  private static class Chx extends Ch {
+    public Chx(char x) {
+      super(x);
+    }
+  }
+
   private static class In extends FileInputStream {
     @Requires("!name.equals(\"/dev/null\")")
     public In(String name) throws FileNotFoundException {
@@ -104,6 +132,22 @@ public class ConstructorTest extends TestCase {
       fail();
     } catch (PreconditionError expected) {
       assertEquals("[x >= 1]", expected.getMessages().toString());
+    }
+  }
+
+  public void testDx() {
+    try {
+      Dx dx = new Dx(-3.0);
+    } catch (PreconditionError expected) {
+      assertEquals("[x >= 0]", expected.getMessages().toString());
+    }
+  }
+
+  public void testChx() {
+    try {
+      Chx chx = new Chx('\0');
+    } catch (PreconditionError expected) {
+      assertEquals("[x != '\0']", expected.getMessages().toString());
     }
   }
 
