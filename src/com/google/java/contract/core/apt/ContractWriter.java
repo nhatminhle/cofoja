@@ -123,7 +123,7 @@ public class ContractWriter extends ElementScanner {
     if (name.equals("boolean")) {
       return "false";
     } else if (numericTypes.contains(name)) {
-      return "0";
+      return "(" + name + ")0";
     } else {
       return "(" + name + ")null";
     }
