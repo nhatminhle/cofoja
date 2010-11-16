@@ -135,7 +135,7 @@ public class ContractMethodModel extends MethodModel {
     epilogue = that.epilogue;
 
     contractedMethod = that.contractedMethod;
-    lineNumbers = new ArrayList<Long>(that.lineNumbers);
+    lineNumbers = that.lineNumbers;
   }
 
   @Override

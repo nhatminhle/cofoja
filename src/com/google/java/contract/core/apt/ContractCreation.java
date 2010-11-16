@@ -458,6 +458,10 @@ public class ContractCreation {
       if (kind.getVariance() == ContractVariance.CONTRAVARIANT) {
         contract.setEpilogue("return null;");
       }
+
+      if (annotation.isPrimary()) {
+        contract.setLineNumbers(annotation.getLineNumbers());
+      }
     } else {
       Elements.copyParameters(method, trait.getInitialMockParameters());
       Elements.copyParameters(method, trait.getExtraMockParameters());
