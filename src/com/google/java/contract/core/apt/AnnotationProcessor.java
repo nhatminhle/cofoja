@@ -499,7 +499,7 @@ public class AnnotationProcessor extends AbstractProcessor {
     ArrayList<TypeModel> undecoratedTypes =
         new ArrayList<TypeModel>(roots.size());
     for (TypeElement r : roots) {
-      TypeModel type = factory.createType(r);
+      TypeModel type = factory.createType(r, diagnostics);
       ElementScanner annotator =
           new ElementScanner() {
             @Override

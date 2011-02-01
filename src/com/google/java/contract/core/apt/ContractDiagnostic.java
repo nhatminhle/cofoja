@@ -35,17 +35,13 @@ import javax.tools.JavaFileObject;
  * @author johannes.rieken@gmail.com (Johannes Rieken)
  */
 @Invariant({
-  "getKind() != null",
-  "getMessage(null) != null",
   "getSource() != null",
   "getPosition() >= startPosition",
   "getPosition() <= endPosition",
   "getStartPosition() >= 0",
   "getStartPosition() <= getEndPosition()"
 })
-public class ContractDiagnostic implements Diagnostic<JavaFileObject> {
-  protected Kind kind;
-  protected String message;
+public class ContractDiagnostic extends SimpleDiagnostic {
   protected SyntheticJavaFile sourceFile;
   protected int position;
   protected int startPosition;
@@ -79,8 +75,7 @@ public class ContractDiagnostic implements Diagnostic<JavaFileObject> {
   public ContractDiagnostic(Kind kind, String message, String sourceString,
                             int position, int startPosition, int endPosition,
                             Object sourceInfo) {
-    this.kind = kind;
-    this.message = message;
+    super(kind, message);
     String commentMarker =
         JavaUtils.BEGIN_LOCATION_COMMENT
         + JavaUtils.quoteComment(sourceString)
@@ -93,21 +88,6 @@ public class ContractDiagnostic implements Diagnostic<JavaFileObject> {
     this.startPosition = base + startPosition;
     this.endPosition = base + endPosition;
     this.sourceInfo = sourceInfo;
-  }
-
-  @Override
-  public Kind getKind() {
-    return kind;
-  }
-
-  @Override
-  public String getMessage(Locale locale) {
-    return message;
-  }
-
-  @Override
-  public String getCode() {
-    return null;
   }
 
   @Override

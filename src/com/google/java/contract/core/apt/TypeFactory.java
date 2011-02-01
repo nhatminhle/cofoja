@@ -65,6 +65,9 @@ import javax.lang.model.util.ElementFilter;
 import javax.lang.model.util.ElementScanner6;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
+import javax.tools.Diagnostic;
+import javax.tools.DiagnosticListener;
+import javax.tools.JavaFileObject;
 
 /**
  * The TypeFactory creates {@link Type} objects from
@@ -367,6 +370,8 @@ class TypeFactory {
       }
     }
 
+    protected DiagnosticListener<JavaFileObject> diagnostics;
+
     /**
      * The resulting top-level type.
      */
@@ -389,7 +394,9 @@ class TypeFactory {
     protected HashMap<String, ArrayList<ContractableMethod>> methodMap;
 
     public TypeBuilder(Set<String> importNames,
-                       Iterator<Long> rootLineNumberIterator) {
+                       Iterator<Long> rootLineNumberIterator,
+                       DiagnosticListener<JavaFileObject> diagnostics) {
+      this.diagnostics = diagnostics;
       type = null;
       rootMirror = null;
       this.importNames = importNames;
@@ -397,8 +404,8 @@ class TypeFactory {
       methodMap = new HashMap<String, ArrayList<ContractableMethod>>();
     }
 
-    public TypeBuilder() {
-      this(null, null);
+    public TypeBuilder(DiagnosticListener<JavaFileObject> diagnostics) {
+      this(null, null, diagnostics);
     }
 
     public TypeModel getType() {
@@ -411,7 +418,7 @@ class TypeFactory {
       /* Inner types. */
       if (type != null) {
         TypeBuilder builder =
-            new TypeBuilder(importNames, rootLineNumberIterator);
+            new TypeBuilder(importNames, rootLineNumberIterator, diagnostics);
         e.accept(builder, p);
         p.addEnclosedElement(builder.type);
         return null;
@@ -755,10 +762,11 @@ class TypeFactory {
     "result.getName().getQualifiedName()" +
         ".equals(element.getQualifiedName().toString())"
   })
-  TypeModel createType(TypeElement element) {
+  TypeModel createType(TypeElement element,
+                       DiagnosticListener<JavaFileObject> diagnostics) {
     String name = elementUtils.getBinaryName(element)
         .toString().replace('.', '/');
-    TypeBuilder visitor = new TypeBuilder();
+    TypeBuilder visitor = new TypeBuilder(diagnostics);
     element.accept(visitor, null);
     return visitor.getType();
   }
