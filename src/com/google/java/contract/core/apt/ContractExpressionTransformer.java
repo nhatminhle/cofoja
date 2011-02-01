@@ -33,7 +33,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import javax.tools.Diagnostic;
-import javax.tools.DiagnosticListener;
 import javax.tools.JavaFileObject;
 
 /**
@@ -60,7 +59,7 @@ import javax.tools.JavaFileObject;
  * @author nhat.minh.le@huoc.org (Nhat Minh Lê)
  */
 @Invariant({
-  "diagnostics != null",
+  "diagnosticManager != null",
   "oldId >= 0",
   "oldParameters != null => oldParametersCode != null",
   "oldParameters != null => oldParametersLineNumbers != null",
@@ -76,9 +75,9 @@ public class ContractExpressionTransformer {
       "com.google.java.contract.core.runtime.ContractRuntime.magicCast";
 
   /**
-   * The diagnostic listener to report errors to.
+   * The diagnostic manager to report errors to.
    */
-  protected DiagnosticListener<JavaFileObject> diagnostics;
+  protected DiagnosticManager diagnosticManager;
 
   /**
    * {@code true} if old expressions should be transformed.
@@ -120,12 +119,12 @@ public class ContractExpressionTransformer {
   /**
    * Constructs a new ContractExpressionTransformer.
    *
-   * @param diagnostics listener to report errors to
+   * @param diagnosticManager manager to report errors to
    * @param acceptOld whether old expressions are recognized
    */
-  public ContractExpressionTransformer(
-      DiagnosticListener<JavaFileObject> diagnostics, boolean acceptOld) {
-    this.diagnostics = diagnostics;
+  public ContractExpressionTransformer(DiagnosticManager diagnosticManager,
+                                       boolean acceptOld) {
+    this.diagnosticManager = diagnosticManager;
     this.acceptOld = acceptOld;
     oldParameters = null;
     oldParametersCode = null;
@@ -240,11 +239,9 @@ public class ContractExpressionTransformer {
 
         /* Unexpected ';' error. */
         if (newLevel == 0 && token.text.equals(";")) {
-          diagnostics.report(new ContractDiagnostic(
-              Diagnostic.Kind.ERROR,
-              "'\"' expected",
+          diagnosticManager.error("'\"' expected",
               expr, token.offset, token.offset, token.offset,
-              sourceInfo));
+              sourceInfo);
           parsed = false;
           continue code;
         }
@@ -295,11 +292,9 @@ public class ContractExpressionTransformer {
             switch (token.kind) {
               case WORD:
                 if (token.text.equals("old")) {
-                  diagnostics.report(new ContractDiagnostic(
-                      Diagnostic.Kind.ERROR,
-                      "nested old expression",
+                  diagnosticManager.error("nested old expression",
                       expr, token.offset, token.offset, token.offset,
-                      sourceInfo));
+                      sourceInfo);
                   parsed = false;
                   continue code;
                 }
@@ -317,11 +312,9 @@ public class ContractExpressionTransformer {
                 if (!tokenizer.hasNext()
                     || !tokenizer.next().text.equals("(")) {
                   int errorPos = tokenizer.getCurrentOffset();
-                  diagnostics.report(new ContractDiagnostic(
-                      Diagnostic.Kind.ERROR,
-                      "'(' expected",
+                  diagnosticManager.error("'(' expected",
                       expr, errorPos, errorPos, errorPos,
-                      sourceInfo));
+                      sourceInfo);
                   parsed = false;
                   continue code;
                 }
@@ -349,11 +342,8 @@ public class ContractExpressionTransformer {
       /* Parse errors. */
       if (tokenizer.hasErrors()) {
         int errorPos = tokenizer.getCurrentOffset();
-        diagnostics.report(new ContractDiagnostic(
-            Diagnostic.Kind.ERROR,
-            tokenizer.getErrorMessage(),
-            expr, errorPos, errorPos, errorPos,
-            sourceInfo));
+        diagnosticManager.error(tokenizer.getErrorMessage(),
+            expr, errorPos, errorPos, errorPos, sourceInfo);
         parsed = false;
         continue code;
       }

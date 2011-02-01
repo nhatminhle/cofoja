@@ -29,7 +29,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
-import javax.tools.DiagnosticCollector;
+import javax.tools.DiagnosticListener;
 import javax.tools.JavaCompiler;
 import javax.tools.JavaCompiler.CompilationTask;
 import javax.tools.JavaFileObject;
@@ -88,7 +88,7 @@ public class ContractJavaCompiler {
   })
   @Ensures("result != null")
   public CompilationTask getTask(List<? extends JavaFileObject> files,
-      DiagnosticCollector<JavaFileObject> diagnostics) {
+      DiagnosticListener<JavaFileObject> diagnostics) {
     return javaCompiler.getTask(null, fileManager, diagnostics,
                                 OPTIONS, null, files);
   }

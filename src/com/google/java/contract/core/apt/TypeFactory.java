@@ -66,7 +66,6 @@ import javax.lang.model.util.ElementScanner6;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import javax.tools.Diagnostic;
-import javax.tools.DiagnosticListener;
 import javax.tools.JavaFileObject;
 
 /**
@@ -310,7 +309,10 @@ class TypeFactory {
    * builds child (nested) types. This visitor takes an element
    * parameter, to which children are added.
    */
-  @Invariant("methodMap != null")
+  @Invariant({
+    "diagnosticManager != null",
+    "methodMap != null"
+  })
   protected class TypeBuilder extends AbstractTypeBuilder {
     protected class ContractableMethod {
       protected ExecutableElement mirror;
@@ -370,7 +372,7 @@ class TypeFactory {
       }
     }
 
-    protected DiagnosticListener<JavaFileObject> diagnostics;
+    protected DiagnosticManager diagnosticManager;
 
     /**
      * The resulting top-level type.
@@ -395,8 +397,8 @@ class TypeFactory {
 
     public TypeBuilder(Set<String> importNames,
                        Iterator<Long> rootLineNumberIterator,
-                       DiagnosticListener<JavaFileObject> diagnostics) {
-      this.diagnostics = diagnostics;
+                       DiagnosticManager diagnosticManager) {
+      this.diagnosticManager = diagnosticManager;
       type = null;
       rootMirror = null;
       this.importNames = importNames;
@@ -404,8 +406,8 @@ class TypeFactory {
       methodMap = new HashMap<String, ArrayList<ContractableMethod>>();
     }
 
-    public TypeBuilder(DiagnosticListener<JavaFileObject> diagnostics) {
-      this(null, null, diagnostics);
+    public TypeBuilder(DiagnosticManager diagnosticManager) {
+      this(null, null, diagnosticManager);
     }
 
     public TypeModel getType() {
@@ -418,7 +420,8 @@ class TypeFactory {
       /* Inner types. */
       if (type != null) {
         TypeBuilder builder =
-            new TypeBuilder(importNames, rootLineNumberIterator, diagnostics);
+            new TypeBuilder(importNames, rootLineNumberIterator,
+                            diagnosticManager);
         e.accept(builder, p);
         p.addEnclosedElement(builder.type);
         return null;
@@ -763,10 +766,10 @@ class TypeFactory {
         ".equals(element.getQualifiedName().toString())"
   })
   TypeModel createType(TypeElement element,
-                       DiagnosticListener<JavaFileObject> diagnostics) {
+                       DiagnosticManager diagnosticManager) {
     String name = elementUtils.getBinaryName(element)
         .toString().replace('.', '/');
-    TypeBuilder visitor = new TypeBuilder(diagnostics);
+    TypeBuilder visitor = new TypeBuilder(diagnosticManager);
     element.accept(visitor, null);
     return visitor.getType();
   }

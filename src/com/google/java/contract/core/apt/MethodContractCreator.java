@@ -53,7 +53,7 @@ import javax.tools.JavaFileObject;
  * @author nhat.minh.le@huoc.org (Nhat Minh Lê)
  */
 @Invariant({
-  "diagnostics != null",
+  "diagnosticManager != null",
   "transformer != null"
 })
 public class MethodContractCreator extends ElementScanner {
@@ -206,10 +206,12 @@ public class MethodContractCreator extends ElementScanner {
           lines.add(itLineNumber.next());
         }
       } catch (NoSuchElementException e) {
-        diagnostics.report(new ContractDiagnostic(Diagnostic.Kind.WARNING,
-            "extra exception type in 'com.google.java.contract.ThrowEnsures'; ignored",
+        diagnosticManager.warning(
+            "extra exception type in "
+            + "'com.google.java.contract.ThrowEnsures'; "
+            + "ignored",
             assocs.get(assocs.size() - 1), 0, 0, 0,
-            annotation.getSourceInfo()));
+            annotation.getSourceInfo());
       }
 
       if (!transform(code, lines, annotation.getSourceInfo())) {
@@ -237,7 +239,7 @@ public class MethodContractCreator extends ElementScanner {
     }
   }
 
-  protected DiagnosticListener<JavaFileObject> diagnostics;
+  protected DiagnosticManager diagnosticManager;
 
   protected MethodModel method;
   protected ContractMethodModel preMethod;
@@ -249,14 +251,14 @@ public class MethodContractCreator extends ElementScanner {
   /**
    * Constructs a new MethodContractCreator.
    */
-  @Requires("diagnostics != null")
-  public MethodContractCreator(DiagnosticListener<JavaFileObject> diagnostics) {
-    this.diagnostics = diagnostics;
+  @Requires("diagnosticManager != null")
+  public MethodContractCreator(DiagnosticManager diagnosticManager) {
+    this.diagnosticManager = diagnosticManager;
     method = null;
     preMethod = null;
     postMethod = null;
     postSignalMethod = null;
-    transformer = new ContractExpressionTransformer(diagnostics, true);
+    transformer = new ContractExpressionTransformer(diagnosticManager, true);
   }
 
   @Override

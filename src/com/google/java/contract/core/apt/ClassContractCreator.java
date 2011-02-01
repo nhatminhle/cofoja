@@ -30,7 +30,6 @@ import com.google.java.contract.core.model.MethodModel;
 import com.google.java.contract.core.model.TypeModel;
 import com.google.java.contract.core.util.ElementScanner;
 
-import javax.tools.DiagnosticListener;
 import javax.tools.JavaFileObject;
 
 /**
@@ -54,11 +53,11 @@ import javax.tools.JavaFileObject;
  * @author nhat.minh.le@huoc.org (Nhat Minh Lê)
  */
 @Invariant({
-  "diagnostics != null",
+  "diagnosticManager != null",
   "transformer != null"
 })
 public class ClassContractCreator extends ElementScanner {
-  protected DiagnosticListener<JavaFileObject> diagnostics;
+  protected DiagnosticManager diagnosticManager;
 
   protected TypeModel type;
   protected TypeModel helperType;
@@ -69,13 +68,13 @@ public class ClassContractCreator extends ElementScanner {
   /**
    * Constructs a new ClassContractCreator.
    */
-  @Requires("diagnostics != null")
-  public ClassContractCreator(DiagnosticListener<JavaFileObject> diagnostics) {
-    this.diagnostics = diagnostics;
+  @Requires("diagnosticManager != null")
+  public ClassContractCreator(DiagnosticManager diagnosticManager) {
+    this.diagnosticManager = diagnosticManager;
     type = null;
     helperType = null;
     invariant = null;
-    transformer = new ContractExpressionTransformer(diagnostics, false);
+    transformer = new ContractExpressionTransformer(diagnosticManager, false);
   }
 
   public TypeModel getHelperType() {
@@ -85,7 +84,8 @@ public class ClassContractCreator extends ElementScanner {
   @Override
   public void visitType(TypeModel type) {
     if (this.type != null) {
-      ClassContractCreator creator = new ClassContractCreator(diagnostics);
+      ClassContractCreator creator =
+          new ClassContractCreator(diagnosticManager);
       type.accept(creator);
       if (creator.getHelperType() != null) {
         this.type.addEnclosedElement(creator.getHelperType());
@@ -103,7 +103,7 @@ public class ClassContractCreator extends ElementScanner {
 
   @Override
   public void visitMethod(MethodModel method) {
-    method.accept(new MethodContractCreator(diagnostics));
+    method.accept(new MethodContractCreator(diagnosticManager));
   }
 
   @Override
