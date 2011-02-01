@@ -32,7 +32,10 @@
           description="build JAR file for distribution">
     <mkdir dir="${dist}/lib" />
     <jar jarfile="${distjar}" basedir="${obj}/bare"
-         manifest="${src}/META-INF/MANIFEST.MF" />
+         manifest="${src}/META-INF/MANIFEST.MF">
+      <service type="javax.annotation.processing.Processor"
+               provider="com.google.java.contract.core.apt.AnnotationProcessor" />
+    </jar>
   </target>
 
   <!-- Bootstrap. -->
@@ -107,7 +110,10 @@
           description="build bootstrap-contracted JAR file">
     <mkdir dir="${dist}/lib" />
     <jar jarfile="${cdistjar}"
-         basedir="${obj}/stage2" manifest="${src}/META-INF/MANIFEST.MF" />
+         basedir="${obj}/stage2" manifest="${src}/META-INF/MANIFEST.MF">
+      <service type="javax.annotation.processing.Processor"
+               provider="com.google.java.contract.core.apt.AnnotationProcessor" />
+    </jar>
   </target>
 
   <!-- Tests. -->
