@@ -154,13 +154,10 @@ public class AnnotationProcessor extends AbstractProcessor {
       return false;
     }
 
-    boolean success = true;
     DiagnosticManager diagnosticManager = new DiagnosticManager();
 
     List<TypeModel> types = createTypes(rootElements, diagnosticManager);
-    if (diagnosticManager.getErrorCount() != 0) {
-      success = false;
-    }
+    boolean success = diagnosticManager.getErrorCount() == 0;
 
     ArrayList<SyntheticJavaFile> sources =
         new ArrayList<SyntheticJavaFile>(types.size());
@@ -176,9 +173,7 @@ public class AnnotationProcessor extends AbstractProcessor {
       if (dump) {
         dumpSources(types, sources);
       }
-    }
 
-    if (success) {
       try {
         ContractJavaCompiler compiler =
             new ContractJavaCompiler(classPath, outputDirectory);
