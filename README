@@ -1,0 +1,110 @@
+Contracts for Java is a contract programming framework for Java, which
+uses annotation processing and bytecode instrumentation to provide
+run-time checking.
+
+
+1. DEPENDENCIES
+
+Contracts fo Java requires Java version 6 for annotation processing
+and bytecode instrumentation. The bytecode rewriter depends on the ASM
+bytecode manipulation library, version 3.x.
+
+Since the Java agent rewrites bytecode in order to inject contracts
+into the loaded code, the ASM library needs to be available in the
+class path at run time if contract checking is enforced through the
+agent. Pre-contracted class files do not need the ASM library or the
+agent to run with contracts enabled.
+
+
+2. QUICK START
+
+To build a JAR file containing all Cofoja classes, run:
+
+  ant dist
+
+The JAR file will be located at:
+
+  ./dist/lib/cofoja-<version>.jar
+
+It can be used both as a Java agent and annotation processor and
+should be added to your class path.
+
+To compile code with contract annotations, run:
+
+  javac -processor com.google.java.contract.core.apt.AnnotationProcessor <someclass>.java
+
+To execute code compiled with contract checking enabled, make sure the
+generated files (additional .class and .contracts files) are in your
+class path, and run:
+
+  java -javaagent:path/to/cofoja-<version>.jar <someclass>
+
+
+3. ADVANCED BUILD
+
+Contracts for Java is annotated with its own contracts, which can be
+compiled, tested and bundled into the result JAR file so it checks its
+own contracts when compiling and checking your program's contracts!
+
+Please note that running such a build will necessarily be slower than
+running an unchecked version of Contracts for Java, but is a great way
+for you to contribute to the project by helping exercise its own
+capabilities while using it.
+
+To build a contracted version of Contracts for Java, you need to have
+a Cofoja JAR file ready first (see previous section; or you could
+reuse one you've built with a previous run of this bootstrap
+process). Copy the JAR file to:
+
+  ./build/bootstrap.jar
+
+Then run:
+
+  ant bootstrap
+
+Once the contracted version is complete, you can run the test suite
+with:
+
+  ant test
+
+
+4. USAGE
+
+Contracts for Java consists of an annotation processor, an
+instrumentation agent, as well as an offline bytecode rewriter. The
+annotation processor compiles annotations into separate contract class
+files. The instrumentation agent weaves these contract files with the
+real classes before they are loaded into the JVM. Alternatively, the
+offline bytecode rewriter can be used to produce pre-weaved class
+files that can be directly deployed without any Cofoja dependency.
+
+The following instructions assume that you have the Cofoja and ASM JAR
+files in your class path.
+
+The annotation processor's entry point is (for use with the -processor
+javac option):
+
+  com.google.java.contract.core.apt.AnnotationProcessor
+
+The Java agent can be invoked from the compiled JAR file (for use with
+the -javaagent java option):
+
+  ./dist/cofoja-<version>.jar
+
+The offline instrumenter can be run with:
+
+  java -Dcom.google.java.contract.classoutput=<outdir> \
+    com.google.java.contract.core.agent.PreMain <someclass>.class
+
+Please refer to the official online documentation for more
+information:
+
+  http://code.google.com/p/cofoja/wiki/QuickReference
+
+
+5. BUGS
+
+Contracts for Java is a very young project. Please help us make it
+better by reporting bugs and posting patches at:
+
+  http://code.google.com/p/cofoja/issues/
