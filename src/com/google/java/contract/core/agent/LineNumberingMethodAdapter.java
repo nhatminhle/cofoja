@@ -67,9 +67,12 @@ abstract class LineNumberingMethodAdapter extends AdviceAdapter {
   @Override
   protected void onMethodEnter() {
     if (lineNumbers != null && !lineNumbers.isEmpty()) {
-      Label methodStart = new Label();
-      mark(methodStart);
-      mv.visitLineNumber(lineNumbers.get(0).intValue(), methodStart);
+      Long lineNumber = lineNumbers.get(0);
+      if (lineNumber != null) {
+        Label methodStart = new Label();
+        mark(methodStart);
+        mv.visitLineNumber(lineNumber.intValue(), methodStart);
+      }
     }
   }
 
