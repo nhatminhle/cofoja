@@ -60,6 +60,13 @@ public class DiagnosticManager
   })
   public abstract class Report {
     /**
+     * Constructs a new Report. Called by child classes that want to
+     * bypass the invariants.
+     */
+    protected Report() {
+    }
+
+    /**
      * Returns the kind of this diagnostic.
      */
     public abstract Kind getKind();
