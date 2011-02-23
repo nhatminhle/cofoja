@@ -1,148 +1,216 @@
 <project name="Cofoja" default="dist" basedir=".">
-  <!-- Override to build a release. -->
-  <property name="version" value="current" />
+  <!-- Configurable properties. -->
+  <property file="local.properties" />
+  <property file="default.properties" />
 
-  <!-- Override to bootstrap from a different JAR file. -->
-  <property name="bootjar" location="build/bootstrap.jar" />
+  <!-- Private properties. -->
 
-  <property name="src" location="src" />
-  <property name="test" location="test" />
-  <property name="build" location="build" />
+  <property name="src.dir" location="src" />
+  <property name="test.dir" location="test" />
+  <property name="build.dir" location="build" />
+  <property name="obj.dir" location="obj" />
+  <property name="dist.dir" location="dist" />
 
-  <property name="obj" location="obj" />
-  <property name="dist" location="dist" />
-
-  <property name="apt"
+  <property name="manifest.path"
+            value="${src.dir}/META-INF/MANIFEST.MF" />
+  <property name="apt.class"
             value="com.google.java.contract.core.apt.AnnotationProcessor" />
-  <property name="distjar" location="${dist}/lib/cofoja-${version}.jar" />
-  <property name="cdistjar"
-            location="${dist}/lib/cofoja-contracted-${version}.jar" />
+  <property name="test.configurator.class"
+            value="com.google.java.contract.tests.Cofoja" />
+
+  <path id="base.class.path">
+    <pathelement path="${java.class.path}" />
+    <pathelement path="${asm.jar}" />
+    <pathelement path="${junit.jar}" />
+    <pathelement path="${tools.jar}" />
+  </path>
+
+  <!-- Build macros. -->
+
+  <macrodef name="barejar">
+    <attribute name="jarfile" />
+    <attribute name="basedir" />
+    <sequential>
+      <jar jarfile="@{jarfile}"
+           basedir="@{basedir}"
+           manifest="${manifest.path}">
+        <service type="javax.annotation.processing.Processor"
+                 provider="${apt.class}" />
+      </jar>
+    </sequential>
+  </macrodef>
+
+  <macrodef name="fulljar">
+    <attribute name="jarfile" />
+    <attribute name="barejarfile" />
+    <sequential>
+      <jar jarfile="@{jarfile}"
+           manifest="${manifest.path}">
+        <service type="javax.annotation.processing.Processor"
+                 provider="${apt.class}" />
+        <zipfileset includes="**/*.class"
+                    src="@{barejarfile}" />
+        <zipfileset includes="**/*.class" src="${asm.jar}" />
+      </jar>
+    </sequential>
+  </macrodef>
+
+  <macrodef name="bootstrapcomp">
+    <attribute name="stage" />
+    <attribute name="bootstrappath" />
+    <sequential>
+      <mkdir dir="${obj.dir}/tmp@{stage}" />
+      <mkdir dir="${obj.dir}/stage@{stage}" />
+      <javac srcdir="${src.dir}" destdir="${obj.dir}/tmp@{stage}"
+             debug="true" includeantruntime="false"
+             includedestclasses="false">
+        <classpath>
+          <path refid="base.class.path" />
+          <pathelement path="@{bootstrappath}" />
+        </classpath>
+        <compilerarg value="-processor" />
+        <compilerarg value="${apt.class}" />
+      </javac>
+      <cofojab srcdir="${obj.dir}/tmp@{stage}"
+               destdir="${obj.dir}/stage@{stage}" />
+    </sequential>
+  </macrodef>
+
+  <!-- Initialization. -->
+
+  <target name="configure">
+    <fail unless="configured"
+          message="The 'configured' property is not set. Please edit 'local.properties' to suit your environment and try again. Consult the 'README' file for more information." />
+    <echo message="Configuration" />
+    <echo message="-------------" />
+    <echo message="ASM JAR:       ${asm.jar}" />
+    <echo message="JUnit JAR:     ${junit.jar}" />
+    <echo message="JDK Tools JAR: ${tools.jar}" />
+    <echo message="Snapshot:      ${snapshot}" />
+    <echo message="Debug:         ${debug}" />
+  </target>
+
+  <target name="init" depends="configure">
+    <tstamp />
+    <available file="${bootstrap.jar}"
+               property="bootstrap.available" />
+    <available file="${asm.jar}"
+               property="asm.available" />
+
+    <condition property="cofoja.version"
+               value="${version}-${DSTAMP}"
+               else="${version}">
+      <equals arg1="${snapshot}" arg2="true" />
+    </condition>
+    <property name="cofoja.jar"
+              value="${dist.dir}/cofoja-${cofoja.version}.jar" />
+    <property name="cofoja.bare.jar"
+              value="${dist.dir}/cofoja-${cofoja.version}-bare.jar" />
+    <property name="cofoja.contracted.jar"
+              value="${dist.dir}/ccofoja-${cofoja.version}.jar" />
+    <property name="cofoja.contracted.bare.jar"
+              value="${dist.dir}/ccofoja-${cofoja.version}-bare.jar" />
+
+    <mkdir dir="${obj.dir}" />
+    <mkdir dir="${dist.dir}" />
+  </target>
 
   <!-- Simple build. -->
 
-  <target name="build"
+  <target name="build" depends="init"
           description="build class files">
-    <mkdir dir="${obj}/bare" />
-    <javac srcdir="${src}" destdir="${obj}/bare" includeantruntime="false">
-      <classpath path="${java.class.path}" />
+    <mkdir dir="${obj.dir}/bare" />
+    <javac srcdir="${src.dir}" destdir="${obj.dir}/bare"
+           debug="${debug}"
+           includeantruntime="false">
+      <classpath refid="base.class.path" />
     </javac>
   </target>
 
-  <target name="dist" depends="build"
-          description="build JAR file for distribution">
-    <mkdir dir="${dist}/lib" />
-    <jar jarfile="${distjar}" basedir="${obj}/bare"
-         manifest="${src}/META-INF/MANIFEST.MF">
-      <service type="javax.annotation.processing.Processor"
-               provider="com.google.java.contract.core.apt.AnnotationProcessor" />
-    </jar>
+  <target name="baredist" depends="build">
+    <barejar jarfile="${cofoja.bare.jar}" basedir="${obj.dir}/bare" />
   </target>
+
+  <target name="fulldist" depends="baredist" if="asm.available">
+    <fulljar jarfile="${cofoja.jar}" barejarfile="${cofoja.bare.jar}" />
+  </target>
+
+  <target name="nofulldist" unless="asm.available">
+    <echo message="ASM JAR file not found; not building bundled JAR files" />
+  </target>
+
+  <target name="dist" depends="baredist,fulldist,nofulldist"
+          description="build JAR files for distribution" />
 
   <!-- Bootstrap. -->
 
-  <target name="copybootstrap" depends="dist"
-          description="copy bootstrap JAR file from a normal build">
-    <copy file="${distjar}" tofile="${bootjar}" />
-  </target>
-
-  <target name="init">
-    <mkdir dir="${obj}/build" />
-    <javac srcdir="${build}" destdir="${obj}/build"
+  <target name="antinit" depends="init">
+    <fail unless="bootstrap.available"
+          message="No bootstrap JAR file found; set the 'bootstrap.jar' property to the Cofoja archive to use for bootstrapping" />
+    <mkdir dir="${obj.dir}/build" />
+    <javac srcdir="${build.dir}" destdir="${obj.dir}/build"
            debug="true" includeantruntime="false">
       <classpath>
-        <pathelement path="${java.class.path}" />
-        <pathelement path="${bootjar}" />
+        <path refid="base.class.path" />
+        <pathelement path="${bootstrap.jar}" />
       </classpath>
     </javac>
     <taskdef name="cofojab" classname="PreAgentAntTask"
-             classpath="${obj}/build:${bootjar}" />
+             classpath="${obj.dir}/build:${bootstrap.jar}:${asm.jar}" />
   </target>
 
-  <target name="stage0" depends="init">
-    <mkdir dir="${obj}/tmp0" />
-    <mkdir dir="${obj}/stage0" />
-    <javac srcdir="${src}" destdir="${obj}/tmp0"
-           debug="true" includeantruntime="false"
-           includedestclasses="false">
-      <classpath>
-        <pathelement path="${java.class.path}" />
-        <pathelement path="${bootjar}" />
-      </classpath>
-      <compilerarg value="-processor" />
-      <compilerarg value="${apt}" />
-    </javac>
-    <cofojab srcdir="${obj}/tmp0" destdir="${obj}/stage0" />
+  <target name="stage0" depends="antinit">
+    <bootstrapcomp stage="0" bootstrappath="${bootstrap.jar}" />
   </target>
 
   <target name="stage1" depends="stage0">
-    <mkdir dir="${obj}/tmp1" />
-    <mkdir dir="${obj}/stage1" />
-    <javac srcdir="${src}" destdir="${obj}/tmp1"
-           debug="true" includeantruntime="false"
-           includedestclasses="false">
-      <classpath>
-        <pathelement path="${java.class.path}" />
-        <pathelement path="${obj}/stage0" />
-      </classpath>
-      <compilerarg value="-processor" />
-      <compilerarg value="${apt}" />
-    </javac>
-    <cofojab srcdir="${obj}/tmp1" destdir="${obj}/stage1" />
+    <bootstrapcomp stage="1" bootstrappath="${obj.dir}/stage0" />
   </target>
 
   <target name="stage2" depends="stage1">
-    <mkdir dir="${obj}/tmp2" />
-    <mkdir dir="${obj}/stage2" />
-    <javac srcdir="${src}" destdir="${obj}/tmp2"
-           debug="true" includeantruntime="false"
-           includedestclasses="false">
-      <classpath>
-        <pathelement path="${java.class.path}" />
-        <pathelement path="${obj}/stage1" />
-      </classpath>
-      <compilerarg value="-processor" />
-      <compilerarg value="${apt}" />
-    </javac>
-    <cofojab srcdir="${obj}/tmp2" destdir="${obj}/stage2" />
+    <bootstrapcomp stage="2" bootstrappath="${obj.dir}/stage1" />
   </target>
 
-  <target name="bootstrap" depends="stage2"
-          description="build bootstrap-contracted JAR file">
-    <mkdir dir="${dist}/lib" />
-    <jar jarfile="${cdistjar}"
-         basedir="${obj}/stage2" manifest="${src}/META-INF/MANIFEST.MF">
-      <service type="javax.annotation.processing.Processor"
-               provider="com.google.java.contract.core.apt.AnnotationProcessor" />
-    </jar>
+  <target name="barecdist" depends="stage2">
+    <barejar jarfile="${cofoja.contracted.bare.jar}"
+             basedir="${obj.dir}/stage2" />
   </target>
+
+  <target name="fullcdist" depends="barecdist" if="asm.available">
+    <fulljar jarfile="${cofoja.contracted.jar}"
+             barejarfile="${cofoja.contracted.bare.jar}" />
+  </target>
+
+  <target name="bootstrap" depends="barecdist,fullcdist,nofulldist"
+          description="build bootstrap-contracted JAR files" />
 
   <!-- Tests. -->
 
   <target name="buildtest1" depends="stage2">
-    <mkdir dir="${obj}/test" />
-    <javac srcdir="${test}" destdir="${obj}/test"
+    <mkdir dir="${obj.dir}/test" />
+    <javac srcdir="${test.dir}" destdir="${obj.dir}/test"
            debug="true" includeantruntime="false">
       <classpath>
-        <pathelement path="${java.class.path}" />
-        <pathelement path="${obj}/stage2" />
+        <path refid="base.class.path" />
+        <pathelement path="${obj.dir}/stage2" />
       </classpath>
       <compilerarg value="-processor" />
-      <compilerarg value="${apt}" />
+      <compilerarg value="${apt.class}" />
       <include name="**/SeparateGenericSuperclass.java" />
       <include name="**/SeparateInterface.java" />
     </javac>
   </target>
 
   <target name="buildtest2" depends="buildtest1,stage2">
-    <javac srcdir="${test}" destdir="${obj}/test"
+    <javac srcdir="${test.dir}" destdir="${obj.dir}/test"
            debug="true" includeantruntime="false">
       <classpath>
-        <pathelement path="${java.class.path}" />
-        <pathelement path="${obj}/stage2" />
-        <pathelement path="${obj}/test" />
+        <path refid="base.class.path" />
+        <pathelement path="${obj.dir}/stage2" />
+        <pathelement path="${obj.dir}/test" />
       </classpath>
       <compilerarg value="-processor" />
-      <compilerarg value="${apt}" />
+      <compilerarg value="${apt.class}" />
       <exclude name="**/SeparateGenericSuperclass.java" />
       <exclude name="**/SeparateInterface.java" />
     </javac>
@@ -152,15 +220,15 @@
           description="run tests">
     <junit printsummary="yes" haltonfailure="yes">
       <classpath>
-        <pathelement path="${java.class.path}"/>
-        <pathelement path="${obj}/stage2" />
-        <pathelement location="${obj}/test"/>
+        <path refid="base.class.path" />
+        <pathelement path="${obj.dir}/stage2" />
+        <pathelement location="${obj.dir}/test"/>
       </classpath>
-      <jvmarg value="-javaagent:${cdistjar}" />
-      <jvmarg value="-Dcom.google.java.contract.configurator=com.google.java.contract.tests.Cofoja" />
+      <jvmarg value="-javaagent:${cofoja.contracted.bare.jar}" />
+      <jvmarg value="-Dcom.google.java.contract.configurator=${test.configurator.class}" />
       <formatter type="plain" />
-      <batchtest fork="yes" todir="${obj}/test">
-        <fileset dir="${obj}/test">
+      <batchtest fork="yes" todir="${obj.dir}/test">
+        <fileset dir="${obj.dir}/test">
           <include name="**/*Test.class"/>
         </fileset>
       </batchtest>
@@ -171,7 +239,7 @@
 
   <target name="clean"
           description="remove generated files">
-    <delete dir="${obj}" />
-    <delete dir="${dist}" />
+    <delete dir="${obj.dir}" />
+    <delete dir="${dist.dir}" />
   </target>
 </project>

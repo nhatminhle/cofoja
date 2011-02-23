@@ -16,7 +16,27 @@ agent. Pre-contracted class files do not need the ASM library or the
 agent to run with contracts enabled.
 
 
-2. QUICK START
+2. CONFIGURATION
+
+In order for the build script to run properly, you must at least
+specify the correct path to Cofoja's dependencies in your local build
+properties file:
+
+  ./local.properties
+
+This file does not exist by default; you can either create it or start
+from a copy of the default configuration file:
+
+  ./default.properties
+
+That file also contains all user-settable properties with their
+descriptions and default values. Once you're done, set the following
+property to true to let Ant run:
+
+  configured=true
+
+
+3. QUICK START
 
 To build a JAR file containing all Cofoja classes, run:
 
@@ -40,7 +60,7 @@ class path, and run:
   java -javaagent:path/to/cofoja-<version>.jar <someclass>
 
 
-3. ADVANCED BUILD
+4. ADVANCED BUILD
 
 Contracts for Java is annotated with its own contracts, which can be
 compiled, tested and bundled into the result JAR file so it checks its
@@ -67,8 +87,14 @@ with:
 
   ant test
 
+Aside from self-contracted builds, Cofoja JAR files bundled with ASM
+library classes can also be produced, for the sake of easier
+distribution:
 
-4. USAGE
+  ant -Dasmjar=path/to/asm-all-<version>.jar dist
+
+
+5. USAGE
 
 Contracts for Java consists of an annotation processor, an
 instrumentation agent, as well as an offline bytecode rewriter. The
@@ -102,7 +128,7 @@ information:
   http://code.google.com/p/cofoja/wiki/QuickReference
 
 
-5. BUGS
+6. BUGS
 
 Contracts for Java is a very young project. Please help us make it
 better by reporting bugs and posting patches at:
