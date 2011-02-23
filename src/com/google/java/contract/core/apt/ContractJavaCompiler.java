@@ -98,7 +98,10 @@ public class ContractJavaCompiler {
                                 OPTIONS, null, files);
   }
 
-  @Requires("path != null")
+  @Requires({
+    "location != null",
+    "path != null"
+  })
   protected void setPath(Location location, String path) throws IOException {
     String[] parts = path.split(Pattern.quote(File.pathSeparator));
     ArrayList<File> dirs = new ArrayList<File>(parts.length);
