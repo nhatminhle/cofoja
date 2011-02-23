@@ -20,11 +20,43 @@
 
   <path id="base.class.path">
     <pathelement path="${asm.jar}" />
-    <pathelement path="${junit.jar}" />
     <pathelement path="${tools.jar}" />
   </path>
 
+  <path id="test.class.path">
+    <path refid="base.class.path" />
+    <pathelement path="${junit.jar}" />
+  </path>
+
   <!-- Build macros. -->
+
+  <macrodef name="checkjar">
+    <attribute name="label" />
+    <attribute name="property" />
+    <sequential>
+      <condition property="@{property}.notfound"
+                 value="no such file: "
+                 else="">
+        <not>
+          <available file="${@{property}}" />
+        </not>
+      </condition>
+      <echo message="@{label}${@{property}.notfound}${@{property}}" />
+    </sequential>
+  </macrodef>
+
+  <macrodef name="requirejar">
+    <attribute name="property" />
+    <sequential>
+      <fail message="Cannot find '${@{property}}'. Please link to the appropriate file or set the '@{property}' property to suit your environment. Consult the 'README' file for more information.">
+        <condition>
+          <not>
+            <equals arg1="${@{property}.notfound}" arg2="" />
+          </not>
+        </condition>
+      </fail>
+    </sequential>
+  </macrodef>
 
   <macrodef name="barejar">
     <attribute name="jarfile" />
@@ -77,24 +109,21 @@
   <!-- Initialization. -->
 
   <target name="configure">
-    <fail unless="configured"
-          message="The 'configured' property is not set. Please edit 'local.properties' to suit your environment and try again. Consult the 'README' file for more information." />
     <echo message="Configuration" />
     <echo message="-------------" />
-    <echo message="ASM JAR:       ${asm.jar}" />
-    <echo message="JUnit JAR:     ${junit.jar}" />
-    <echo message="JDK Tools JAR: ${tools.jar}" />
+    <checkjar label="ASM JAR:       " property="asm.jar" />
+    <checkjar label="JUnit JAR:     " property="junit.jar" />
+    <checkjar label="JDK Tools JAR: " property="tools.jar" />
+    <checkjar label="Bootstrap JAR: " property="bootstrap.jar" />
     <echo message="Snapshot:      ${snapshot}" />
     <echo message="Debug:         ${debug}" />
   </target>
 
   <target name="init" depends="configure">
-    <tstamp />
-    <available file="${bootstrap.jar}"
-               property="bootstrap.available" />
-    <available file="${asm.jar}"
-               property="asm.available" />
+    <requirejar property="asm.jar" />
+    <requirejar property="tools.jar" />
 
+    <tstamp />
     <condition property="cofoja.version"
                value="${version}-${DSTAMP}"
                else="${version}">
@@ -125,26 +154,16 @@
     </javac>
   </target>
 
-  <target name="baredist" depends="build">
+  <target name="dist" depends="build"
+          description="build JAR files for distribution">
     <barejar jarfile="${cofoja.bare.jar}" basedir="${obj.dir}/bare" />
-  </target>
-
-  <target name="fulldist" depends="baredist" if="asm.available">
     <fulljar jarfile="${cofoja.jar}" barejarfile="${cofoja.bare.jar}" />
   </target>
-
-  <target name="nofulldist" unless="asm.available">
-    <echo message="ASM JAR file not found; not building bundled JAR files" />
-  </target>
-
-  <target name="dist" depends="baredist,fulldist,nofulldist"
-          description="build JAR files for distribution" />
 
   <!-- Bootstrap. -->
 
   <target name="antinit" depends="init">
-    <fail unless="bootstrap.available"
-          message="No bootstrap JAR file found; set the 'bootstrap.jar' property to the Cofoja archive to use for bootstrapping" />
+    <requirejar property="bootstrap.jar" />
     <mkdir dir="${obj.dir}/build" />
     <javac srcdir="${build.dir}" destdir="${obj.dir}/build"
            debug="true" includeantruntime="false">
@@ -170,27 +189,23 @@
     <bootstrapcomp stage="2" bootstrappath="${obj.dir}/stage1" />
   </target>
 
-  <target name="barecdist" depends="stage2">
+  <target name="bootstrap" depends="stage2"
+          description="build bootstrap-contracted JAR files">
     <barejar jarfile="${cofoja.contracted.bare.jar}"
              basedir="${obj.dir}/stage2" />
-  </target>
-
-  <target name="fullcdist" depends="barecdist" if="asm.available">
     <fulljar jarfile="${cofoja.contracted.jar}"
              barejarfile="${cofoja.contracted.bare.jar}" />
   </target>
 
-  <target name="bootstrap" depends="barecdist,fullcdist,nofulldist"
-          description="build bootstrap-contracted JAR files" />
-
   <!-- Tests. -->
 
   <target name="buildtest1" depends="stage2">
+    <requirejar property="junit.jar" />
     <mkdir dir="${obj.dir}/test" />
     <javac srcdir="${test.dir}" destdir="${obj.dir}/test"
            debug="true" includeantruntime="false">
       <classpath>
-        <path refid="base.class.path" />
+        <path refid="test.class.path" />
         <pathelement path="${obj.dir}/stage2" />
       </classpath>
       <compilerarg value="-processor" />
@@ -204,7 +219,7 @@
     <javac srcdir="${test.dir}" destdir="${obj.dir}/test"
            debug="true" includeantruntime="false">
       <classpath>
-        <path refid="base.class.path" />
+        <path refid="test.class.path" />
         <pathelement path="${obj.dir}/stage2" />
         <pathelement path="${obj.dir}/test" />
       </classpath>
@@ -220,7 +235,7 @@
           description="run tests">
     <junit printsummary="yes" haltonfailure="yes">
       <classpath>
-        <path refid="base.class.path" />
+        <path refid="test.class.path" />
         <pathelement path="${obj.dir}/stage2" />
         <pathelement location="${obj.dir}/test"/>
       </classpath>
