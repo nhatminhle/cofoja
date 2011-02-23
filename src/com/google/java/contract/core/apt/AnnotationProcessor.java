@@ -74,6 +74,7 @@ import javax.tools.JavaFileObject.Kind;
 @SupportedOptions({
   AnnotationProcessor.OPT_DEBUG,
   AnnotationProcessor.OPT_DUMP,
+  AnnotationProcessor.OPT_SOURCEPATH,
   AnnotationProcessor.OPT_CLASSPATH,
   AnnotationProcessor.OPT_CLASSOUTPUT,
   AnnotationProcessor.OPT_DEPSPATH,
@@ -92,6 +93,13 @@ public class AnnotationProcessor extends AbstractProcessor {
    * specified directory (defaults to {@code contracts_for_java.out}).
    */
   protected static final String OPT_DUMP = "com.google.java.contract.dump";
+
+  /**
+   * This option sets the source path for the compilation of the
+   * generated source files. It should be the same as the class path
+   * for the sources themselves.
+   */
+  protected static final String OPT_SOURCEPATH = "com.google.java.contract.sourcepath";
 
   /**
    * This option sets the class path for the compilation of the
@@ -122,6 +130,7 @@ public class AnnotationProcessor extends AbstractProcessor {
 
   protected TypeFactory factory;
 
+  protected String sourcePath;
   protected String classPath;
   protected String outputDirectory;
 
@@ -176,7 +185,7 @@ public class AnnotationProcessor extends AbstractProcessor {
 
       try {
         ContractJavaCompiler compiler =
-            new ContractJavaCompiler(classPath, outputDirectory);
+            new ContractJavaCompiler(sourcePath, classPath, outputDirectory);
         CompilationTask task = compiler.getTask(sources, diagnosticManager);
         success = task.call();
       } catch (IOException e) {
@@ -197,6 +206,7 @@ public class AnnotationProcessor extends AbstractProcessor {
    * Sets class and output paths from command-line options.
    */
   private void setupPaths() {
+    sourcePath = processingEnv.getOptions().get(OPT_SOURCEPATH);
     classPath = processingEnv.getOptions().get(OPT_CLASSPATH);
     outputDirectory = processingEnv.getOptions().get(OPT_CLASSOUTPUT);
 
@@ -212,6 +222,10 @@ public class AnnotationProcessor extends AbstractProcessor {
       JavacProcessingEnvironment javacEnv =
           (JavacProcessingEnvironment) processingEnv;
       Options options = Options.instance(javacEnv.getContext());
+
+      if (sourcePath == null) {
+        sourcePath = options.get(OptionName.SOURCEPATH);
+      }
 
       if (classPath == null) {
         String classPath1 = options.get(OptionName.CP);

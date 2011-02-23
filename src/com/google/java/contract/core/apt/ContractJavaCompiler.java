@@ -32,6 +32,7 @@ import java.util.regex.Pattern;
 import javax.tools.DiagnosticListener;
 import javax.tools.JavaCompiler;
 import javax.tools.JavaCompiler.CompilationTask;
+import javax.tools.JavaFileManager.Location;
 import javax.tools.JavaFileObject;
 import javax.tools.StandardLocation;
 import javax.tools.ToolProvider;
@@ -65,14 +66,18 @@ public class ContractJavaCompiler {
 
   protected ContractJavaFileManager fileManager;
 
-  public ContractJavaCompiler(String classPath, String outputDirectory)
+  public ContractJavaCompiler(String sourcePath, String classPath,
+                              String outputDirectory)
       throws IOException {
     javaCompiler = ToolProvider.getSystemJavaCompiler();
     fileManager = new ContractJavaFileManager(
         javaCompiler.getStandardFileManager(null, null, null));
 
+    if (sourcePath != null) {
+      setPath(StandardLocation.SOURCE_PATH, sourcePath);
+    }
     if (classPath != null) {
-      setClassPath(classPath);
+      setPath(StandardLocation.CLASS_PATH, classPath);
     }
     if (outputDirectory != null) {
       setClassOutputDirectory(outputDirectory);
@@ -93,14 +98,14 @@ public class ContractJavaCompiler {
                                 OPTIONS, null, files);
   }
 
-  @Requires("classPath != null")
-  protected void setClassPath(String classPath) throws IOException {
-    String[] parts = classPath.split(Pattern.quote(File.pathSeparator));
+  @Requires("path != null")
+  protected void setPath(Location location, String path) throws IOException {
+    String[] parts = path.split(Pattern.quote(File.pathSeparator));
     ArrayList<File> dirs = new ArrayList<File>(parts.length);
     for (String part : parts) {
       dirs.add(new File(part));
     }
-    fileManager.setLocation(StandardLocation.CLASS_PATH, dirs);
+    fileManager.setLocation(location, dirs);
   }
 
   @Requires("outputDirectory != null")
