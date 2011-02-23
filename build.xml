@@ -19,7 +19,6 @@
             value="com.google.java.contract.tests.Cofoja" />
 
   <path id="base.class.path">
-    <pathelement path="${java.class.path}" />
     <pathelement path="${asm.jar}" />
     <pathelement path="${junit.jar}" />
     <pathelement path="${tools.jar}" />
@@ -64,10 +63,9 @@
       <javac srcdir="${src.dir}" destdir="${obj.dir}/tmp@{stage}"
              debug="true" includeantruntime="false"
              includedestclasses="false">
-        <classpath>
-          <path refid="base.class.path" />
-          <pathelement path="@{bootstrappath}" />
-        </classpath>
+        <classpath refid="base.class.path" />
+        <compilerarg value="-processorpath" />
+        <compilerarg value="@{bootstrappath}:${asm.jar}" />
         <compilerarg value="-processor" />
         <compilerarg value="${apt.class}" />
       </javac>
@@ -152,6 +150,7 @@
            debug="true" includeantruntime="false">
       <classpath>
         <path refid="base.class.path" />
+        <pathelement path="${java.class.path}" />
         <pathelement path="${bootstrap.jar}" />
       </classpath>
     </javac>
@@ -211,6 +210,7 @@
       </classpath>
       <compilerarg value="-processor" />
       <compilerarg value="${apt.class}" />
+      <compilerarg value="-Acom.google.java.contract.dump=${obj.dir}/test/dump" />
       <exclude name="**/SeparateGenericSuperclass.java" />
       <exclude name="**/SeparateInterface.java" />
     </javac>
