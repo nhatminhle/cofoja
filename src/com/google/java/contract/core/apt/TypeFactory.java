@@ -759,7 +759,10 @@ class TypeFactory {
    * Returns a {@link TypeModel} instanec representing the specified
    * {@link TypeElement}.
    */
-  @Requires("element != null")
+  @Requires({
+    "element != null",
+    "diagnosticManager != null"
+  })
   @Ensures({
     "result != null",
     "result.getName().getQualifiedName()" +
