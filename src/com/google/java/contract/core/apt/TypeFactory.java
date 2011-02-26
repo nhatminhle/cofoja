@@ -135,10 +135,8 @@ class TypeFactory {
    * Abstract base class providing annotation processing facilities
    * used to build types.
    */
-  protected class AbstractTypeBuilder
+  protected abstract class AbstractTypeBuilder
       extends ElementScanner6<Void, ElementModel> {
-    protected boolean primary;
-    protected boolean virtual;
     protected ClassName owner;
 
     /**
@@ -157,7 +155,6 @@ class TypeFactory {
      * @param parent the target of the annotation
      * @param annotation the annotation
      * @param primary whether this is a primary contract annotation
-     * @param virtual whether this is a virtual contract annotation
      * @param owner the owner of this annotation
      * @param p the element to add the created annotation to
      *
@@ -171,8 +168,7 @@ class TypeFactory {
     })
     protected void visitAnnotation(
         Element parent, AnnotationMirror annotation,
-        boolean primary, boolean virtual, ClassName owner,
-        ElementModel p) {
+        boolean primary, ClassName owner, ElementModel p) {
       String annotationName = annotation.getAnnotationType().toString();
 
       ElementKind kind;
@@ -188,8 +184,17 @@ class TypeFactory {
         return;
       }
 
-      TypeName returnType = null;
-      if (parent.getKind() == javax.lang.model.element.ElementKind.METHOD) {
+      boolean virtual;
+      TypeName returnType;
+      if (parent.getKind() != javax.lang.model.element.ElementKind.METHOD) {
+        virtual =
+            parent.getKind()
+            != javax.lang.model.element.ElementKind.INTERFACE;
+        returnType = null;
+      } else {
+        virtual =
+            parent.getEnclosingElement().getKind()
+            != javax.lang.model.element.ElementKind.INTERFACE;
         ExecutableElement method = (ExecutableElement) parent;
         returnType = getTypeNameForType(
             typeUtils.erasure(method.getReturnType()));
@@ -283,23 +288,20 @@ class TypeFactory {
 
     /**
      * Scans a list of annotations and call
-     * {@link #visitAnnotation(Element, AnnotationMirror,boolean,boolean,ClassName,ElementModel)}
+     * {@link #visitAnnotation(Element,AnnotationMirror,boolean,ClassName,ElementModel)}
      * on each one of them, in order.
      *
      * @see ContractAnnotationModel
      */
     @Requires({
       "parent != null",
-      "annotations != null",
       "owner != null",
       "p != null"
     })
     protected void scanAnnotations(Element parent,
-        List<? extends AnnotationMirror> annotations,
-        boolean primary, boolean virtual, ClassName owner,
-        ElementModel p) {
-      for (AnnotationMirror ann : annotations) {
-        visitAnnotation(parent, ann, primary, virtual, owner, p);
+        boolean primary, ClassName owner, ElementModel p) {
+      for (AnnotationMirror ann : parent.getAnnotationMirrors()) {
+        visitAnnotation(parent, ann, primary, owner, p);
       }
     }
   }
@@ -332,7 +334,6 @@ class TypeFactory {
     @Contracted
     protected class ContractExtensionBuilder extends AbstractTypeBuilder {
       protected TypeElement mirror;
-      protected boolean isInterface;
 
       @Override
       public Void visitType(TypeElement e, ElementModel p) {
@@ -341,11 +342,7 @@ class TypeFactory {
         }
 
         mirror = e;
-        isInterface =
-            e.getKind() == javax.lang.model.element.ElementKind.INTERFACE;
-        scanAnnotations(e, e.getAnnotationMirrors(),
-                        false, !isInterface,
-                        getClassNameForType(e.asType()), type);
+        scanAnnotations(e, false, getClassNameForType(e.asType()), type);
 
         scan(ElementFilter.methodsIn(e.getEnclosedElements()), type);
 
@@ -362,9 +359,7 @@ class TypeFactory {
         }
         for (ContractableMethod overrider : candidates) {
           if (elementUtils.overrides(overrider.mirror, e, rootMirror)) {
-            scanAnnotations(e, e.getAnnotationMirrors(),
-                            false, !isInterface,
-                            getClassNameForType(mirror.asType()),
+            scanAnnotations(e, false, getClassNameForType(mirror.asType()),
                             overrider.element);
           }
         }
@@ -501,9 +496,7 @@ class TypeFactory {
       }
 
       /* Process members. */
-      scanAnnotations(e, e.getAnnotationMirrors(),
-                      true, type.getKind() != ElementKind.INTERFACE,
-                      type.getName(), type);
+      scanAnnotations(e, true, type.getName(), type);
       scan(e.getEnclosedElements(), type);
 
       /* Add inherited contract annotations. */
@@ -562,9 +555,7 @@ class TypeFactory {
                             getTypeNameForType(e.asType()));
       copyModifiers(e, variable);
 
-      scanAnnotations(e, e.getAnnotationMirrors(),
-                      true, type.getKind() != ElementKind.INTERFACE,
-                      type.getName(), variable);
+      scanAnnotations(e, true, type.getName(), variable);
 
       p.addEnclosedElement(variable);
       return null;
@@ -620,9 +611,7 @@ class TypeFactory {
       }
 
       /* Add annotations. */
-      scanAnnotations(e, e.getAnnotationMirrors(),
-                      true, type.getKind() != ElementKind.INTERFACE,
-                      type.getName(), exec);
+      scanAnnotations(e, true, type.getName(), exec);
 
       /* Register method. */
       p.addEnclosedElement(exec);
