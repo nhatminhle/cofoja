@@ -28,7 +28,6 @@ import com.google.java.contract.core.model.ElementKind;
 import com.google.java.contract.core.model.ElementModel;
 import com.google.java.contract.core.model.ElementModifier;
 import com.google.java.contract.core.model.MethodModel;
-import com.google.java.contract.core.model.QualifiedElementModel;
 import com.google.java.contract.core.model.TypeModel;
 import com.google.java.contract.core.model.TypeName;
 import com.google.java.contract.core.model.VariableModel;
@@ -78,11 +77,7 @@ import javax.tools.JavaFileObject;
  * @author nhat.minh.le@huoc.org (Nhat Minh Lê)
  * @author johannes.rieken@gmail.com (Johannes Rieken)
  */
-@Invariant({
-  "processingEnv != null",
-  "elementUtils != null",
-  "typeUtils != null"
-})
+@Invariant("processingEnv != null")
 class TypeFactory {
   /**
    * An element visitor that extracts constructor arguments from a
@@ -120,10 +115,10 @@ class TypeFactory {
 
       subtype.clearSuperArguments();
       ExecutableType execType =
-          (ExecutableType) typeUtils.asMemberOf(typeMirror, e);
+          (ExecutableType) utils.typeUtils.asMemberOf(typeMirror, e);
       List<? extends TypeMirror> paramTypes = execType.getParameterTypes();
       for (TypeMirror t : paramTypes) {
-        subtype.addSuperArgument(getTypeNameForType(t));
+        subtype.addSuperArgument(utils.getTypeNameForType(t));
       }
 
       constructorFound = v;
@@ -196,8 +191,8 @@ class TypeFactory {
             parent.getEnclosingElement().getKind()
             != javax.lang.model.element.ElementKind.INTERFACE;
         ExecutableElement method = (ExecutableElement) parent;
-        returnType = getTypeNameForType(
-            typeUtils.erasure(method.getReturnType()));
+        returnType = utils.getTypeNameForType(
+            utils.typeUtils.erasure(method.getReturnType()));
       }
       ContractAnnotationModel model =
           new ContractAnnotationModel(kind, primary, virtual,
@@ -342,7 +337,7 @@ class TypeFactory {
         }
 
         mirror = e;
-        scanAnnotations(e, false, getClassNameForType(e.asType()), type);
+        scanAnnotations(e, false, utils.getClassNameForType(e.asType()), type);
 
         scan(ElementFilter.methodsIn(e.getEnclosedElements()), type);
 
@@ -358,8 +353,10 @@ class TypeFactory {
           return null;
         }
         for (ContractableMethod overrider : candidates) {
-          if (elementUtils.overrides(overrider.mirror, e, rootMirror)) {
-            scanAnnotations(e, false, getClassNameForType(mirror.asType()),
+          if (utils.elementUtils.overrides(overrider.mirror, e,
+                                           rootMirror)) {
+            scanAnnotations(e, false,
+                            utils.getClassNameForType(mirror.asType()),
                             overrider.element);
           }
         }
@@ -440,8 +437,8 @@ class TypeFactory {
         default:
           return null;
       }
-      type = new TypeModel(kind, getClassNameForType(e.asType()));
-      copyModifiers(e, type);
+      type = new TypeModel(kind, utils.getClassNameForType(e.asType()));
+      utils.copyModifiers(e, type);
       if (kind == ElementKind.ENUM) {
         type.removeModifier(ElementModifier.FINAL);
       }
@@ -470,11 +467,11 @@ class TypeFactory {
       /* Set superclass and interfaces. */
       TypeMirror superclass = e.getSuperclass();
       if (superclass.getKind() == TypeKind.DECLARED) {
-        type.setSuperclass(getClassNameForType(superclass));
+        type.setSuperclass(utils.getClassNameForType(superclass));
       }
       List<? extends TypeMirror> interfaces = e.getInterfaces();
       for (TypeMirror iface : interfaces) {
-        type.addInterface(getClassNameForType(iface));
+        type.addInterface(utils.getClassNameForType(iface));
       }
 
       /* Construct super() call. */
@@ -482,7 +479,7 @@ class TypeFactory {
         TypeMirror superMirror = e.getSuperclass();
         if (superMirror.getKind() == TypeKind.DECLARED) {
           TypeElement superType =
-              (TypeElement) typeUtils.asElement(superMirror);
+              (TypeElement) utils.typeUtils.asElement(superMirror);
           SuperCallBuilder visitor =
               new SuperCallBuilder((DeclaredType) superMirror, type);
           superType.accept(visitor, null);
@@ -492,7 +489,7 @@ class TypeFactory {
       /* Process generic signature. */
       List<? extends TypeParameterElement> typeParams = e.getTypeParameters();
       for (TypeParameterElement tp : typeParams) {
-        type.addTypeParameter(getGenericTypeName(tp));
+        type.addTypeParameter(utils.getGenericTypeName(tp));
       }
 
       /* Process members. */
@@ -552,8 +549,8 @@ class TypeFactory {
       }
       VariableModel variable =
           new VariableModel(kind, e.getSimpleName().toString(),
-                            getTypeNameForType(e.asType()));
-      copyModifiers(e, variable);
+                            utils.getTypeNameForType(e.asType()));
+      utils.copyModifiers(e, variable);
 
       scanAnnotations(e, true, type.getName(), variable);
 
@@ -580,7 +577,8 @@ class TypeFactory {
         } else if (name.equals("valueOf")) {
           List<TypeMirror> valueOfParameterTypes =
               Collections.singletonList(
-                  elementUtils.getTypeElement("java.lang.String").asType());
+                  utils.elementUtils
+                  .getTypeElement("java.lang.String").asType());
           if (t.getParameterTypes().equals(valueOfParameterTypes)) {
             return null;
           }
@@ -592,14 +590,14 @@ class TypeFactory {
         exec = new MethodModel();
       } else {
         exec = new MethodModel(ElementKind.METHOD, name,
-                               getTypeNameForType(e.getReturnType()));
+                               utils.getTypeNameForType(e.getReturnType()));
       }
-      copyModifiers(e, exec);
+      utils.copyModifiers(e, exec);
 
       /* Add generic signature. */
       List<? extends TypeParameterElement> genericTypes = e.getTypeParameters();
       for (TypeParameterElement tp : genericTypes) {
-        exec.addTypeParameter(getGenericTypeName(tp));
+        exec.addTypeParameter(utils.getGenericTypeName(tp));
       }
 
       /* Add parameters. */
@@ -607,7 +605,7 @@ class TypeFactory {
 
       /* Add throws list. */
       for (TypeMirror tt : e.getThrownTypes()) {
-        exec.addException(getTypeNameForType(tt));
+        exec.addException(utils.getTypeNameForType(tt));
       }
 
       /* Add annotations. */
@@ -638,12 +636,13 @@ class TypeFactory {
      */
     protected void scanSuper(TypeElement e) {
       TypeElement superElement =
-          (TypeElement) typeUtils.asElement(e.getSuperclass());
+          (TypeElement) utils.typeUtils.asElement(e.getSuperclass());
       if (superElement != null) {
         superElement.accept(new ContractExtensionBuilder(), type);
       }
       for (TypeMirror iface : e.getInterfaces()) {
-        TypeElement ifaceElement = (TypeElement) typeUtils.asElement(iface);
+        TypeElement ifaceElement =
+            (TypeElement) utils.typeUtils.asElement(iface);
         ifaceElement.accept(new ContractExtensionBuilder(), type);
       }
     }
@@ -652,8 +651,7 @@ class TypeFactory {
   protected URLClassLoader sourceDependencyLoader;
 
   protected ProcessingEnvironment processingEnv;
-  protected Elements elementUtils;
-  protected Types typeUtils;
+  protected FactoryUtils utils;
 
   @Requires("processingEnv != null")
   TypeFactory(ProcessingEnvironment processingEnv,
@@ -674,74 +672,8 @@ class TypeFactory {
     }
 
     this.processingEnv = processingEnv;
-    this.elementUtils = processingEnv.getElementUtils();
-    this.typeUtils = processingEnv.getTypeUtils();
-  }
-
-  private static void copyModifiers(Element e, QualifiedElementModel model) {
-    for (ElementModifier modifier :
-         ElementModifier.forModifiers(e.getModifiers())) {
-      model.addModifier(modifier);
-    }
-  }
-
-  /**
-   * Creates a ClassName from a TypeMirror. The created ClassName
-   * bears generic parameters, if any.
-   */
-  @Requires({
-    "type != null",
-    "type.getKind() == javax.lang.model.type.TypeKind.DECLARED"
-  })
-  @Ensures("result == null || result.getDeclaredName().equals(type.toString())")
-  protected ClassName getClassNameForType(TypeMirror type) {
-    DeclaredType tmp = (DeclaredType) type;
-    TypeElement element = (TypeElement) tmp.asElement();
-    String binaryName = elementUtils.getBinaryName(element)
-        .toString().replace('.', '/');
-    return new ClassName(binaryName, type.toString());
-  }
-
-  @Requires("type != null")
-  @Ensures("result == null || result.getDeclaredName().equals(type.toString())")
-  protected TypeName getTypeNameForType(TypeMirror type) {
-    switch (type.getKind()) {
-      case NONE:
-        return null;
-      default:
-        return new TypeName(type.toString());
-    }
-  }
-
-  /**
-   * Returns a Java-printable generic type name from the specified
-   * TypeParameterElement.
-   */
-  @Requires("element != null")
-  @Ensures("result != null")
-  protected static TypeName getGenericTypeName(TypeParameterElement element) {
-    String name = element.getSimpleName().toString();
-    List<? extends TypeMirror> bounds = element.getBounds();
-    if (bounds.isEmpty()
-        || (bounds.size() == 1
-            && bounds.get(0).toString().equals("java.lang.Object"))) {
-      return new TypeName(name);
-    }
-
-    StringBuilder buffer = new StringBuilder();
-    buffer.append(name);
-    buffer.append(" extends ");
-
-    Iterator<? extends TypeMirror> iter = bounds.iterator();
-    for (;;) {
-      buffer.append(iter.next().toString());
-      if (!iter.hasNext()) {
-        break;
-      }
-      buffer.append(" & ");
-    }
-
-    return new TypeName(buffer.toString());
+    utils = new FactoryUtils(processingEnv.getElementUtils(),
+                             processingEnv.getTypeUtils());
   }
 
   /**
@@ -759,7 +691,7 @@ class TypeFactory {
   })
   TypeModel createType(TypeElement element,
                        DiagnosticManager diagnosticManager) {
-    String name = elementUtils.getBinaryName(element)
+    String name = utils.elementUtils.getBinaryName(element)
         .toString().replace('.', '/');
     TypeBuilder visitor = new TypeBuilder(diagnosticManager);
     element.accept(visitor, null);
