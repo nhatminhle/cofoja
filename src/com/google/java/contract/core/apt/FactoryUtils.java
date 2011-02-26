@@ -28,6 +28,7 @@ import com.google.java.contract.core.model.TypeName;
 
 import java.util.Iterator;
 import java.util.List;
+import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.TypeParameterElement;
@@ -43,24 +44,25 @@ import javax.lang.model.util.Types;
  * @author nhat.minh.le@huoc.org (Nhat Minh Lê)
  */
 @Invariant({
+  "processingEnv != null",
   "elementUtils != null",
   "typeUtils != null"
 })
 class FactoryUtils {
+  ProcessingEnvironment processingEnv;
   Elements elementUtils;
   Types typeUtils;
 
-  @Requires({
-    "elementUtils != null",
-    "typeUtils != null"
-  })
+  @Requires("processingEnv != null")
   @Ensures({
-    "this.elementUtils == elementUtils",
-    "this.typeUtils == typeUtils"
+    "this.processingEnv == processingEnv",
+    "elementUtils == processingEnv.getElementUtils()",
+    "typeUtils == processingEnv.getTypeUtils()"
   })
-  FactoryUtils(Elements elementUtils, Types typeUtils) {
-    this.elementUtils = elementUtils;
-    this.typeUtils = typeUtils;
+  FactoryUtils(ProcessingEnvironment processingEnv) {
+    this.processingEnv = processingEnv;
+    elementUtils = processingEnv.getElementUtils();
+    typeUtils = processingEnv.getTypeUtils();
   }
 
   void copyModifiers(Element e, QualifiedElementModel model) {
