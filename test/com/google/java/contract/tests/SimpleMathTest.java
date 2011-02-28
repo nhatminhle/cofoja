@@ -53,8 +53,8 @@ public class SimpleMathTest extends TestCase {
     @Requires({ "x > 0", "y > 0" })
     @Ensures({
       "result != 0",
-      "old(x) % result == 0",
-      "old(y) % result == 0"
+      "old (x) % result == 0",
+      "old (y) % result == 0"
     })
     public static int gcd(int x, int y) {
       while (x != 0 && y != 0) {
@@ -71,8 +71,8 @@ public class SimpleMathTest extends TestCase {
     @Requires({ "x > 0", "y > 0" })
     @Ensures({
       "result != 0",
-      "old(x) % result == 0",
-      "old(y) % result == 0"
+      "old (x) % result == 0",
+      "old (y) % result == 0"
     })
     public static int bogusGcd(int x, int y) {
       while (x != 0 && y != 0) {
@@ -89,15 +89,15 @@ public class SimpleMathTest extends TestCase {
     @Requires({ "x > 0", "y > 0" })
     @Ensures({
       "result != 0",
-      "old(x) % result == 0",
-      "old(y) % result == 0"
+      "old (x) % result == 0",
+      "old (y) % result == 0"
     })
     public static int bogusGcd1(int x, int y) {
       return x;
     }
 
     @Requires("n >= 0")
-    @Ensures("result => old(n) % 2 == 0")
+    @Ensures("result => old (n) % 2 == 0")
     public static boolean even(int n) {
       if (n == 0) {
         return true;
@@ -108,9 +108,9 @@ public class SimpleMathTest extends TestCase {
 
     @Requires("n >= 0")
     @Ensures({
-      "result => old(n) % 2 == 1",
-      /* For testing purposes: check that old() has the right value. */
-      "old(n) == n"
+      "result => old (n) % 2 == 1",
+      /* For testing purposes: check that old () has the right value. */
+      "old (n) == n"
     })
     public static boolean odd(int n) {
       if (n == 0) {
@@ -120,7 +120,7 @@ public class SimpleMathTest extends TestCase {
       }
     }
 
-    @ThrowEnsures({ "IllegalArgumentException", "old(x) < 0" })
+    @ThrowEnsures({ "IllegalArgumentException", "old (x) < 0" })
     public static double sqrt(double x) {
       if (x < 0) {
         throw new IllegalArgumentException();
@@ -128,7 +128,7 @@ public class SimpleMathTest extends TestCase {
       return Math.sqrt(x);
     }
 
-    @ThrowEnsures({ "IllegalArgumentException", "old(x) < -1" })
+    @ThrowEnsures({ "IllegalArgumentException", "old (x) < -1" })
     public static double bogusSqrt(double x) {
       if (x < 0) {
         throw new IllegalArgumentException();
@@ -181,7 +181,7 @@ public class SimpleMathTest extends TestCase {
       SimpleMath.bogusGcd1(83295, 37285);
       fail();
     } catch (PostconditionError expected) {
-      assertEquals("[old(y) % result == 0]", expected.getMessages().toString());
+      assertEquals("[old (y) % result == 0]", expected.getMessages().toString());
     }
   }
 
@@ -208,7 +208,7 @@ public class SimpleMathTest extends TestCase {
       fail();
     } catch (PostconditionError expected) {
       assertEquals(expected.getMessages().toString(),
-                   "[IllegalArgumentException => old(x) < -1]");
+                   "[IllegalArgumentException => old (x) < -1]");
     }
   }
 }

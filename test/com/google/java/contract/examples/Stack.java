@@ -49,8 +49,8 @@ public interface Stack<T> {
    */
   @Requires("size() >= 1")
   @Ensures({
-    "size() == old(size()) - 1",
-    "result == old(peek())"
+    "size() == old (size()) - 1",
+    "result == old (peek())"
   })
   public T pop();
 
@@ -58,8 +58,8 @@ public interface Stack<T> {
    * Pushes an element onto the stack.
    */
   @Ensures({
-    "size() == old(size()) + 1",
-    "peek() == old(obj)"
+    "size() == old (size()) + 1",
+    "peek() == old (obj)"
   })
   public void push(T obj);
 }

@@ -53,7 +53,7 @@ public class ArrayListStack<T> implements Stack<T> {
   }
 
   @Override
-  @Ensures("elements.contains(old(obj))")
+  @Ensures("elements.contains(old (obj))")
   public void push(T obj) {
     elements.add(obj);
   }

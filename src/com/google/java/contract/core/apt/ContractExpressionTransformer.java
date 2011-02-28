@@ -25,6 +25,7 @@ import com.google.java.contract.core.model.ElementKind;
 import com.google.java.contract.core.model.VariableModel;
 import com.google.java.contract.core.util.BalancedTokenizer;
 import com.google.java.contract.core.util.JavaTokenizer.Token;
+import com.google.java.contract.core.util.JavaTokenizer.TokenKind;
 import com.google.java.contract.core.util.JavaUtils;
 
 import java.io.StringReader;
@@ -309,9 +310,14 @@ public class ContractExpressionTransformer {
             case WORD:
               if (acceptOld && token.text.equals("old")) {
                 /* Start of old expression. */
+                Token afterOld = null;
                 if (!tokenizer.hasNext()
-                    || !tokenizer.next().text.equals("(")) {
-                  int errorPos = tokenizer.getCurrentOffset();
+                    || !((afterOld = tokenizer.next()).text.equals("(")
+                         || (afterOld.kind == TokenKind.SPACE
+                             && tokenizer.hasNext()
+                             && tokenizer.next().text.equals("(")))) {
+                  int errorPos = afterOld != null ? afterOld.offset
+                      : tokenizer.getCurrentOffset();
                   diagnosticManager.error("'(' expected",
                       expr, errorPos, errorPos, errorPos,
                       sourceInfo);
@@ -323,7 +329,11 @@ public class ContractExpressionTransformer {
                 oldName = JavaUtils.OLD_VARIABLE_PREFIX + oldId++;
 
                 /* Enter old context. */
-                oldBuffer = new StringBuilder();
+                if (afterOld.kind == TokenKind.SPACE) {
+                  oldBuffer = new StringBuilder(afterOld.text);
+                } else {
+                  oldBuffer = new StringBuilder();
+                }
                 oldContext = currentLevel;
                 break;
               }

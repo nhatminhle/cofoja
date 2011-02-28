@@ -173,7 +173,7 @@ public class StackTest extends TestCase {
       bogusPostconditionsStack.push(1);
       fail();
     } catch (PostconditionError expected) {
-      assertEquals("[size() == old(size()) + 1]",
+      assertEquals("[size() == old (size()) + 1]",
                    expected.getMessages().toString());
     }
   }
@@ -184,7 +184,7 @@ public class StackTest extends TestCase {
       countingStack.push(1);
       fail();
     } catch (PostconditionError expected) {
-      assertEquals("[peek() == old(obj)]", expected.getMessages().toString());
+      assertEquals("[peek() == old (obj)]", expected.getMessages().toString());
     }
   }
 

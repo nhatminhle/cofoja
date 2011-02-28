@@ -47,10 +47,10 @@ public class InheritanceTest extends TestCase {
     }
 
     @Requires("x == 1")
-    @Ensures("result >= old(x)")
+    @Ensures("result >= old (x)")
     public abstract int g(int x);
 
-    @Ensures("p == old(p)")
+    @Ensures("p == old (p)")
     public void q() {
     }
   }
@@ -61,7 +61,7 @@ public class InheritanceTest extends TestCase {
 
     @Override
     @Requires("x == -1")
-    @Ensures("result >= old(x)")
+    @Ensures("result >= old (x)")
     public int f(int x) {
       /* Bogus for x == -1. */
       a = b = x;
@@ -251,7 +251,7 @@ public class InheritanceTest extends TestCase {
       c.g(735);
       fail();
     } catch (PostconditionError expected) {
-      assertEquals("[result >= old(x)]", expected.getMessages().toString());
+      assertEquals("[result >= old (x)]", expected.getMessages().toString());
     }
   }
 
