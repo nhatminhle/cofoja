@@ -243,7 +243,7 @@ public class ClassName extends TypeName {
    * <p>Note: there is no syntactical difference between
    * semi-qualified and fully-qualified names.
    */
-  @Ensures("result == isQualifiedName(name.replace('.', '/'))")
+  @Ensures("result == isBinaryName(name.replace('.', '/'))")
   public static boolean isQualifiedName(String name) {
     if (name == null || name.isEmpty()) {
       return false;
