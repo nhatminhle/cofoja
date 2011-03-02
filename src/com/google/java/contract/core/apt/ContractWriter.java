@@ -23,6 +23,7 @@ import com.google.java.contract.Ensures;
 import com.google.java.contract.Invariant;
 import com.google.java.contract.Requires;
 import com.google.java.contract.core.model.ClassName;
+import com.google.java.contract.core.model.ContractKind;
 import com.google.java.contract.core.model.ContractMethodModel;
 import com.google.java.contract.core.model.ElementKind;
 import com.google.java.contract.core.model.ElementModifier;
@@ -362,11 +363,12 @@ public class ContractWriter extends ElementScanner {
     appendEndOfLine();
 
     Object info = contract.getSourceInfo();
-    if (debugTrace) {
-      append("com.google.java.contract.core.util.DebugUtils.info(\"contract\", ");
+    if (debugTrace && contract.getContractKind() == ContractKind.HELPER) {
+      append("com.google.java.contract.core.util.DebugUtils.contractInfo(");
       append("\"checking contract: ");
       append(quoteString(((TypeModel) contract.getEnclosingElement())
                          .getName().getQualifiedName()));
+      append(".");
       append(quoteString(contract.getSimpleName()));
       if (info instanceof AnnotationSourceInfo) {
         AnnotationSourceInfo sourceInfo = (AnnotationSourceInfo) info;

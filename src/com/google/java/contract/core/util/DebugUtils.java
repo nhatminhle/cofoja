@@ -87,6 +87,18 @@ public class DebugUtils {
     return enabled;
   }
 
+  /**
+   * Outputs an informative message regarding contract
+   * activation. Does not bear any contracts itself so as not to
+   * pollute the output.
+   */
+  public static void contractInfo(String message) {
+    if (isLoggingEnabled("contract")) {
+      System.err.println("[com.google.java.contract:contract "
+                         + message + "]");
+    }
+  }
+
   @Requires({
     "facility != null",
     "message != null"
