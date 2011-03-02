@@ -116,7 +116,11 @@ public class DebugUtils {
                        + message
                        + (cause != null ? " (stack trace follows)" : "")
                        + "]");
-    cause.printStackTrace();
+    if (cause != null) {
+      cause.printStackTrace();
+    } else {
+      new Exception().printStackTrace();
+    }
     System.exit(1);
   }
 }
