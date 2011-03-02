@@ -55,16 +55,16 @@ public abstract class GenericElementModel extends QualifiedElementModel {
     typeParameters = new ArrayList<TypeName>();
   }
 
+  /**
+   * Constructs a clone of {@code that}. The new object is identical
+   * to the original <em>except</em> it has no enclosing element.
+   */
   @Requires("that != null")
   protected GenericElementModel(GenericElementModel that) {
     super(that);
     typeParameters = new ArrayList<TypeName>(that.typeParameters);
   }
 
-  /**
-   * Constructs a clone of {@code that}. The new object is identical
-   * to the original <em>except</em> it has no enclosing element.
-   */
   @Override
   protected GenericElementModel clone() throws CloneNotSupportedException {
     throw new CloneNotSupportedException();
