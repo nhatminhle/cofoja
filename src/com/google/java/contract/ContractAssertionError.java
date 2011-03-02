@@ -54,7 +54,10 @@ public abstract class ContractAssertionError extends AssertionError {
   private void cleanStackTrace() {
     StackTraceElement[] realTrace = getStackTrace();
     StackTraceElement[] trace = new StackTraceElement[realTrace.length - 1];
-    trace[0] = realTrace[0];
+    StackTraceElement top = realTrace[0];
+    trace[0] = new StackTraceElement(top.getClassName(),
+        getMethodName(realTrace[2].getMethodName()),
+        top.getFileName(), top.getLineNumber());
     System.arraycopy(realTrace, 2, trace, 1, realTrace.length - 2);
     setStackTrace(trace);
   }
@@ -68,4 +71,10 @@ public abstract class ContractAssertionError extends AssertionError {
     } while (error != null);
     return list;
   }
+
+  /**
+   * Returns the method name to show in the stack trace instead of the
+   * generated method name for the contract.
+   */
+  protected abstract String getMethodName(String contractedName);
 }

@@ -34,4 +34,9 @@ public class InvariantError extends ContractAssertionError {
   public InvariantError(String msg) {
     super(msg);
   }
+
+  @Override
+  protected String getMethodName(String contractedName) {
+    return "<invariant>";
+  }
 }

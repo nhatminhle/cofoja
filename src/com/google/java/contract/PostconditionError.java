@@ -34,4 +34,9 @@ public class PostconditionError extends ContractAssertionError {
   public PostconditionError(String msg) {
     super(msg);
   }
+
+  @Override
+  protected String getMethodName(String contractedName) {
+    return contractedName + ".<post>";
+  }
 }

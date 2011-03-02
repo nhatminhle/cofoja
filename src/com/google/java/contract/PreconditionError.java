@@ -35,4 +35,9 @@ public class PreconditionError extends ContractAssertionError {
   public PreconditionError(String msg, PreconditionError cause) {
     super(msg, cause);
   }
+
+  @Override
+  protected String getMethodName(String contractedName) {
+    return contractedName + ".<pre>";
+  }
 }
