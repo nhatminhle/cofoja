@@ -36,7 +36,7 @@ import java.util.Set;
  * @author nhat.minh.le@huoc.org (Nhat Minh Lê)
  */
 @Invariant({
-  "exceptions != null",
+  "getExceptions() != null",
   "isConstructor() == (returnType == null)"
 })
 public class MethodModel extends GenericElementModel {
@@ -94,7 +94,6 @@ public class MethodModel extends GenericElementModel {
     returnType = null;
   }
 
-  @Ensures("result != null")
   public Set<? extends TypeName> getExceptions() {
     return Collections.unmodifiableSet(exceptions);
   }
