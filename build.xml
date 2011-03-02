@@ -93,8 +93,7 @@
       <mkdir dir="${obj.dir}/tmp@{stage}" />
       <mkdir dir="${obj.dir}/stage@{stage}" />
       <javac srcdir="${src.dir}" destdir="${obj.dir}/tmp@{stage}"
-             debug="true" includeantruntime="false"
-             includedestclasses="false">
+             debug="true" includeantruntime="false">
         <classpath refid="base.class.path" />
         <compilerarg value="-processorpath" />
         <compilerarg value="@{bootstrappath}:${asm.jar}" />
