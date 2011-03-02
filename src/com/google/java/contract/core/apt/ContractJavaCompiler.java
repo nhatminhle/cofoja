@@ -70,6 +70,11 @@ public class ContractJavaCompiler {
                               String outputDirectory)
       throws IOException {
     javaCompiler = ToolProvider.getSystemJavaCompiler();
+    if (javaCompiler == null) {
+      throw new IOException("no system JavaCompiler found; "
+                            + "are you using a JRE instead of a JDK?");
+    }
+
     fileManager = new ContractJavaFileManager(
         javaCompiler.getStandardFileManager(null, null, null));
 
