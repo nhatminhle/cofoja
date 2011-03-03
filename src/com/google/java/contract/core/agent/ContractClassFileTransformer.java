@@ -180,12 +180,13 @@ public class ContractClassFileTransformer implements ClassFileTransformer {
 
     /* Skip interfaces. */
     String ifaceName = className + JavaUtils.HELPER_CLASS_SUFFIX;
-    if (getContractClassInputStream(loader, ifaceName) != null) {
+    if (JavaUtils.getContractClassInputStream(loader, ifaceName) != null) {
       return null;
     }
 
     /* Try to get contracts class file. */
-    InputStream contractStream = getContractClassInputStream(loader, className);
+    InputStream contractStream =
+        JavaUtils.getContractClassInputStream(loader, className);
     if (contractStream == null) {
       contractedChecker.addFutureContractedCheck(className.replace('/', '.'));
       return null;
@@ -244,31 +245,5 @@ public class ContractClassFileTransformer implements ClassFileTransformer {
     ClassWriter writer = new NonLoadingClassWriter(reader, 0);
     reader.accept(new HelperClassAdapter(writer), ClassReader.EXPAND_FRAMES);
     return writer.toByteArray();
-  }
-
-  /**
-   * Reads the contract class file of the specified class, as a
-   * stream. The contract class file is searched in the following
-   * places, in order:
-   *
-   * <ol>
-   * <li>The resources of the current class loader, if any.
-   * <li>The resources of the system class loader.
-   * </ol>
-   *
-   * @param loader the class loader used to load resources
-   * @param className the class name, in binary format
-   * @return the content of the contract class file, as a stream, or
-   * {@code null} if none was found
-   */
-  @Requires("ClassName.isBinaryName(className)")
-  private InputStream getContractClassInputStream(ClassLoader loader,
-                                                  String className)
-      throws IOException {
-    String fileName = className + JavaUtils.CONTRACTS_EXTENSION;
-    if (loader != null) {
-      return loader.getResourceAsStream(fileName);
-    }
-    return ClassLoader.getSystemResourceAsStream(fileName);
   }
 }
