@@ -66,7 +66,6 @@ import javax.tools.JavaFileObject;
   "oldParameters != null => oldParametersLineNumbers != null",
   "oldParameters != null => !oldParameters.contains(null)",
   "oldParameters != null => !oldParametersCode.contains(null)",
-  "oldParameters != null => !oldParametersLineNumbers.contains(null)",
   "oldParameters != null => oldParameters.size() == oldParametersCode.size()",
   "oldParameters != null " +
       "=> oldParameters.size() == oldParametersLineNumbers.size()"
