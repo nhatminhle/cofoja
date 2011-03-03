@@ -413,6 +413,23 @@ public class JavaUtils {
   }
 
   /**
+   * Returns a {@link URLClassLoader} that searches {@code path}.
+   */
+  @Requires("path != null")
+  public static URLClassLoader getLoaderForPath(String path) {
+    String[] parts = path.split(Pattern.quote(File.pathSeparator));
+    URL[] urls = new URL[parts.length];
+    for (int i = 0; i < parts.length; ++i) {
+      try {
+        urls[i] = new File(parts[i]).toURI().toURL();
+      } catch (MalformedURLException e) {
+        /* Ignore erroneous paths. */
+      }
+    }
+    return new URLClassLoader(urls);
+  }
+
+  /**
    * Reads the contract class file of the specified class, as a
    * stream. The contract class file is searched in the following
    * places, in order:

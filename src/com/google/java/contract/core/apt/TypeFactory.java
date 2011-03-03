@@ -22,6 +22,7 @@ package com.google.java.contract.core.apt;
 import com.google.java.contract.Ensures;
 import com.google.java.contract.Requires;
 import com.google.java.contract.core.model.TypeModel;
+import com.google.java.contract.core.util.JavaUtils;
 
 import java.io.File;
 import java.net.MalformedURLException;
@@ -51,17 +52,8 @@ class TypeFactory {
               String sourceDependencyPath) {
     sourceDependencyLoader = null;
     if (sourceDependencyPath != null) {
-      String[] parts =
-          sourceDependencyPath.split(Pattern.quote(File.pathSeparator));
-      URL[] urls = new URL[parts.length];
-      for (int i = 0; i < parts.length; ++i) {
-        try {
-          urls[i] = new File(parts[i]).toURI().toURL();
-        } catch (MalformedURLException e) {
-          /* Ignore erroneous paths. */
-        }
-      }
-      sourceDependencyLoader = new URLClassLoader(urls);
+      sourceDependencyLoader =
+          JavaUtils.getLoaderForPath(sourceDependencyPath);
     }
 
     utils = new FactoryUtils(processingEnv);
