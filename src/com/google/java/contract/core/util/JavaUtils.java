@@ -22,10 +22,16 @@ import com.google.java.contract.Ensures;
 import com.google.java.contract.Requires;
 import com.google.java.contract.core.model.ClassName;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.Map;
+import java.util.regex.Pattern;
+import javax.tools.JavaFileObject.Kind;
 
 /**
  * Utility methods related to the Java language.
@@ -423,12 +429,47 @@ public class JavaUtils {
    */
   @Requires("ClassName.isBinaryName(className)")
   public static InputStream getContractClassInputStream(ClassLoader loader,
-                                                        String className)
-      throws IOException {
-    String fileName = className + JavaUtils.CONTRACTS_EXTENSION;
+                                                        String className,
+                                                        boolean loadHelper) {
+    String fileName = className + CONTRACTS_EXTENSION;
+    String helperFileName = className + HELPER_CLASS_SUFFIX
+        + Kind.CLASS.extension;
+
+    URL url;
+
     if (loader != null) {
-      return loader.getResourceAsStream(fileName);
+      url = loader.getResource(helperFileName);
+      if (url != null && loadHelper) {
+        DebugUtils.info("loader", "found " + url);
+        return loader.getResourceAsStream(helperFileName);
+      }
+
+      url = loader.getResource(fileName);
+      if (url != null) {
+        DebugUtils.info("loader", "found " + url);
+        return loader.getResourceAsStream(fileName);
+      }
+
+      return null;
+    } else {
+      url = ClassLoader.getSystemResource(helperFileName);
+      if (url != null && loadHelper) {
+        DebugUtils.info("loader", "found " + url);
+        return ClassLoader.getSystemResourceAsStream(helperFileName);
+      }
+
+      url = ClassLoader.getSystemResource(fileName);
+      if (url != null) {
+        DebugUtils.info("loader", "found " + url);
+        return ClassLoader.getSystemResourceAsStream(fileName);
+      }
+
+      return null;
     }
-    return ClassLoader.getSystemResourceAsStream(fileName);
+  }
+
+  public static InputStream getContractClassInputStream(ClassLoader loader,
+                                                        String className) {
+    return getContractClassInputStream(loader, className, false);
   }
 }
