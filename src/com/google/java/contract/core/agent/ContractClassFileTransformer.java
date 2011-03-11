@@ -35,6 +35,7 @@ import java.io.InputStream;
 import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.IllegalClassFormatException;
 import java.security.ProtectionDomain;
+import javax.tools.JavaFileObject.Kind;
 
 /**
  * A class transformer responsible for instrumenting classes with
@@ -179,8 +180,9 @@ public class ContractClassFileTransformer implements ClassFileTransformer {
     }
 
     /* Skip interfaces. */
-    String ifaceName = className + JavaUtils.HELPER_CLASS_SUFFIX;
-    if (JavaUtils.getContractClassInputStream(loader, ifaceName) != null) {
+    String helperFileName = className + JavaUtils.HELPER_CLASS_SUFFIX
+        + Kind.CLASS.extension;
+    if (JavaUtils.resourceExists(loader, helperFileName)) {
       return null;
     }
 

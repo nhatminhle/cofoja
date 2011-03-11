@@ -489,4 +489,13 @@ public class JavaUtils {
                                                         String className) {
     return getContractClassInputStream(loader, className, false);
   }
+
+  @Requires("className != null")
+  public static boolean resourceExists(ClassLoader loader, String className) {
+    if (loader != null) {
+      return loader.getResource(className) != null;
+    } else {
+      return ClassLoader.getSystemResource(className) != null;
+    }
+  }
 }
