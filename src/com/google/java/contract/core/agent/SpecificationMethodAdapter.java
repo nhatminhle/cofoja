@@ -71,6 +71,8 @@ public class SpecificationMethodAdapter extends AdviceAdapter {
       Type.getObjectType("com/google/java/contract/core/runtime/ContractRuntime");
   private static final Type CONTRACT_CONTEXT_TYPE =
       Type.getObjectType("com/google/java/contract/core/runtime/ContractContext");
+  private static final Method GET_CLASS_METHOD =
+      Method.getMethod("java.lang.Class getClass()");
   private static final Method GET_CONTEXT_METHOD =
       Method.getMethod("com.google.java.contract.core.runtime.ContractContext "
                        + "getContext()");
@@ -94,6 +96,7 @@ public class SpecificationMethodAdapter extends AdviceAdapter {
   protected String className;
   protected String methodName;
   protected String methodDesc;
+  protected Type thisType;
 
   protected boolean statik;
   protected boolean isConstructor;
@@ -139,6 +142,7 @@ public class SpecificationMethodAdapter extends AdviceAdapter {
     className = ca.getClassName();
     this.methodName = methodName;
     this.methodDesc = methodDesc;
+    thisType = Type.getType("L" + className + ";");
 
     statik = (access & ACC_STATIC) != 0;
     isConstructor = methodName.equals("<init>");
@@ -389,8 +393,15 @@ public class SpecificationMethodAdapter extends AdviceAdapter {
     MethodNode contractMethod = injectContractMethod(h);
 
     Label skipInvariants = new Label();
-    loadLocal(checkInvariantsLocal);
-    ifZCmp(EQ, skipInvariants);
+    if (isConstructor) {
+      loadThis();
+      invokeVirtual(thisType, GET_CLASS_METHOD);
+      loadThisClass();
+      ifCmp(CLASS_TYPE, NE, skipInvariants);
+    } else {
+      loadLocal(checkInvariantsLocal);
+      ifZCmp(EQ, skipInvariants);
+    }
 
     if (!statik) {
       loadThis();
@@ -576,7 +587,7 @@ public class SpecificationMethodAdapter extends AdviceAdapter {
    * stack.
    */
   protected void loadThisClass() {
-    visitLdcInsn(Type.getType("L" + className + ";"));
+    visitLdcInsn(thisType);
   }
 
   /**

@@ -20,6 +20,7 @@ package com.google.java.contract.tests;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.fail;
 
+import com.google.java.contract.Contracted;
 import com.google.java.contract.Invariant;
 import com.google.java.contract.InvariantError;
 import junit.framework.TestCase;
@@ -57,6 +58,18 @@ public class PublicCallTest extends TestCase {
     }
   }
 
+  @Invariant("x != 0")
+  private static class A {
+    public int x;
+  }
+
+  @Contracted
+  private static class B extends A {
+    public B() {
+      x = 1;
+    }
+  }
+
   protected SimpleObject sample;
 
   protected void setUp() {
@@ -87,5 +100,18 @@ public class PublicCallTest extends TestCase {
   public void testG1() {
     sample.x = 1;
     sample.g1();
+  }
+
+  public void testA() {
+    try {
+      A a = new A();
+      fail();
+    } catch (InvariantError expected) {
+      assertEquals("[x != 0]", expected.getMessages().toString());
+    }
+  }
+
+  public void testB() {
+    B b = new B();
   }
 }
