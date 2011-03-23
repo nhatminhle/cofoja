@@ -1,6 +1,7 @@
 /*
  * Copyright 2007 Johannes Rieken
  * Copyright 2010 Google Inc.
+ * Copyright 2011 Nhat Minh Lê
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -18,6 +19,8 @@
  */
 package com.google.java.contract.core.runtime;
 
+import java.util.IdentityHashMap;
+
 /**
  * A helper to evaluate and enable method specifications. At runtime
  * it is the interface between instrumented bytecode and Contracts for
@@ -34,7 +37,12 @@ package com.google.java.contract.core.runtime;
  * @author johannes.rieken@gmail.com (Johannes Rieken)
  */
 public class ContractContext {
-  protected static ThreadLocal<ContractContext> context =
+  /**
+   * The default size of the {@link #entered} object map.
+   */
+  private static final int ENTERED_DEFAULT_SIZE = 100;
+
+  static ThreadLocal<ContractContext> context =
       new ThreadLocal<ContractContext>() {
     @Override
     protected ContractContext initialValue() {
@@ -43,26 +51,19 @@ public class ContractContext {
   };
 
   protected boolean busy;
-
-  /**
-   * Retrieves the contract context associated with the specified
-   * thread.
-   */
-  static ContractContext getContractContext() {
-    return context.get();
-  }
+  protected IdentityHashMap<Object, Void> entered;
 
   protected ContractContext() {
-    busy = false;
+    entered = new IdentityHashMap<Object, Void>(ENTERED_DEFAULT_SIZE);
   }
 
   /**
-   * Begins evaluation of an assertion block.
+   * Marks the start of a contract evaluation block.
    *
-   * @return {@code true} if the contract should be evaluated, false
-   * otherwise
+   * @return {@code true} if contracts should be evaluated,
+   * {@code false} otherwise
    */
-  public boolean enter() {
+  public boolean tryEnterContract() {
     if (busy) {
       return false;
     } else {
@@ -72,9 +73,41 @@ public class ContractContext {
   }
 
   /**
-   * Ends evaluation of an assertion block.
+   * Marks the start of a contract evaluation block.
    */
-  public void leave() {
+  public void leaveContract() {
+    busy = false;
+  }
+
+  /**
+   * Queries whether invariants should be checked for the current
+   * method call. If it returns {@code true}, {@link #leave(Object)}
+   * must be called on method exit.
+   *
+   * @return {@code true} if invariants should be evaluated,
+   * {@code false} otherwise
+   */
+  public boolean tryEnter(Object obj) {
+    if (entered.containsKey(obj)) {
+      return false;
+    } else {
+      entered.put(obj, null);
+      return true;
+    }
+  }
+
+  /**
+   * Must be called if and only if {@link #tryEnter(Object)}
+   * previously returned {@code true} for this call frame.
+   */
+  public void leave(Object obj) {
+    entered.remove(obj);
+  }
+
+  /**
+   * Resets the busy state of this context.
+   */
+  public void clear() {
     busy = false;
   }
 }

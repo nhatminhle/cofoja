@@ -1,5 +1,6 @@
 /*
  * Copyright 2010 Google Inc.
+ * Copyright 2011 Nhat Minh Lê
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -17,22 +18,30 @@
  */
 package com.google.java.contract.core.runtime;
 
+import com.google.java.contract.ContractAssertionError;
 import com.google.java.contract.SpecificationError;
 
 /**
- * Utility methods to manipulate the {@link ContractContext} in the
- * current thread. Methods are modeled after methods of
- * ContractContext.
+ * Utility methods for use in generated contract code.
  *
  * @author nhat.minh.le@huoc.org (Nhat Minh Lê)
  */
 public class ContractRuntime {
-  public static boolean enter() {
-    return ContractContext.getContractContext().enter();
+  /**
+   * Retrieves the contract context associated with the current
+   * thread.
+   */
+  public static ContractContext getContext() {
+    return ContractContext.context.get();
   }
 
-  public static void leave() {
-    ContractContext.getContractContext().leave();
+  /**
+   * Resets the contract context and throws this assertion.
+   */
+  public static void raise(ContractAssertionError ex)
+      throws ContractAssertionError {
+    getContext().clear();
+    throw ex;
   }
 
   /**

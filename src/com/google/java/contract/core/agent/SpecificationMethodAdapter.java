@@ -1,6 +1,7 @@
 /*
  * Copyright 2007 Johannes Rieken
  * Copyright 2010 Google Inc.
+ * Copyright 2011 Nhat Minh Lê
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -62,14 +63,25 @@ public class SpecificationMethodAdapter extends AdviceAdapter {
   /*
    * Reflection constants used in instrumentation code.
    */
+  private static final Type CLASS_TYPE =
+      Type.getObjectType("java/lang/Class");
   private static final Type EXCEPTION_TYPE =
       Type.getObjectType("java/lang/Exception");
   private static final Type CONTRACT_RUNTIME_TYPE =
       Type.getObjectType("com/google/java/contract/core/runtime/ContractRuntime");
-  private static final Method ENTER_METHOD =
-      Method.getMethod("boolean enter()");
+  private static final Type CONTRACT_CONTEXT_TYPE =
+      Type.getObjectType("com/google/java/contract/core/runtime/ContractContext");
+  private static final Method GET_CONTEXT_METHOD =
+      Method.getMethod("com.google.java.contract.core.runtime.ContractContext "
+                       + "getContext()");
+  private static final Method TRY_ENTER_CONTRACT_METHOD =
+      Method.getMethod("boolean tryEnterContract()");
+  private static final Method LEAVE_CONTRACT_METHOD =
+      Method.getMethod("void leaveContract()");
+  private static final Method TRY_ENTER_METHOD =
+      Method.getMethod("boolean tryEnter(Object)");
   private static final Method LEAVE_METHOD =
-      Method.getMethod("void leave()");
+      Method.getMethod("void leave(Object)");
 
   /*
    * Used to bracket the entire original method to catch any exception
@@ -88,6 +100,8 @@ public class SpecificationMethodAdapter extends AdviceAdapter {
   protected boolean isStaticInit;
   protected boolean isHelper;
 
+  protected int contextLocal;
+  protected int checkInvariantsLocal;
   protected List<Integer> oldValueLocals;
   protected List<Integer> signalOldValueLocals;
 
@@ -131,6 +145,8 @@ public class SpecificationMethodAdapter extends AdviceAdapter {
     isStaticInit = methodName.endsWith("<clinit>");
     isHelper = (access & (ACC_PRIVATE | ACC_PROTECTED)) != 0;
 
+    contextLocal = -1;
+    checkInvariantsLocal = -1;
     oldValueLocals = new ArrayList<Integer>();
     signalOldValueLocals = new ArrayList<Integer>();
 
@@ -179,30 +195,34 @@ public class SpecificationMethodAdapter extends AdviceAdapter {
    */
   @Override
   protected void onMethodEnter() {
-    if (withPostconditions) {
-      allocateOldValues(ContractKind.OLD, oldValueLocals);
-      allocateOldValues(ContractKind.SIGNAL_OLD, signalOldValueLocals);
+    if (withPreconditions || withPostconditions || withInvariants) {
+      enterContractedMethod();
+
+      if (withPostconditions) {
+        allocateOldValues(ContractKind.OLD, oldValueLocals);
+        allocateOldValues(ContractKind.SIGNAL_OLD, signalOldValueLocals);
+      }
 
       mark(methodStart);
+
+      Label skip = enterBusySection();
+
+      if (withInvariants
+          && !statik && !isHelper && !isConstructor && !isStaticInit) {
+        invokeInvariants();
+      }
+
+      if (withPreconditions) {
+        invokePreconditions();
+      }
+
+      if (withPostconditions) {
+        invokeOldValues(ContractKind.OLD, oldValueLocals);
+        invokeOldValues(ContractKind.SIGNAL_OLD, signalOldValueLocals);
+      }
+
+      leaveBusySection(skip);
     }
-
-    Label skip = enterBusySection();
-
-    if (withInvariants
-        && !statik && !isHelper && !isConstructor && !isStaticInit) {
-      invokeInvariants();
-    }
-
-    if (withPreconditions) {
-      invokePreconditions();
-    }
-
-    if (withPostconditions) {
-      invokeOldValues(ContractKind.OLD, oldValueLocals);
-      invokeOldValues(ContractKind.SIGNAL_OLD, signalOldValueLocals);
-    }
-
-    leaveBusySection(skip);
   }
 
   /**
@@ -211,30 +231,34 @@ public class SpecificationMethodAdapter extends AdviceAdapter {
    */
   @Override
   protected void onMethodExit(int opcode) {
-    if ((withPostconditions || withInvariants) && opcode != ATHROW) {
-      Label skip = enterBusySection();
+    if ((withPreconditions || withPostconditions || withInvariants)
+        && opcode != ATHROW) {
+      if (withPostconditions || withInvariants) {
+        Label skip = enterBusySection();
 
-      if (withPostconditions) {
-        Type returnType = Type.getReturnType(methodDesc);
-        int returnIndex = -1;
-        if (returnType.getSort() != Type.VOID) {
-          if (returnType.getSize() == 2) {
-            dup2();
-          } else {
-            dup();
+        if (withPostconditions) {
+          Type returnType = Type.getReturnType(methodDesc);
+          int returnIndex = -1;
+          if (returnType.getSort() != Type.VOID) {
+            if (returnType.getSize() == 2) {
+              dup2();
+            } else {
+              dup();
+            }
+            returnIndex = newLocal(returnType);
+            storeLocal(returnIndex);
           }
-          returnIndex = newLocal(returnType);
-          storeLocal(returnIndex);
+          invokeCommonPostconditions(ContractKind.POST, oldValueLocals,
+                                     returnIndex);
         }
-        invokeCommonPostconditions(ContractKind.POST, oldValueLocals,
-                                   returnIndex);
-      }
 
-      if (withInvariants && !statik && !isHelper) {
-        invokeInvariants();
-      }
+        if (withInvariants && !statik && !isHelper) {
+          invokeInvariants();
+        }
 
-      leaveBusySection(skip);
+        leaveBusySection(skip);
+      }
+      leaveContractedMethod();
     }
   }
 
@@ -246,24 +270,38 @@ public class SpecificationMethodAdapter extends AdviceAdapter {
    */
   @Override
   public void visitMaxs(int maxStack, int maxLocals) {
-    if (withPostconditions) {
+    if (withPreconditions || withPostconditions || withInvariants) {
       mark(methodEnd);
-      catchException(methodStart, methodEnd, EXCEPTION_TYPE);
+      catchException(methodStart, methodEnd, null);
 
-      int throwIndex = newLocal(EXCEPTION_TYPE);
-      storeLocal(throwIndex);
+      if (withPostconditions) {
+        Label skipEx = new Label();
+        dup();
+        instanceOf(EXCEPTION_TYPE);
+        ifZCmp(EQ, skipEx);
 
-      Label skip = enterBusySection();
+        Label skip = enterBusySection();
+        int throwIndex = newLocal(EXCEPTION_TYPE);
+        checkCast(EXCEPTION_TYPE);
+        storeLocal(throwIndex);
 
-      invokeCommonPostconditions(ContractKind.SIGNAL, signalOldValueLocals,
-                                 throwIndex);
-      if (withInvariants && !statik && !isHelper) {
-        invokeInvariants();
+        invokeCommonPostconditions(ContractKind.SIGNAL, signalOldValueLocals,
+                                   throwIndex);
+        if (withInvariants && !statik && !isHelper) {
+          invokeInvariants();
+        }
+
+        loadLocal(throwIndex);
+        leaveBusySection(skip);
+
+        mark(skipEx);
       }
 
-      leaveBusySection(skip);
-
-      loadLocal(throwIndex);
+      /*
+       * The exception to throw is on the stack and
+       * leaveContractedMethod() does not alter that fact.
+       */
+      leaveContractedMethod();
       throwException();
     }
     super.visitMaxs(maxStack, maxLocals);
@@ -349,10 +387,17 @@ public class SpecificationMethodAdapter extends AdviceAdapter {
     }
 
     MethodNode contractMethod = injectContractMethod(h);
+
+    Label skipInvariants = new Label();
+    loadLocal(checkInvariantsLocal);
+    ifZCmp(EQ, skipInvariants);
+
     if (!statik) {
       loadThis();
     }
     invokeContractMethod(contractMethod);
+
+    mark(skipInvariants);
   }
 
   /**
@@ -498,13 +543,17 @@ public class SpecificationMethodAdapter extends AdviceAdapter {
 
   /**
    * Marks the beginning of a busy section. A busy section is skipped
-   * if the context is already busy (that is, evaluating an outer
-   * assertion).
+   * if the context is already busy.
    */
+  @Requires({
+    "contextLocal >= 0",
+    "checkInvariantsLocal >= 0"
+  })
   @Ensures("result != null")
   protected Label enterBusySection() {
     Label skip = new Label();
-    invokeStatic(CONTRACT_RUNTIME_TYPE, ENTER_METHOD);
+    loadLocal(contextLocal);
+    invokeVirtual(CONTRACT_CONTEXT_TYPE, TRY_ENTER_CONTRACT_METHOD);
     ifZCmp(EQ, skip);
     return skip;
   }
@@ -512,9 +561,63 @@ public class SpecificationMethodAdapter extends AdviceAdapter {
   /**
    * Marks the end of a busy section.
    */
-  @Requires("skip != null")
+  @Requires({
+    "contextLocal >= 0",
+    "skip != null"
+  })
   protected void leaveBusySection(Label skip) {
-    invokeStatic(CONTRACT_RUNTIME_TYPE, LEAVE_METHOD);
+    loadLocal(contextLocal);
+    invokeVirtual(CONTRACT_CONTEXT_TYPE, LEAVE_CONTRACT_METHOD);
+    mark(skip);
+  }
+
+  /**
+   * Loads the static class object this method belongs to on the
+   * stack.
+   */
+  protected void loadThisClass() {
+    visitLdcInsn(Type.getType("L" + className + ";"));
+  }
+
+  /**
+   * Retrieves busy state of the current object.
+   */
+  @Ensures({
+    "contextLocal >= 0",
+    "checkInvariantsLocal >= 0"
+  })
+  protected void enterContractedMethod() {
+    contextLocal = newLocal(CONTRACT_CONTEXT_TYPE);
+    checkInvariantsLocal = newLocal(Type.BOOLEAN_TYPE);
+    invokeStatic(CONTRACT_RUNTIME_TYPE, GET_CONTEXT_METHOD);
+    dup();
+    storeLocal(contextLocal);
+    if (statik) {
+      loadThisClass();
+    } else {
+      loadThis();
+    }
+    invokeVirtual(CONTRACT_CONTEXT_TYPE, TRY_ENTER_METHOD);
+    storeLocal(checkInvariantsLocal);
+  }
+
+  /**
+   * Cancels busy state of the current object.
+   */
+  @Requires("contextLocal >= 0")
+  protected void leaveContractedMethod() {
+    Label skip = new Label();
+    loadLocal(checkInvariantsLocal);
+    ifZCmp(EQ, skip);
+
+    loadLocal(contextLocal);
+    if (statik) {
+      loadThisClass();
+    } else {
+      loadThis();
+    }
+    invokeVirtual(CONTRACT_CONTEXT_TYPE, LEAVE_METHOD);
+
     mark(skip);
   }
 }

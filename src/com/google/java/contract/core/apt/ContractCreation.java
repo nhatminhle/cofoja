@@ -1,5 +1,6 @@
 /*
  * Copyright 2010 Google Inc.
+ * Copyright 2011 Nhat Minh Lê
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -48,8 +49,8 @@ import java.util.Set;
  * @author nhat.minh.le@huoc.org (Nhat Minh Lê)
  */
 public class ContractCreation {
-  static final String LEAVE_METHOD =
-      "com.google.java.contract.core.runtime.ContractRuntime.leave";
+  static final String RAISE_METHOD =
+      "com.google.java.contract.core.runtime.ContractRuntime.raise";
 
   /**
    * Returns {@code code} with all unqualified or this-qualified
@@ -159,13 +160,12 @@ public class ContractCreation {
         buffer.append(JavaUtils.ERROR_VARIABLE);
         buffer.append("); ");
       } else {
-        buffer.append(LEAVE_METHOD);
-        buffer.append("();");
-        buffer.append("throw new ");
+        buffer.append(RAISE_METHOD);
+        buffer.append("(new ");
         buffer.append(trait.getExceptionName());
         buffer.append("(\"");
         buffer.append(ContractWriter.quoteString(exprMsg));
-        buffer.append("\");");
+        buffer.append("\"));");
       }
       buffer.append("} ");
 
@@ -318,8 +318,8 @@ public class ContractCreation {
       if (kind.getVariance() == ContractVariance.CONTRAVARIANT) {
         contract.setPrologue(trait.getExceptionName() + " "
                              + JavaUtils.ERROR_VARIABLE + " = null;");
-        contract.setEpilogue(LEAVE_METHOD + "(); "
-                             + "throw " + JavaUtils.ERROR_VARIABLE + ";");
+        contract.setEpilogue(RAISE_METHOD + "("
+                             + JavaUtils.ERROR_VARIABLE + ");");
       }
     }
     Elements.copyParameters(contract, trait.getExtraParameters());

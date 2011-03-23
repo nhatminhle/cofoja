@@ -21,7 +21,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Base class for contract assertion errors.
+ * Base class for contract assertion errors. You should generally not
+ * catch this.
  *
  * @author nhat.minh.le@huoc.org (Nhat Minh Lê)
  */
