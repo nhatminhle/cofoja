@@ -101,7 +101,6 @@ public class SpecificationMethodAdapter extends AdviceAdapter {
   protected boolean statik;
   protected boolean isConstructor;
   protected boolean isStaticInit;
-  protected boolean isHelper;
 
   protected int contextLocal;
   protected int checkInvariantsLocal;
@@ -147,7 +146,6 @@ public class SpecificationMethodAdapter extends AdviceAdapter {
     statik = (access & ACC_STATIC) != 0;
     isConstructor = methodName.equals("<init>");
     isStaticInit = methodName.endsWith("<clinit>");
-    isHelper = (access & (ACC_PRIVATE | ACC_PROTECTED)) != 0;
 
     contextLocal = -1;
     checkInvariantsLocal = -1;
@@ -211,8 +209,7 @@ public class SpecificationMethodAdapter extends AdviceAdapter {
 
       Label skip = enterBusySection();
 
-      if (withInvariants
-          && !statik && !isHelper && !isConstructor && !isStaticInit) {
+      if (withInvariants && !statik && !isConstructor && !isStaticInit) {
         invokeInvariants();
       }
 
@@ -256,7 +253,7 @@ public class SpecificationMethodAdapter extends AdviceAdapter {
                                      returnIndex);
         }
 
-        if (withInvariants && !statik && !isHelper) {
+        if (withInvariants && !statik) {
           invokeInvariants();
         }
 
@@ -291,7 +288,7 @@ public class SpecificationMethodAdapter extends AdviceAdapter {
 
         invokeCommonPostconditions(ContractKind.SIGNAL, signalOldValueLocals,
                                    throwIndex);
-        if (withInvariants && !statik && !isHelper) {
+        if (withInvariants && !statik) {
           invokeInvariants();
         }
 
