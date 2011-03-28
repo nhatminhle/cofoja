@@ -76,6 +76,7 @@ public class ContractClassFileTransformer implements ClassFileTransformer {
      * non-class-loading implementation as provided by the ASM package
      * examples should be assessed.
      */
+    @Override
     protected String getCommonSuperClass(String type1, String type2) {
       return "java/lang/Object";
     }

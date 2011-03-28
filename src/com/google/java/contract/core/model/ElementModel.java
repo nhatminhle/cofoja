@@ -226,9 +226,6 @@ public abstract class ElementModel implements Cloneable {
     }
 
     ElementModel element = (ElementModel) obj;
-    if (element == null) {
-      return false;
-    }
     return element.getSimpleName().equals(getSimpleName())
         && element.getEnclosingElement().equals(getEnclosingElement());
   }

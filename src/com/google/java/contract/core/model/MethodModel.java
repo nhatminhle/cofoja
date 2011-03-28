@@ -193,9 +193,6 @@ public class MethodModel extends GenericElementModel {
     }
 
     MethodModel method = (MethodModel) obj;
-    if (method == null) {
-      return false;
-    }
     if (!method.getSimpleName().equals(getSimpleName())) {
       return false;
     }

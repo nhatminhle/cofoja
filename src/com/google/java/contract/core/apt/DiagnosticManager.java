@@ -147,7 +147,7 @@ public class DiagnosticManager
      * @param position the position of the error
      * @param startPosition the start position of the error
      * @param endPosition the end position of the error
-     * @param sourceInfo the source of this diagnostic
+     * @param info the source of this diagnostic
      */
     @Requires({
       "kind != null",
@@ -368,17 +368,20 @@ public class DiagnosticManager
       return msg;
     }
 
+    @Override
     public Element getElement() {
       AnnotationSourceInfo sourceInfo = getSourceInfo();
       return getSourceInfo() == null ? null : sourceInfo.getElement();
     }
 
+    @Override
     public AnnotationMirror getAnnotationMirror() {
       AnnotationSourceInfo sourceInfo = getSourceInfo();
       return getSourceInfo() == null
           ? null : sourceInfo.getAnnotationMirror();
     }
 
+    @Override
     public AnnotationValue getAnnotationValue() {
       AnnotationSourceInfo sourceInfo = getSourceInfo();
       return getSourceInfo() == null

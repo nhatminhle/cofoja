@@ -24,11 +24,7 @@ import com.google.java.contract.Requires;
 import com.google.java.contract.core.model.TypeModel;
 import com.google.java.contract.core.util.JavaUtils;
 
-import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.regex.Pattern;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.TypeElement;
 

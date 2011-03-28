@@ -33,8 +33,6 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import javax.tools.Diagnostic;
-import javax.tools.JavaFileObject;
 
 /**
  * A contract expression checker and transformer. An instance of this

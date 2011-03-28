@@ -30,8 +30,6 @@ import com.google.java.contract.core.model.MethodModel;
 import com.google.java.contract.core.model.TypeModel;
 import com.google.java.contract.core.util.ElementScanner;
 
-import javax.tools.JavaFileObject;
-
 /**
  * Element visitor responsible for decorating a {@link TypeModel}
  * object with class-wide contract code elements. Delegates

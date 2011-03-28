@@ -34,7 +34,6 @@ import com.google.java.contract.core.model.TypeModel;
 import com.google.java.contract.core.model.TypeName;
 import com.google.java.contract.core.model.VariableModel;
 import com.google.java.contract.core.util.ElementScanner;
-import com.google.java.contract.core.util.Elements;
 import com.google.java.contract.core.util.JavaUtils;
 
 import java.util.ArrayList;
@@ -42,9 +41,6 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
-import javax.tools.Diagnostic;
-import javax.tools.DiagnosticListener;
-import javax.tools.JavaFileObject;
 
 /**
  * Element visitor responsible for decorating a {@link TypeModel}

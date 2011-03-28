@@ -23,7 +23,6 @@ import com.google.java.contract.Requires;
 import com.google.java.contract.core.model.ClassName;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.net.MalformedURLException;

@@ -47,16 +47,16 @@ public class ContractedChecker {
 
   static boolean startupContractedCheck = true;
 
-  protected ConcurrentHashMap<Class, Boolean> declaredContracted =
-      new ConcurrentHashMap<Class, Boolean>();
-  protected ConcurrentHashMap<Class, Boolean> contracted =
-      new ConcurrentHashMap<Class, Boolean>();
+  protected ConcurrentHashMap<Class<?>, Boolean> declaredContracted =
+      new ConcurrentHashMap<Class<?>, Boolean>();
+  protected ConcurrentHashMap<Class<?>, Boolean> contracted =
+      new ConcurrentHashMap<Class<?>, Boolean>();
   protected LinkedBlockingDeque<String> futureContractedChecks =
       new LinkedBlockingDeque<String>();
 
   protected ContractedChecker() {
-    declaredContracted = new ConcurrentHashMap<Class, Boolean>();
-    contracted = new ConcurrentHashMap<Class, Boolean>();
+    declaredContracted = new ConcurrentHashMap<Class<?>, Boolean>();
+    contracted = new ConcurrentHashMap<Class<?>, Boolean>();
     futureContractedChecks = new LinkedBlockingDeque<String>();
   }
 
@@ -105,7 +105,7 @@ public class ContractedChecker {
     }
 
     if (!result) {
-      for (Constructor constructor : clazz.getDeclaredConstructors()) {
+      for (Constructor<?> constructor : clazz.getDeclaredConstructors()) {
         if (constructor.getAnnotation(Ensures.class) != null
             || constructor.getAnnotation(Requires.class) != null
             || constructor.getAnnotation(ThrowEnsures.class) != null) {
@@ -137,7 +137,7 @@ public class ContractedChecker {
                && hasContracts(clazz.getSuperclass())) {
       result = true;
     } else {
-      for (Class iface : clazz.getInterfaces()) {
+      for (Class<?> iface : clazz.getInterfaces()) {
         if (hasContracts(iface)) {
           result = true;
           break;

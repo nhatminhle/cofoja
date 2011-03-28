@@ -38,7 +38,6 @@ import com.google.java.contract.core.util.JavaUtils;
 import com.google.java.contract.core.util.PushbackTokenizer;
 
 import java.io.StringReader;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -103,7 +102,6 @@ public class ContractCreation {
    * @param contract the contract method to add the clauses to
    * @param trait the trait to get contract code information from
    * @param annotation the source of the contract
-   * @return the Java code for the body of the contract method
    */
   @Requires({
     "contract != null",

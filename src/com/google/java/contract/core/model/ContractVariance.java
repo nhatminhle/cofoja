@@ -17,9 +17,6 @@
  */
 package com.google.java.contract.core.model;
 
-import com.google.java.contract.Ensures;
-import com.google.java.contract.Requires;
-
 /**
  * The variance of a kind of contract. Contracts are either
  * contravariant (preconditions), covariant (postconditions and
