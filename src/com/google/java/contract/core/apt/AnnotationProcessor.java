@@ -276,13 +276,9 @@ public class AnnotationProcessor extends AbstractProcessor {
     while (itType.hasNext() && itFile.hasNext()) {
       TypeModel type = itType.next();
       SyntheticJavaFile file = itFile.next();
-      try {
-        DebugUtils.dump(type.getName().getBinaryName(),
-                        file.getCharContent(true).toString().getBytes(),
-                        Kind.SOURCE);
-      } catch (IOException e) {
-        DebugUtils.warn("dump", "while reading: " + file.getName());
-      }
+      DebugUtils.dump(type.getName().getBinaryName(),
+                      file.getCharContent(true).toString().getBytes(),
+                      Kind.SOURCE);
     }
   }
 

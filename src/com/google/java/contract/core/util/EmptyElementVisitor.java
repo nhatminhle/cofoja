@@ -32,7 +32,7 @@ import com.google.java.contract.core.model.VariableModel;
  * @author nhat.minh.le@huoc.org (Nhat Minh Lê)
  */
 @Contracted
-public class EmptyElementVisitor implements ElementVisitor {
+public abstract class EmptyElementVisitor implements ElementVisitor {
   @Override
   public void visitType(TypeModel type) {
   }

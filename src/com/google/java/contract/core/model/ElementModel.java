@@ -232,7 +232,12 @@ public abstract class ElementModel implements Cloneable {
 
   @Override
   public int hashCode() {
-    return simpleName.hashCode();
+    return 31 * simpleName.hashCode() + getEnclosingElement().hashCode();
+  }
+
+  @Override
+  public String toString() {
+    return simpleName;
   }
 
   /**

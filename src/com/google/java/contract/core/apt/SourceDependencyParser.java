@@ -29,7 +29,6 @@ import com.google.java.contract.core.util.JavaUtils.ParseException;
 import com.google.java.contract.util.Iterables;
 import com.google.java.contract.util.Predicates;
 
-import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -104,7 +103,7 @@ public class SourceDependencyParser {
    * @throws ParseException if a parsing error occurs
    */
   @Ensures("canQueryResults()")
-  public void parse() throws IOException, ParseException {
+  public void parse() throws ParseException {
     if (parsed) {
       return;
     }

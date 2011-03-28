@@ -35,7 +35,7 @@ import java.util.List;
  * @author nhat.minh.le@huoc.org (Nhat Minh Lê)
  * @author johannes.rieken@gmail.com (Johannes Rieken)
  */
-public class ElementScanner extends EmptyElementVisitor {
+public abstract class ElementScanner extends EmptyElementVisitor {
   @Requires({
     "elements != null",
     "!elements.contains(null)"

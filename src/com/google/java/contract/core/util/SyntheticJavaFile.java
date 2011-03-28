@@ -25,7 +25,6 @@ import com.google.java.contract.util.Iterables;
 import com.google.java.contract.util.Predicates;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 import javax.tools.SimpleJavaFileObject;
@@ -67,13 +66,12 @@ public class SyntheticJavaFile extends SimpleJavaFileObject {
   }
 
   @Override
-  public InputStream openInputStream() throws IOException {
+  public InputStream openInputStream() {
     return new ByteArrayInputStream(content);
   }
 
   @Override
-  public CharSequence getCharContent(boolean ignoreEncodingErrors)
-      throws IOException {
+  public CharSequence getCharContent(boolean ignoreEncodingErrors) {
     return new String(content);
   }
 

@@ -56,7 +56,7 @@ class TypeFactory {
   }
 
   /**
-   * Returns a {@link TypeModel} instanec representing the specified
+   * Returns a {@link TypeModel} instance representing the specified
    * {@link TypeElement}.
    */
   @Requires({
