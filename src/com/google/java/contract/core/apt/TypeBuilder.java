@@ -291,7 +291,7 @@ class TypeBuilder extends AbstractTypeBuilder {
                                   + "perform any contract check: " +
                                   type.toString(),
                                   asi.getAnnotationValue().toString(), 0, 0, 0,
-                                  model.getSourceInfo());
+                                  asi);
       } else {
         p.addEnclosedElement(model);
       }

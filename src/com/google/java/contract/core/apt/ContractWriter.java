@@ -54,6 +54,7 @@ import java.util.Set;
  * with a given {@link Type} as Java source code to an output stream.
  *
  * @author nhat.minh.le@huoc.org (Nhat Minh Lê)
+ * @author chatain@google.com (Leonardo Chatain)
  */
 @AllowUnusedImport({ Iterables.class, Predicates.class })
 @Invariant({
@@ -431,8 +432,44 @@ public class ContractWriter extends ElementScanner {
       appendImportStatements(type);
     }
 
-    /* Start of type. */
-    String keyword;
+    /*
+     * TODO(lenh): Suppress warnings related to com.google.java.contract.util
+     * library use. We should really copy over the SuppressWarnings
+     * annotation from the original source, but which annotations to
+     * copy and which not to is a rather delicate question; besides,
+     * we do not have full support for annotation values in the
+     * abstract tree.
+     */
+    append("@SuppressWarnings(\"unchecked\")");
+
+    /* Type and name. */
+    appendTypeDeclaration(type);
+
+    /* Superclass. */
+    appendSuperclass(type);
+
+    /* Interfaces. */
+    appendInterfaces(type);
+
+    /* Body. */
+    append(" {");
+    appendEndOfLine();
+
+    if (type.getKind() == ElementKind.ENUM) {
+      appendEnumSkeleton(type);
+    }
+
+    /* Members. */
+    scan(type.getEnclosedElements());
+
+    /* End of type. */
+    append("}");
+    appendEndOfLine();
+  }
+
+  @Requires("kind != null")
+  private String getKeywordForType(ElementKind kind) {
+    String keyword = null;
     switch (type.getKind()) {
       case CLASS:
         keyword = "class";
@@ -446,21 +483,51 @@ public class ContractWriter extends ElementScanner {
       case ANNOTATION_TYPE:
         keyword = "@interface";
         break;
-      default:
-        throw new IllegalArgumentException();
     }
+    return keyword;
+  }
 
-    /*
-     * TODO(lenh): Suppress warnings related to com.google.java.contract.util
-     * library use. We should really copy over the SuppressWarnings
-     * annotation from the original source, but which annotations to
-     * copy and which not to is a rather delicate question; besides,
-     * we do not have full support for annotation values in the
-     * abstract tree.
-     */
-    append("@SuppressWarnings(\"unchecked\")");
+  /**
+   * Adds enum constants and a dummy constructor.
+   */
+  @Requires("type != null")
+  private void appendEnumSkeleton(TypeModel type) {
+    /* Enum constants. */
+    List<? extends VariableModel> constants =
+        Elements.filter(type.getEnclosedElements(), VariableModel.class,
+                        ElementKind.CONSTANT);
+    Iterator<? extends VariableModel> it = constants.iterator();
+    if (it.hasNext()) {
+      for (;;) {
+        append(it.next().getSimpleName());
+        if (!it.hasNext()) {
+          break;
+        }
+        append(", ");
+      }
+    }
+    append(";");
+    appendEndOfLine();
 
-    /* Type and name. */
+    /* Enum dummy constructor. */
+    append("private ");
+    append(type.getSimpleName());
+    append("() {");
+    appendEndOfLine();
+    append("}");
+    appendEndOfLine();
+  }
+
+  /**
+   * Adds the type declaration information, including modifiers, name and
+   * generic signature.
+   */
+  private void appendTypeDeclaration(TypeModel type) {
+    String keyword = getKeywordForType(type.getKind());
+    if (keyword == null)
+      throw new IllegalArgumentException();
+
+    /* Type modifiers. */
     EnumSet<ElementModifier> modifiers = type.getModifiers();
     switch(type.getKind()) {
       case INTERFACE:
@@ -477,24 +544,43 @@ public class ContractWriter extends ElementScanner {
     append(keyword);
     append(" ");
 
+    /* Type name. */
     String printName = type.getSimpleName();
     append(printName);
 
     /* Generic parameters. */
     appendGenericSignature(type.getTypeParameters());
+  }
 
-    /* Superclass. */
+  /**
+   * Adds superclass information if needed.
+   */
+  @Requires("type != null")
+  private void appendSuperclass(TypeModel type) {
     if (type.getKind() != ElementKind.ENUM
         && type.getSuperclass() != null) {
       append(" extends ");
       append(type.getSuperclass().getDeclaredName());
     }
+  }
 
-    /* Interfaces. */
-    if (type.getKind() != ElementKind.ANNOTATION_TYPE) {
+  /**
+   * Appends information about the interfaces implemented by this type.
+   * All annotations implicitly implement
+   * {@code java.lang.annotation.Annotation}, but this can't be explicitly
+   * declared on the mock.
+   */
+  @Requires({
+    "type != null",
+    "type.getKind() != ElementKind.ANNOTATION_TYPE" +
+        "|| type.getInterfaces().size() == 1"
+  })
+  private void appendInterfaces(TypeModel type) {
+    final ElementKind kind = type.getKind();
+    if (kind != ElementKind.ANNOTATION_TYPE) {
       Set<? extends ClassName> interfaces = type.getInterfaces();
       if (interfaces.size() != 0) {
-        if (type.getKind() == ElementKind.INTERFACE) {
+        if (kind == ElementKind.INTERFACE) {
           append(" extends ");
         } else {
           append(" implements ");
@@ -502,44 +588,6 @@ public class ContractWriter extends ElementScanner {
         appendJoin(interfaces, ", ");
       }
     }
-
-    /* Body. */
-    append(" {");
-    appendEndOfLine();
-
-    if (type.getKind() == ElementKind.ENUM) {
-      /* Enum constants. */
-      List<? extends VariableModel> constants =
-          Elements.filter(type.getEnclosedElements(), VariableModel.class,
-                          ElementKind.CONSTANT);
-      Iterator<? extends VariableModel> it = constants.iterator();
-      if (it.hasNext()) {
-        for (;;) {
-          append(it.next().getSimpleName());
-          if (!it.hasNext()) {
-            break;
-          }
-          append(", ");
-        }
-      }
-      append(";");
-      appendEndOfLine();
-
-      /* Enum dummy constructor. */
-      append("private ");
-      append(type.getSimpleName());
-      append("() {");
-      appendEndOfLine();
-      append("}");
-      appendEndOfLine();
-    }
-
-    /* Members. */
-    scan(type.getEnclosedElements());
-
-    /* End of type. */
-    append("}");
-    appendEndOfLine();
   }
 
   /**
