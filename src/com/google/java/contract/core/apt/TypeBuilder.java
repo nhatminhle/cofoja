@@ -22,6 +22,8 @@ import com.google.java.contract.Contracted;
 import com.google.java.contract.Ensures;
 import com.google.java.contract.Invariant;
 import com.google.java.contract.Requires;
+import com.google.java.contract.core.model.ClassName;
+import com.google.java.contract.core.model.ContractAnnotationModel;
 import com.google.java.contract.core.model.ElementKind;
 import com.google.java.contract.core.model.ElementModel;
 import com.google.java.contract.core.model.ElementModifier;
@@ -40,6 +42,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+
+import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.TypeParameterElement;
@@ -56,6 +61,7 @@ import javax.lang.model.util.ElementFilter;
  * element parameter, to which children are added.
  *
  * @author nhat.minh.le@huoc.org (Nhat Minh Lê)
+ * @author chatain@google.com (Leonardo Chatain)
  */
 @Invariant({
   "diagnosticManager != null",
@@ -258,14 +264,38 @@ class TypeBuilder extends AbstractTypeBuilder {
       type.addTypeParameter(utils.getGenericTypeName(tp));
     }
 
-    /* Process members. */
+    /* Process annotations. */
     scanAnnotations(e, true, type.getName(), type);
+
+    /* Process members. */
     scan(e.getEnclosedElements(), type);
 
     /* Add inherited contract annotations. */
     scanSuper(e);
 
     return null;
+  }
+
+  @Override
+  protected void visitAnnotation(Element parent, AnnotationMirror annotation,
+                                 boolean primary, ClassName owner,
+                                 ElementModel p) {
+    if (utils.isContractAnnotation(annotation)) {
+      ContractAnnotationModel model =
+          createContractModel(parent, annotation, primary, owner);
+      if (type.getKind() == ElementKind.ANNOTATION_TYPE) {
+        AnnotationSourceInfo asi = (AnnotationSourceInfo) model.getSourceInfo();
+        /* Do not add contracts to annotations. Warn the user instead. */
+        diagnosticManager.warning("Contracts can't be applied to annotations. "
+                                  + "The following annotation will not "
+                                  + "perform any contract check: " +
+                                  type.toString(),
+                                  asi.getAnnotationValue().toString(), 0, 0, 0,
+                                  model.getSourceInfo());
+      } else {
+        p.addEnclosedElement(model);
+      }
+    }
   }
 
   /**

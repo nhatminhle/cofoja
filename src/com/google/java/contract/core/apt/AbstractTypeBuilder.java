@@ -33,9 +33,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import javax.annotation.processing.ProcessingEnvironment;
-import javax.lang.model.element.Element;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
+import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.util.ElementScanner6;
 
@@ -44,6 +44,7 @@ import javax.lang.model.util.ElementScanner6;
  * used to build types.
  *
  * @author nhat.minh.le@huoc.org (Nhat Minh Lê)
+ * @author chatain@google.com (Leonardo Chatain)
  */
 @Invariant("utils != null")
 abstract class AbstractTypeBuilder
@@ -60,6 +61,79 @@ abstract class AbstractTypeBuilder
    * information.
    */
   protected Iterator<Long> rootLineNumberIterator;
+
+
+  /**
+   * Creates a {@code ContractAnnotationModel} from an {code AnnotationMirror}.
+   *
+   * @param parent the target of the annotation
+   * @param annotation the annotation
+   * @param primary whether this is a primary contract annotation
+   * @param owner the owner of this annotation
+   * @return the contract model of this annotation
+   */
+  @Requires({
+    "parent != null",
+    "annotation != null",
+    "owner != null",
+    "utils.isContractAnnotation(annotation)"
+  })
+  @Ensures("result != null")
+  protected ContractAnnotationModel createContractModel(Element parent,
+      AnnotationMirror annotation, boolean primary, ClassName owner) {
+    ElementKind kind = utils.getAnnotationKindForName(annotation);
+
+    boolean virtual;
+    TypeName returnType;
+    if (parent.getKind() != javax.lang.model.element.ElementKind.METHOD) {
+      virtual =
+          parent.getKind()
+          != javax.lang.model.element.ElementKind.INTERFACE;
+      returnType = null;
+    } else {
+      virtual =
+          parent.getEnclosingElement().getKind()
+          != javax.lang.model.element.ElementKind.INTERFACE;
+      ExecutableElement method = (ExecutableElement) parent;
+      returnType = utils.getTypeNameForType(
+          utils.typeUtils.erasure(method.getReturnType()));
+    }
+    ContractAnnotationModel model =
+        new ContractAnnotationModel(kind, primary, virtual,
+                                    owner, returnType);
+    List<Long> lineNumbers = null;
+    if (rootLineNumberIterator == null) {
+      lineNumbers = getLineNumbers(parent, annotation);
+    }
+
+    AnnotationValue lastAnnotationValue = null;
+    for (AnnotationValue annotationValue :
+         annotation.getElementValues().values()) {
+      @SuppressWarnings("unchecked")
+      List<? extends AnnotationValue> values =
+          (List<? extends AnnotationValue>) annotationValue.getValue();
+
+      Iterator<? extends AnnotationValue> iterValue = values.iterator();
+      Iterator<Long> iterLineNumber;
+      if (rootLineNumberIterator != null) {
+        iterLineNumber = rootLineNumberIterator;
+      } else {
+        iterLineNumber = lineNumbers.iterator();
+      }
+      while (iterValue.hasNext()) {
+        String value = (String) iterValue.next().getValue();
+        Long lineNumber =
+            iterLineNumber.hasNext() ? iterLineNumber.next() : null;
+        model.addValue(value, lineNumber);
+      }
+      lastAnnotationValue = annotationValue;
+    }
+    AnnotationSourceInfo sourceInfo =
+        new AnnotationSourceInfo(parent, annotation, lastAnnotationValue,
+                                 model.getValues());
+    model.setSourceInfo(sourceInfo);
+    return model;
+  }
 
   /**
    * Visits an annotation and adds a corresponding node to the
@@ -85,71 +159,11 @@ abstract class AbstractTypeBuilder
   protected void visitAnnotation(
       Element parent, AnnotationMirror annotation,
       boolean primary, ClassName owner, ElementModel p) {
-    String annotationName = annotation.getAnnotationType().toString();
-
-    ElementKind kind;
-    if (annotationName.equals("com.google.java.contract.Invariant")) {
-      kind = ElementKind.INVARIANT;
-    } else if (annotationName.equals("com.google.java.contract.Requires")) {
-      kind = ElementKind.REQUIRES;
-    } else if (annotationName.equals("com.google.java.contract.Ensures")) {
-      kind = ElementKind.ENSURES;
-    } else if (annotationName.equals("com.google.java.contract.ThrowEnsures")) {
-      kind = ElementKind.THROW_ENSURES;
-    } else {
-      return;
+    if (utils.isContractAnnotation(annotation)) {
+      ContractAnnotationModel model =
+          createContractModel(parent, annotation, primary, owner);
+      p.addEnclosedElement(model);
     }
-
-    boolean virtual;
-    TypeName returnType;
-    if (parent.getKind() != javax.lang.model.element.ElementKind.METHOD) {
-      virtual =
-          parent.getKind()
-          != javax.lang.model.element.ElementKind.INTERFACE;
-      returnType = null;
-    } else {
-      virtual =
-          parent.getEnclosingElement().getKind()
-          != javax.lang.model.element.ElementKind.INTERFACE;
-      ExecutableElement method = (ExecutableElement) parent;
-      returnType = utils.getTypeNameForType(
-          utils.typeUtils.erasure(method.getReturnType()));
-    }
-    ContractAnnotationModel model =
-        new ContractAnnotationModel(kind, primary, virtual,
-                                    owner, returnType);
-    List<Long> lineNumbers = null;
-    if (rootLineNumberIterator == null) {
-      lineNumbers = getLineNumbers(parent, annotation);
-    }
-
-    for (AnnotationValue annotationValue :
-         annotation.getElementValues().values()) {
-      @SuppressWarnings("unchecked")
-      List<? extends AnnotationValue> values =
-          (List<? extends AnnotationValue>) annotationValue.getValue();
-
-      Iterator<? extends AnnotationValue> iterValue = values.iterator();
-      Iterator<Long> iterLineNumber;
-      if (rootLineNumberIterator != null) {
-        iterLineNumber = rootLineNumberIterator;
-      } else {
-        iterLineNumber = lineNumbers.iterator();
-      }
-      while (iterValue.hasNext()) {
-        String value = (String) iterValue.next().getValue();
-        Long lineNumber =
-            iterLineNumber.hasNext() ? iterLineNumber.next() : null;
-        model.addValue(value, lineNumber);
-      }
-
-      AnnotationSourceInfo sourceInfo =
-          new AnnotationSourceInfo(parent, annotation, annotationValue,
-                                   model.getValues());
-      model.setSourceInfo(sourceInfo);
-    }
-
-    p.addEnclosedElement(model);
   }
 
   /**

@@ -171,6 +171,16 @@ public enum ElementKind {
     }
   }
 
+  public boolean isInterfaceType() {
+    switch(this) {
+      case INTERFACE:
+      case ANNOTATION_TYPE:
+        return true;
+      default:
+        return false;
+    }
+  }
+
   public boolean isSourceAnnotation() {
     switch (this) {
       case INVARIANT:

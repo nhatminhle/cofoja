@@ -22,6 +22,7 @@ import com.google.java.contract.Ensures;
 import com.google.java.contract.Invariant;
 import com.google.java.contract.Requires;
 import com.google.java.contract.core.model.ClassName;
+import com.google.java.contract.core.model.ElementKind;
 import com.google.java.contract.core.model.ElementModifier;
 import com.google.java.contract.core.model.QualifiedElementModel;
 import com.google.java.contract.core.model.TypeName;
@@ -29,6 +30,7 @@ import com.google.java.contract.core.model.TypeName;
 import java.util.Iterator;
 import java.util.List;
 import javax.annotation.processing.ProcessingEnvironment;
+import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.TypeParameterElement;
@@ -132,5 +134,34 @@ class FactoryUtils {
     }
 
     return new TypeName(buffer.toString());
+  }
+
+  /**
+   * Gets the contract kind of an annotation given its qualified name.
+   * Returns null if the annotation is not a contract annotation.
+   *
+   * @param annotationName the fully qualified name of the annotation
+   * @return the contract type, null if not contracts
+   */
+  ElementKind getAnnotationKindForName(AnnotationMirror annotation) {
+    String annotationName = annotation.getAnnotationType().toString();
+    ElementKind kind;
+    if (annotationName.equals("com.google.java.contract.Invariant")) {
+      kind = ElementKind.INVARIANT;
+    } else if (annotationName.equals("com.google.java.contract.Requires")) {
+      kind = ElementKind.REQUIRES;
+    } else if (annotationName.equals("com.google.java.contract.Ensures")) {
+      kind = ElementKind.ENSURES;
+    } else if (annotationName.equals("com.google.java.contract.ThrowEnsures")) {
+      kind = ElementKind.THROW_ENSURES;
+    } else {
+      kind = null;
+    }
+
+    return kind;
+  }
+
+  boolean isContractAnnotation(AnnotationMirror annotation) {
+    return getAnnotationKindForName(annotation) != null;
   }
 }

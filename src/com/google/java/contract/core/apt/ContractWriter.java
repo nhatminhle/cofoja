@@ -224,7 +224,7 @@ public class ContractWriter extends ElementScanner {
   @Requires("method != null")
   private void appendMethodDeclaration(MethodModel method) {
     EnumSet<ElementModifier> modifiers = method.getModifiers();
-    if (type.getKind() == ElementKind.INTERFACE) {
+    if (type.getKind().isInterfaceType()) {
       modifiers.remove(ElementModifier.ABSTRACT);
     }
     appendModifiers(modifiers);
@@ -398,7 +398,7 @@ public class ContractWriter extends ElementScanner {
     }
 
     appendMethodDeclaration(method);
-    if (type.getKind() == ElementKind.INTERFACE
+    if (type.getKind().isInterfaceType()
         || method.getModifiers().contains(ElementModifier.ABSTRACT)) {
       append(";");
     } else {
@@ -443,6 +443,9 @@ public class ContractWriter extends ElementScanner {
       case INTERFACE:
         keyword = "interface";
         break;
+      case ANNOTATION_TYPE:
+        keyword = "@interface";
+        break;
       default:
         throw new IllegalArgumentException();
     }
@@ -459,9 +462,16 @@ public class ContractWriter extends ElementScanner {
 
     /* Type and name. */
     EnumSet<ElementModifier> modifiers = type.getModifiers();
-    if (type.getKind() == ElementKind.INTERFACE) {
-      modifiers.remove(ElementModifier.ABSTRACT);
+    switch(type.getKind()) {
+      case INTERFACE:
+        modifiers.remove(ElementModifier.ABSTRACT);
+        break;
+      case ANNOTATION_TYPE:
+        modifiers.remove(ElementModifier.ABSTRACT);
+        modifiers.remove(ElementModifier.STATIC);
+        break;
     }
+
     appendModifiers(modifiers);
     append(" ");
     append(keyword);
@@ -481,14 +491,16 @@ public class ContractWriter extends ElementScanner {
     }
 
     /* Interfaces. */
-    Set<? extends ClassName> interfaces = type.getInterfaces();
-    if (interfaces.size() != 0) {
-      if (type.getKind() == ElementKind.INTERFACE) {
-        append(" extends ");
-      } else {
-        append(" implements ");
+    if (type.getKind() != ElementKind.ANNOTATION_TYPE) {
+      Set<? extends ClassName> interfaces = type.getInterfaces();
+      if (interfaces.size() != 0) {
+        if (type.getKind() == ElementKind.INTERFACE) {
+          append(" extends ");
+        } else {
+          append(" implements ");
+        }
+        appendJoin(interfaces, ", ");
       }
-      appendJoin(interfaces, ", ");
     }
 
     /* Body. */
