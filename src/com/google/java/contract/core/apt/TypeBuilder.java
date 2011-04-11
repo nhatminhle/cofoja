@@ -197,6 +197,9 @@ class TypeBuilder extends AbstractTypeBuilder {
       case CLASS:
         kind = ElementKind.CLASS;
         break;
+      case ANNOTATION_TYPE:
+        kind = ElementKind.ANNOTATION_TYPE;
+        break;
       default:
         return null;
     }

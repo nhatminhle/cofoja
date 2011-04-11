@@ -43,6 +43,11 @@ public enum ElementKind {
   INTERFACE,
 
   /**
+   * An annotation.
+   */
+  ANNOTATION_TYPE,
+
+  /**
    * An enum.
    */
   ENUM,
@@ -116,6 +121,7 @@ public enum ElementKind {
       case CLASS:
       case ENUM:
       case INTERFACE:
+      case ANNOTATION_TYPE:
         return true;
       default:
         return false;
