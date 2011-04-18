@@ -17,7 +17,6 @@
  */
 package com.google.java.contract.core.apt;
 
-import com.google.java.contract.Contracted;
 import com.google.java.contract.core.model.ContractAnnotationModel;
 import com.google.java.contract.core.model.VariableModel;
 
@@ -30,7 +29,6 @@ import java.util.List;
  *
  * @author nhat.minh.le@huoc.org (Nhat Minh Lê)
  */
-@Contracted
 class SimpleContractCreationTrait implements ContractCreationTrait {
   protected ContractAnnotationModel annotation;
 

@@ -34,30 +34,6 @@ package com.google.java.contract;
  */
 public interface ContractEnvironment {
   /**
-   * Disables the check for missing {@link com.google.java.contract.Contracted}
-   * annotations performed at startup time (when the first contract is
-   * executed). After a call to this method, manual checks can still
-   * be performed with {@link #assertLoadedClassesContracted()}.
-   */
-  public void disableStartupContractedCheck();
-
-  /**
-   * Checks for missing {@link Contracted} annotations on loaded
-   * classes; throws a {@link SpecificationError} if such an
-   * annotation is missing. Classes are only checked the first time;
-   * subsequent calls to this method do not examine already checked
-   * classes again.
-   */
-  public void assertLoadedClassesContracted() throws SpecificationError;
-
-  /**
-   * Returns {@code true} if {@code clazz} has contracts. This does
-   * not imply that such contracts are enabled.
-   */
-  @Requires("clazz != null")
-  public boolean hasContracts(Class<?> clazz);
-
-  /**
    * Enables precondition checking for classes matched by pattern
    * {@code pattern}.
    *

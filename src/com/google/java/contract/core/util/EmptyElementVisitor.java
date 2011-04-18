@@ -18,7 +18,6 @@
  */
 package com.google.java.contract.core.util;
 
-import com.google.java.contract.Contracted;
 import com.google.java.contract.core.model.ContractAnnotationModel;
 import com.google.java.contract.core.model.ContractMethodModel;
 import com.google.java.contract.core.model.ElementVisitor;
@@ -31,7 +30,6 @@ import com.google.java.contract.core.model.VariableModel;
  *
  * @author nhat.minh.le@huoc.org (Nhat Minh Lê)
  */
-@Contracted
 public abstract class EmptyElementVisitor implements ElementVisitor {
   @Override
   public void visitType(TypeModel type) {

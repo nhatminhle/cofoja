@@ -20,11 +20,9 @@ package com.google.java.contract.core.agent;
 
 import com.google.java.contract.AllowUnusedImport;
 import com.google.java.contract.Ensures;
-import com.google.java.contract.Invariant;
 import com.google.java.contract.Requires;
 import com.google.java.contract.core.model.ClassName;
 import com.google.java.contract.core.runtime.BlacklistManager;
-import com.google.java.contract.core.runtime.ContractedChecker;
 import com.google.java.contract.core.util.DebugUtils;
 import com.google.java.contract.core.util.JavaUtils;
 import org.objectweb.asm.ClassReader;
@@ -54,7 +52,6 @@ import javax.tools.JavaFileObject.Kind;
  * @author johannes.rieken@gmail.com (Johannes Rieken)
  */
 @AllowUnusedImport(ClassName.class)
-@Invariant("contractedChecker != null")
 public class ContractClassFileTransformer implements ClassFileTransformer {
   /**
    * A ClassWriter that does not load any class.
@@ -83,14 +80,12 @@ public class ContractClassFileTransformer implements ClassFileTransformer {
   }
 
   protected BlacklistManager blacklistManager;
-  protected ContractedChecker contractedChecker;
 
   /**
    * Constructs a new ContractClassFileTransformer.
    */
   public ContractClassFileTransformer() {
     blacklistManager = BlacklistManager.getInstance();
-    contractedChecker = ContractedChecker.getInstance();
   }
 
   /**
@@ -99,8 +94,7 @@ public class ContractClassFileTransformer implements ClassFileTransformer {
   @Override
   public byte[] transform(ClassLoader loader, String className,
       Class<?> redefinedClass, ProtectionDomain protectionDomain,
-      byte[] bytecode)
-      throws IllegalClassFormatException {
+      byte[] bytecode) {
     if (blacklistManager.isIgnored(className)) {
       DebugUtils.info("agent", "ignoring " + className);
       return null;
@@ -191,7 +185,6 @@ public class ContractClassFileTransformer implements ClassFileTransformer {
     InputStream contractStream =
         JavaUtils.getContractClassInputStream(loader, className);
     if (contractStream == null) {
-      contractedChecker.addFutureContractedCheck(className.replace('/', '.'));
       return null;
     }
 

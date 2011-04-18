@@ -19,7 +19,6 @@
 package com.google.java.contract.core.runtime;
 
 import com.google.java.contract.ContractAssertionError;
-import com.google.java.contract.SpecificationError;
 
 /**
  * Utility methods for use in generated contract code.
@@ -58,15 +57,5 @@ public class ContractRuntime {
   @SuppressWarnings("unchecked")
   public static <T> T magicCast(Object obj, T dummy) {
     return (T) obj;
-  }
-
-  static {
-    if (ContractedChecker.startupContractedCheck) {
-      try {
-        ContractedChecker.getInstance().assertLoadedClassesContracted();
-      } catch (SpecificationError e) {
-        throw new RuntimeException(e);
-      }
-    }
   }
 }

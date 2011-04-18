@@ -18,7 +18,6 @@
  */
 package com.google.java.contract.core.apt;
 
-import com.google.java.contract.Contracted;
 import com.google.java.contract.Ensures;
 import com.google.java.contract.Invariant;
 import com.google.java.contract.Requires;
@@ -83,7 +82,6 @@ class TypeBuilder extends AbstractTypeBuilder {
    * An element visitor that adds inherited contract annotations to
    * an existing TypeModel object.
    */
-  @Contracted
   protected class ContractExtensionBuilder extends AbstractTypeBuilder {
     protected TypeElement mirror;
 

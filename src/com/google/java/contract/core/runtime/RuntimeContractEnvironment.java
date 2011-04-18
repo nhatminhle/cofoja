@@ -18,37 +18,17 @@
 package com.google.java.contract.core.runtime;
 
 import com.google.java.contract.ContractEnvironment;
-import com.google.java.contract.Invariant;
-import com.google.java.contract.SpecificationError;
 
 /**
  * A contract environment running under the Cofoja Java agent.
  *
  * @author nhat.minh.le@huoc.org (Nhat Minh Lê)
  */
-@Invariant("contractedChecker != null")
 public class RuntimeContractEnvironment implements ContractEnvironment {
   protected BlacklistManager blacklistManager;
-  protected ContractedChecker contractedChecker;
 
   public RuntimeContractEnvironment() {
     blacklistManager = BlacklistManager.getInstance();
-    contractedChecker = ContractedChecker.getInstance();
-  }
-
-  @Override
-  public void disableStartupContractedCheck() {
-    contractedChecker.disableStartupContractedCheck();
-  }
-
-  @Override
-  public void assertLoadedClassesContracted() throws SpecificationError {
-    contractedChecker.assertLoadedClassesContracted();
-  }
-
-  @Override
-  public boolean hasContracts(Class<?> clazz) {
-    return !isIgnored(clazz.getName()) && contractedChecker.hasContracts(clazz);
   }
 
   @Override
