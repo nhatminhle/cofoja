@@ -19,19 +19,15 @@ package com.google.java.contract.tests;
 
 import com.google.java.contract.ContractEnvironment;
 import com.google.java.contract.ContractEnvironmentConfigurator;
-import com.google.java.contract.Contracted;
 
 /**
  * Contracts for Java configuration and initialization.
  */
-@Contracted
 public class Cofoja implements ContractEnvironmentConfigurator {
   static ContractEnvironment contractEnv;
 
   @Override
   public void configure(ContractEnvironment env) {
     contractEnv = env;
-
-    env.disableStartupContractedCheck();
   }
 }

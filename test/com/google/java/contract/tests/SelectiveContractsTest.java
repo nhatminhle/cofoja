@@ -17,8 +17,6 @@
  */
 package com.google.java.contract.tests;
 
-import static junit.framework.Assert.fail;
-
 import com.google.java.contract.ContractEnvironment;
 import com.google.java.contract.Ensures;
 import com.google.java.contract.Invariant;
@@ -26,6 +24,7 @@ import com.google.java.contract.InvariantError;
 import com.google.java.contract.PostconditionError;
 import com.google.java.contract.PreconditionError;
 import com.google.java.contract.Requires;
+
 import junit.framework.TestCase;
 
 /**
@@ -80,10 +79,9 @@ public class SelectiveContractsTest extends TestCase {
   private static class G implements I {
   }
 
+  @Override
   protected void setUp() {
     ContractEnvironment env = Cofoja.contractEnv;
-
-    env.assertLoadedClassesContracted();
 
     env.disablePreconditions("com.google.java.contract.tests.SelectiveContractsTest$A");
     env.disablePostconditions("com.google.java.contract.tests.SelectiveContractsTest$B");

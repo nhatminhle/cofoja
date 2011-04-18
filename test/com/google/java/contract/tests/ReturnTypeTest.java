@@ -17,11 +17,9 @@
  */
 package com.google.java.contract.tests;
 
-import static junit.framework.Assert.fail;
-
-import com.google.java.contract.Contracted;
 import com.google.java.contract.Ensures;
 import com.google.java.contract.PostconditionError;
+
 import junit.framework.TestCase;
 
 import java.io.Serializable;
@@ -32,6 +30,7 @@ import java.io.Serializable;
  *
  * @author nhat.minh.le@huoc.org (Nhat Minh Lê)
  */
+@SuppressWarnings("unused")
 public class ReturnTypeTest extends TestCase {
   private static class A {
     @Ensures({
@@ -43,7 +42,6 @@ public class ReturnTypeTest extends TestCase {
     }
   }
 
-  @Contracted
   private static class B extends A {
     /* Covariant return type. */
     @Override
@@ -61,7 +59,6 @@ public class ReturnTypeTest extends TestCase {
     public T f(int x);
   }
 
-  @Contracted
   private static class C implements I<Integer> {
     /* Specialized return type. */
     @Override
@@ -71,7 +68,6 @@ public class ReturnTypeTest extends TestCase {
     }
   }
 
-  @Contracted
   private static class C1 implements I<Number> {
     /* Specialized and covariant return type. */
     @Override
@@ -81,7 +77,6 @@ public class ReturnTypeTest extends TestCase {
     }
   }
 
-  @Contracted
   private static class C2 extends A implements I<Comparable> {
     /* Specialized and doubly covariant return type. */
     @Override
@@ -100,7 +95,6 @@ public class ReturnTypeTest extends TestCase {
     public abstract T f(int x);
   }
 
-  @Contracted
   private static class D extends J<Integer> {
     /* Specialized return type. */
     @Override
@@ -108,10 +102,6 @@ public class ReturnTypeTest extends TestCase {
       /* Bogus. */
       return x - 1;
     }
-  }
-
-  protected void setUp() {
-    Cofoja.contractEnv.assertLoadedClassesContracted();
   }
 
   public void testB() {

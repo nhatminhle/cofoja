@@ -17,15 +17,13 @@
  */
 package com.google.java.contract.tests;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.fail;
-
 import com.google.java.contract.Ensures;
 import com.google.java.contract.Invariant;
 import com.google.java.contract.InvariantError;
 import com.google.java.contract.PostconditionError;
 import com.google.java.contract.PreconditionError;
 import com.google.java.contract.Requires;
+
 import junit.framework.TestCase;
 
 /**
@@ -93,8 +91,8 @@ public class MemberContractsTest extends TestCase {
 
   MemberContracts sample;
 
+  @Override
   protected void setUp() {
-    Cofoja.contractEnv.assertLoadedClassesContracted();
     sample = new MemberContracts();
   }
 

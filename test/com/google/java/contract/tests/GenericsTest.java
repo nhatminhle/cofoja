@@ -17,10 +17,6 @@
  */
 package com.google.java.contract.tests;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.fail;
-
-import com.google.java.contract.Contracted;
 import com.google.java.contract.Ensures;
 import com.google.java.contract.Invariant;
 import com.google.java.contract.InvariantError;
@@ -65,12 +61,12 @@ public class GenericsTest extends TestCase {
       this.x = x;
     }
 
+    @Override
     public String toString() {
       return x.toString();
     }
   }
 
-  @Contracted
   private static class C<U extends S> extends A<U> {
     public C(U u) {
       super(u);
@@ -91,8 +87,8 @@ public class GenericsTest extends TestCase {
     public <T> int f(T x);
   }
 
-  @Contracted
   private static class E implements I {
+    @Override
     public <T> int f(T x) {
       return x.toString().length();
     }
@@ -104,8 +100,8 @@ public class GenericsTest extends TestCase {
     public int g(T x);
   }
 
-  @Contracted
   private static class F implements J<Integer> {
+    @Override
     public int g(Integer x) {
       return x.toString().length();
     }
@@ -120,14 +116,11 @@ public class GenericsTest extends TestCase {
   }
 
   private static class Npe extends T<NullPointerException> {
+    @Override
     @Ensures("true")
     public void f(NullPointerException x) throws NullPointerException {
       throw x;
     }
-  }
-
-  protected void setUp() {
-    Cofoja.contractEnv.assertLoadedClassesContracted();
   }
 
   public void testB() {

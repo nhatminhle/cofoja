@@ -17,15 +17,12 @@
  */
 package com.google.java.contract.tests;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.fail;
-
-import com.google.java.contract.Contracted;
 import com.google.java.contract.InvariantError;
 import com.google.java.contract.PostconditionError;
 import com.google.java.contract.PreconditionError;
 import com.google.java.contract.examples.ArrayListStack;
 import com.google.java.contract.examples.Stack;
+
 import junit.framework.TestCase;
 
 /**
@@ -38,7 +35,6 @@ public class StackTest extends TestCase {
   /**
    * A stack implementation that does not preserve its invariant.
    */
-  @Contracted
   public static class BogusInvariantStack<T> implements Stack<T> {
     @Override
     public int size() {
@@ -63,7 +59,6 @@ public class StackTest extends TestCase {
   /**
    * A stack implementation that does not preserve its postconditions.
    */
-  @Contracted
   public static class BogusPostconditionsStack<T>
       extends BogusInvariantStack<T> {
     @Override
@@ -76,7 +71,6 @@ public class StackTest extends TestCase {
    * A stack implementation that simply counts its elements instead of
    * storing them.
    */
-  @Contracted
   public static class BogusCountingStack<T>
       extends BogusPostconditionsStack<T> {
     protected int count;
@@ -106,7 +100,6 @@ public class StackTest extends TestCase {
    * A stack implementation that simply stores the last element. This
    * implementation suffices to fool our contracts.
    */
-  @Contracted
   public static class BogusLastElementStack<T>
       extends BogusCountingStack<T> {
     protected T lastElement;
@@ -131,8 +124,8 @@ public class StackTest extends TestCase {
 
   private Stack<Integer> stack;
 
+  @Override
   public void setUp() {
-    Cofoja.contractEnv.assertLoadedClassesContracted();
     stack = new ArrayListStack<Integer>();
   }
 

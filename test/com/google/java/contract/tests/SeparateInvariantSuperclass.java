@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 Google Inc.
+ * Copyright 2011 Google Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -17,32 +17,22 @@
  */
 package com.google.java.contract.tests;
 
-import com.google.java.contract.PostconditionError;
-
-import junit.framework.TestCase;
+import com.google.java.contract.Invariant;
 
 /**
- * Tests inheritance of postconditions of methods returning a generic
- * type parameter with complex erasure in a superclass compiled
- * separately.
+ * Separate dummy class to test contract checking through inheritance.
  *
- * @author nhat.minh.le@huoc.org (Nhat Minh Lê)
+ * @author chatain@google.com (Leonardo Chatain)
  */
-public class SeparateGenericSuperclassTest extends TestCase {
-  private static class SeparateChild
-      extends SeparateGenericSuperclass<Integer> {
-    @Override
-    public Integer f(int x) {
-      return x + 1;
-    }
+@Invariant("x != 0")
+public class SeparateInvariantSuperclass {
+  @SuppressWarnings("unused")
+  protected int x = 0;
+
+  public SeparateInvariantSuperclass() {
+    x = 1;
   }
 
-  public void testF() {
-    try {
-      new SeparateChild().f(6379);
-      fail();
-    } catch (PostconditionError expected) {
-      /* Bogus implementation. */
-    }
+  public void violate() {
   }
 }

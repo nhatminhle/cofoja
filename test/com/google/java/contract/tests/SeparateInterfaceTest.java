@@ -17,10 +17,6 @@
  */
 package com.google.java.contract.tests;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.fail;
-
-import com.google.java.contract.Contracted;
 import com.google.java.contract.PreconditionError;
 import junit.framework.TestCase;
 
@@ -30,7 +26,6 @@ import junit.framework.TestCase;
  * @author nhat.minh.le@huoc.org (Nhat Minh Lê)
  */
 public class SeparateInterfaceTest extends TestCase {
-  @Contracted
   private static class SeparateImplementation implements SeparateInterface {
     @Override
     public void f(int y) {
@@ -51,8 +46,8 @@ public class SeparateInterfaceTest extends TestCase {
 
   private SeparateImplementation sample;
 
+  @Override
   protected void setUp() {
-    Cofoja.contractEnv.assertLoadedClassesContracted();
     sample = new SeparateImplementation();
   }
 

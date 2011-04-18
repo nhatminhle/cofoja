@@ -17,12 +17,9 @@
  */
 package com.google.java.contract.tests;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.fail;
-
-import com.google.java.contract.Contracted;
 import com.google.java.contract.Invariant;
 import com.google.java.contract.InvariantError;
+
 import junit.framework.TestCase;
 
 /**
@@ -63,7 +60,6 @@ public class PublicCallTest extends TestCase {
     public int x;
   }
 
-  @Contracted
   private static class B extends A {
     public B() {
       x = 1;
@@ -72,8 +68,8 @@ public class PublicCallTest extends TestCase {
 
   protected SimpleObject sample;
 
+  @Override
   protected void setUp() {
-    Cofoja.contractEnv.assertLoadedClassesContracted();
     sample = new SimpleObject();
   }
 

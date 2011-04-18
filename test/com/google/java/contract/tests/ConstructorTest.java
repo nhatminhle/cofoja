@@ -17,10 +17,6 @@
  */
 package com.google.java.contract.tests;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.fail;
-
-import com.google.java.contract.Contracted;
 import com.google.java.contract.Invariant;
 import com.google.java.contract.InvariantError;
 import com.google.java.contract.PreconditionError;
@@ -46,7 +42,6 @@ public class ConstructorTest extends TestCase {
     }
   }
 
-  @Contracted
   private static class B extends A {
     public B(int x) {
       /* Bogus for x < 0. */
@@ -68,7 +63,6 @@ public class ConstructorTest extends TestCase {
     }
   }
 
-  @Contracted
   private static class Dx extends D {
     public Dx(double x) {
       super(x);
@@ -82,7 +76,6 @@ public class ConstructorTest extends TestCase {
     }
   }
 
-  @Contracted
   private static class Chx extends Ch {
     public Chx(char x) {
       super(x);
@@ -94,10 +87,6 @@ public class ConstructorTest extends TestCase {
     public In(String name) throws FileNotFoundException {
       super(name);
     }
-  }
-
-  protected void setUp() {
-    Cofoja.contractEnv.assertLoadedClassesContracted();
   }
 
   public void testA() {

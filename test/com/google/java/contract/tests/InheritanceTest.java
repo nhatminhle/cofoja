@@ -17,10 +17,6 @@
  */
 package com.google.java.contract.tests;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.fail;
-
-import com.google.java.contract.Contracted;
 import com.google.java.contract.Ensures;
 import com.google.java.contract.Invariant;
 import com.google.java.contract.InvariantError;
@@ -34,6 +30,7 @@ import junit.framework.TestCase;
  *
  * @author nhat.minh.le@huoc.org (Nhat Minh Lê)
  */
+@SuppressWarnings("unused")
 public class InheritanceTest extends TestCase {
   @Invariant("a >= 0")
   private abstract static class A {
@@ -112,7 +109,6 @@ public class InheritanceTest extends TestCase {
     }
   }
 
-  @Contracted
   private static class D extends B implements I {
     /* Necessary so that invariants will apply. */
     public D() {
@@ -129,7 +125,6 @@ public class InheritanceTest extends TestCase {
     }
   }
 
-  @Contracted
   private static class E extends B implements I {
     /* Necessary so that invariants will apply. */
     public E() {
@@ -192,8 +187,8 @@ public class InheritanceTest extends TestCase {
   D d;
   F f;
 
+  @Override
   protected void setUp() {
-    Cofoja.contractEnv.assertLoadedClassesContracted();
 
     b = new B();
     c = new C();

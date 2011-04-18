@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 Google Inc.
+ * Copyright 2011 Google Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -17,28 +17,15 @@
  */
 package com.google.java.contract.tests;
 
-import static junit.framework.Assert.fail;
-
-import com.google.java.contract.SpecificationError;
-import junit.framework.TestCase;
+import com.google.java.contract.Requires;
 
 /**
- * Tests that {@link ContractedChecker#assertLoadedClassesContracted}
- * detects a class which is missing the {@link Contracted} annotation.
+ * Separate dummy class to test contract checking through inheritance.
  *
- * @author nhat.minh.le@huoc.org (Nhat Minh Lê)
+ * @author chatain@google.com (Leonardo Chatain)
  */
-public class ContractedCheckTest extends TestCase {
-  private static class ShouldBeContractedClass extends ContractedClass {
-  }
-
-  public void testContractedCheck() {
-    ShouldBeContractedClass sample = new ShouldBeContractedClass();
-    try {
-      Cofoja.contractEnv.assertLoadedClassesContracted();
-      fail();
-    } catch (SpecificationError expected) {
-      /* Expected exception. */
-    }
+public class SeparateMethodContractSuperclass {
+  @Requires("false")
+  public void violate() {
   }
 }

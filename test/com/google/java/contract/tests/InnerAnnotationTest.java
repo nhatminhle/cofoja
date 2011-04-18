@@ -39,11 +39,6 @@ public class InnerAnnotationTest extends TestCase {
 
   DefinesInnerAnnotation dia;
 
-  @Override
-  protected void setUp() {
-    Cofoja.contractEnv.assertLoadedClassesContracted();
-  }
-
   public void testInnerAnnotation() {
     dia = new DefinesInnerAnnotation();
   }

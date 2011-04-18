@@ -18,11 +18,9 @@
  */
 package com.google.java.contract.tests;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.fail;
-
 import com.google.java.contract.PostconditionError;
 import com.google.java.contract.PreconditionError;
+
 import junit.framework.TestCase;
 
 /**
@@ -33,8 +31,8 @@ import junit.framework.TestCase;
 public class ConstantContractsTest extends TestCase {
   ConstantContracts sample;
 
+  @Override
   protected void setUp() {
-    Cofoja.contractEnv.assertLoadedClassesContracted();
     sample = new ConstantContracts();
   }
 

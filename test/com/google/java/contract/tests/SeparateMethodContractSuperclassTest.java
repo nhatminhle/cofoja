@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 Google Inc.
+ * Copyright 2011 Google Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -15,56 +15,40 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  */
+
 package com.google.java.contract.tests;
 
 import com.google.java.contract.PreconditionError;
-import com.google.java.contract.Requires;
 
 import junit.framework.TestCase;
 
 /**
- * Tests contracts that apply to enum classes.
+ * Tests that contracts are found through inheritance when declared as
+ * method contracts on the superclass.
  *
- * @author nhat.minh.le@huoc.org (Nhat Minh Lê)
+ * @author chatain@google.com (Leonardo Chatain)
  */
-public class EnumTest extends TestCase {
-  private static enum E {
-    X, Y, Z;
+public class SeparateMethodContractSuperclassTest extends TestCase {
+  private static class SeparateChild extends SeparateMethodContractSuperclass{
+    @Override
+    public void violate() {
 
-    @Requires("this != Z")
-    public int f() {
-      return this == X ? 1 : 2;
     }
   }
 
-  private static enum F {
-    X(1), Y(2), Z(3);
+  private SeparateChild child;
 
-    private F(int x) {
-    }
-
-    @Requires("this != Z")
-    public int f() {
-      return this == X ? 1 : 2;
-    }
+  @Override
+  protected void setUp() {
+    child = new SeparateChild();
   }
 
-  public void testX() {
-    E e = E.X;
-    e.f();
-  }
-
-  public void testZ() {
-    E e = E.Z;
-  }
-
-  public void testZIllegalState() {
-    E e = E.Z;
+  public void testViolate() {
     try {
-      e.f();
+      child.violate();
       fail();
     } catch (PreconditionError expected) {
-      assertEquals("[this != Z]", expected.getMessages().toString());
+      /* Bogus implementation. */
     }
   }
 }

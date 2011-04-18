@@ -68,11 +68,6 @@ public class ContractedAnnotationTest extends TestCase {
 
   UsesAnnotations uses;
 
-  @Override
-  protected void setUp() {
-    /* Do not assert contracted because this causes proxy classes errors. */
-  }
-
   public void testInnerAnnotation() {
     uses = new UsesAnnotations();
   }

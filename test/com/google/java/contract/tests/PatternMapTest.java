@@ -17,9 +17,8 @@
  */
 package com.google.java.contract.tests;
 
-import static junit.framework.Assert.assertEquals;
-
 import com.google.java.contract.core.util.PatternMap;
+
 import junit.framework.TestCase;
 
 /**
@@ -30,6 +29,7 @@ import junit.framework.TestCase;
 public class PatternMapTest extends TestCase {
   private PatternMap<Integer> map;
 
+  @Override
   protected void setUp() {
     map = new PatternMap<Integer>();
   }

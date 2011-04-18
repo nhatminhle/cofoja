@@ -17,14 +17,12 @@
  */
 package com.google.java.contract.tests;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.fail;
-
 import com.google.java.contract.Ensures;
 import com.google.java.contract.PostconditionError;
 import com.google.java.contract.PreconditionError;
 import com.google.java.contract.Requires;
 import com.google.java.contract.ThrowEnsures;
+
 import junit.framework.TestCase;
 
 /**
@@ -135,10 +133,6 @@ public class SimpleMathTest extends TestCase {
       }
       return Math.sqrt(x);
     }
-  }
-
-  protected void setUp() {
-    Cofoja.contractEnv.assertLoadedClassesContracted();
   }
 
   public void testAdd() {
