@@ -59,15 +59,10 @@ import javax.tools.JavaFileObject.Kind;
  *
  * @author nhat.minh.le@huoc.org (Nhat Minh Lê)
  * @author johannes.rieken@gmail.com (Johannes Rieken)
+ * @author chatain@google.com (Leonardo Chatain)
  */
 @AllowUnusedImport(ElementKind.class)
-@SupportedAnnotationTypes({
-  "com.google.java.contract.Contracted",
-  "com.google.java.contract.Ensures",
-  "com.google.java.contract.Invariant",
-  "com.google.java.contract.Requires",
-  "com.google.java.contract.ThrowEnsures"
-})
+@SupportedAnnotationTypes("*")
 @SupportedSourceVersion(SourceVersion.RELEASE_6)
 @SupportedOptions({
   AnnotationProcessor.OPT_DEBUG,
@@ -127,6 +122,7 @@ public class AnnotationProcessor extends AbstractProcessor {
   protected static final String OPT_EXPERIMENTAL = "com.google.java.contract.experimental";
 
   protected TypeFactory factory;
+  protected FactoryUtils utils;
 
   protected String sourcePath;
   protected String classPath;
@@ -147,7 +143,8 @@ public class AnnotationProcessor extends AbstractProcessor {
       DebugUtils.setDumpDirectory(dumpDir);
     }
 
-    factory = new TypeFactory(processingEnv, options.get(OPT_DEPSPATH));
+    utils = new FactoryUtils(processingEnv);
+    factory = new TypeFactory(utils, options.get(OPT_DEPSPATH));
 
     setupPaths();
   }
@@ -155,8 +152,7 @@ public class AnnotationProcessor extends AbstractProcessor {
   @Override
   public boolean process(Set<? extends TypeElement> annotations,
                          RoundEnvironment roundEnv) {
-    Set<TypeElement> rootElements =
-        getAnnotatedRootElements(annotations, roundEnv);
+    Set<TypeElement> rootElements = getContractedRootElements(roundEnv);
     if (rootElements.isEmpty()) {
       return false;
     }
@@ -316,7 +312,6 @@ public class AnnotationProcessor extends AbstractProcessor {
           };
       r.accept(visitor, null);
     }
-
     /*
      * Mark annotations inherited from classes compiled in the same
      * task as weak so we don't generate stubs for them later on. This
@@ -341,7 +336,6 @@ public class AnnotationProcessor extends AbstractProcessor {
       type.accept(annotator);
       undecoratedTypes.add(type);
     }
-
     /*
      * Decorate the type models with contract methods and create
      * helper types.
@@ -363,31 +357,29 @@ public class AnnotationProcessor extends AbstractProcessor {
   }
 
   /**
-   * Returns the set of root elements annotated with any annotation in
-   * {@code annotations}, or that have descendants annotated with
-   * these annotations.
+   * Returns the set of root elements that contain contracts.
+   * Contracts can have been directly declared as annotations or inherited
+   * through the hierarchy.
    *
    * @param annotations the set of annotations to look for
    * @param roundEnv the environment to get elements from
    */
-  @Requires({
-    "annotations != null",
-    "roundEnv != null"
-  })
+  @Requires("roundEnv != null")
   @Ensures("result != null")
-  protected static Set<TypeElement> getAnnotatedRootElements(
-      Set<? extends TypeElement> annotations,
+  protected Set<TypeElement> getContractedRootElements(
       RoundEnvironment roundEnv) {
-    HashSet<TypeElement> rootElements = new HashSet<TypeElement>();
-    for (TypeElement annotation : annotations) {
-      Set<? extends Element> elements =
-          roundEnv.getElementsAnnotatedWith(annotation);
-      for (Element e : elements) {
-        rootElements.add(getRootElement(e));
+    Set<? extends Element> allElements = roundEnv.getRootElements();
+    Set<TypeElement> contractedRootElements =
+        new HashSet<TypeElement>(allElements.size());
+
+    ContractFinder cf = new ContractFinder(utils);
+    for (Element e : allElements) {
+      if (e.accept(cf, null)) {
+        contractedRootElements.add(getRootElement(e));
       }
     }
 
-    return rootElements;
+    return contractedRootElements;
   }
 
   /**

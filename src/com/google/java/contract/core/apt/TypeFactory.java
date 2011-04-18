@@ -25,7 +25,6 @@ import com.google.java.contract.core.model.TypeModel;
 import com.google.java.contract.core.util.JavaUtils;
 
 import java.net.URLClassLoader;
-import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.TypeElement;
 
 /**
@@ -43,8 +42,8 @@ class TypeFactory {
 
   protected FactoryUtils utils;
 
-  @Requires("processingEnv != null")
-  TypeFactory(ProcessingEnvironment processingEnv,
+  @Requires("utils != null")
+  TypeFactory(FactoryUtils utils,
               String sourceDependencyPath) {
     sourceDependencyLoader = null;
     if (sourceDependencyPath != null) {
@@ -52,7 +51,7 @@ class TypeFactory {
           JavaUtils.getLoaderForPath(sourceDependencyPath);
     }
 
-    utils = new FactoryUtils(processingEnv);
+    this.utils = utils;
   }
 
   /**
