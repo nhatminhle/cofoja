@@ -62,9 +62,70 @@ abstract class AbstractTypeBuilder
    */
   protected Iterator<Long> rootLineNumberIterator;
 
+  /**
+   * Creates a blank {@code ContractAnnotationModel} from
+   * an {@code AnnotationMirror}. The returned model is created with
+   * the correct properties for the provided context but does not
+   * contain any of the clauses from {@code annotation}.
+   *
+   * @param parent the target of the annotation
+   * @param annotation the annotation
+   * @param primary whether this is a primary contract annotation
+   * @param owner the owner of this annotation
+   * @return the contract model of this annotation
+   */
+  @Requires({
+    "parent != null",
+    "annotation != null",
+    "owner != null",
+    "utils.isContractAnnotation(annotation)"
+  })
+  @Ensures("result != null")
+  private ContractAnnotationModel createBlankContractModel(Element parent,
+      AnnotationMirror annotation, boolean primary, ClassName owner) {
+    ElementKind kind = utils.getAnnotationKindForName(annotation);
+
+    boolean virtual;
+    TypeName returnType;
+    switch (parent.getKind()) {
+      default:
+        virtual =
+            parent.getKind()
+            != javax.lang.model.element.ElementKind.INTERFACE;
+        returnType = null;
+        break;
+      case CONSTRUCTOR:
+      case METHOD:
+        virtual =
+            parent.getEnclosingElement().getKind()
+            != javax.lang.model.element.ElementKind.INTERFACE;
+        ExecutableElement method = (ExecutableElement) parent;
+        switch (method.getReturnType().getKind()) {
+          case VOID:
+            /* For void methods. */
+            returnType = utils.getTypeNameForType(method.getReturnType());
+            break;
+          case NONE:
+            /* For constructors. */
+            returnType = null;
+            break;
+          case PACKAGE:
+            /* Should not happen. */
+            throw new RuntimeException(
+                "ExecutableElement has PACKAGE return type");
+          default:
+            returnType = utils.getTypeNameForType(
+                utils.typeUtils.erasure(method.getReturnType()));
+        }
+    }
+
+    return new ContractAnnotationModel(kind, primary, virtual,
+                                       owner, returnType);
+  }
 
   /**
-   * Creates a {@code ContractAnnotationModel} from an {code AnnotationMirror}.
+   * Creates a {@code ContractAnnotationModel} from
+   * an {@code AnnotationMirror}.
    *
    * @param parent the target of the annotation
    * @param annotation the annotation
@@ -81,26 +142,8 @@ abstract class AbstractTypeBuilder
   @Ensures("result != null")
   protected ContractAnnotationModel createContractModel(Element parent,
       AnnotationMirror annotation, boolean primary, ClassName owner) {
-    ElementKind kind = utils.getAnnotationKindForName(annotation);
-
-    boolean virtual;
-    TypeName returnType;
-    if (parent.getKind() != javax.lang.model.element.ElementKind.METHOD) {
-      virtual =
-          parent.getKind()
-          != javax.lang.model.element.ElementKind.INTERFACE;
-      returnType = null;
-    } else {
-      virtual =
-          parent.getEnclosingElement().getKind()
-          != javax.lang.model.element.ElementKind.INTERFACE;
-      ExecutableElement method = (ExecutableElement) parent;
-      returnType = utils.getTypeNameForType(
-          utils.typeUtils.erasure(method.getReturnType()));
-    }
-    ContractAnnotationModel model =
-        new ContractAnnotationModel(kind, primary, virtual,
-                                    owner, returnType);
+    ContractAnnotationModel model = createBlankContractModel(
+        parent, annotation, primary, owner);
     List<Long> lineNumbers = null;
     if (rootLineNumberIterator == null) {
       lineNumbers = getLineNumbers(parent, annotation);
