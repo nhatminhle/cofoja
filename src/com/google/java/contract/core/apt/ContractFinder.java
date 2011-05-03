@@ -61,6 +61,12 @@ public class ContractFinder
     if (contractedElements.containsKey(e))
       return contractedElements.get(e);
 
+    /*
+     * Before searching for contracts, add the element to the visited cache.
+     * This is important to avoid recursion (e.g. when an enclosed element
+     * extends the enclosing one).
+     */
+    contractedElements.put(e, Boolean.FALSE);
     Boolean contracted = isContractedType(e);
     contractedElements.put(e, contracted);
     return contracted;
