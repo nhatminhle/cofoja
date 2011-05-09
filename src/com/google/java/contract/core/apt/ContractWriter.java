@@ -350,7 +350,15 @@ public class ContractWriter extends ElementScanner {
     appendVariableDeclaration(variable);
     if (variable.getModifiers().contains(ElementModifier.FINAL)) {
       append(" = ");
-      append(getDefaultValue(variable.getType()));
+      String defaultValue = getDefaultValue(variable.getType());
+      /*
+       * Append dummy check to prevent the compiler from substituting the field
+       * for its value on contract-checking methods.
+       */
+      append("\"dummy\".equals(\"dummy\") ? ");
+      append(defaultValue);
+      append(":");
+      append(defaultValue);
     }
     append(";");
     appendEndOfLine();
