@@ -38,8 +38,8 @@ import javax.tools.SimpleJavaFileObject;
 @AllowUnusedImport({ Iterables.class, Predicates.class })
 @Invariant({
   "content != null",
-  "lineNumberMap != null " +
-      "=> Iterables.all(lineNumberMap.keySet(), Predicates.between(1L, null))"
+  "lineNumberMap == null " +
+      "|| Iterables.all(lineNumberMap.keySet(), Predicates.between(1L, null))"
 })
 public class SyntheticJavaFile extends SimpleJavaFileObject {
   protected byte[] content;

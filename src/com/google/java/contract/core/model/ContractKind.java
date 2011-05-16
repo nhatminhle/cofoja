@@ -127,8 +127,8 @@ public enum ContractKind {
    * or exceptional).
    */
   @Ensures({
-    "result => isMethodContract()",
-    "result => !isOld()"
+    "!result || isMethodContract()",
+    "!(result && isOld())"
   })
   public boolean isPostcondition() {
     switch (this) {
@@ -145,8 +145,8 @@ public enum ContractKind {
    * computing method values.
    */
   @Ensures({
-    "result => isMethodContract()",
-    "result => !isPostcondition()"
+    "!result || isMethodContract()",
+    "!(result && isPostcondition())"
   })
   public boolean isOld() {
     switch (this) {

@@ -29,7 +29,7 @@ public class SpecificationError extends Error {
    *
    * @param msg the error message.
    */
-  @Ensures("msg != null => msg.equals(getMessage())")
+  @Ensures("msg == null || msg.equals(getMessage())")
   public SpecificationError(String msg) {
     super(msg);
   }

@@ -55,8 +55,8 @@ public class DiagnosticManager
   @Invariant({
     "getKind() != null",
     "getMessage(null) != null",
-    "getAnnotationMirror() != null => getElement() != null",
-    "getAnnotationValue() != null => getAnnotationMirror() != null"
+    "getAnnotationMirror() == null || getElement() != null",
+    "getAnnotationValue() == null || getAnnotationMirror() != null"
   })
   public abstract class Report {
     /**

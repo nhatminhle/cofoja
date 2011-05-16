@@ -44,8 +44,8 @@ import java.util.List;
   "getKind() != null",
   "ClassName.isBinaryName(getClassName())",
   "getKey() >= -1",
-  "getLineNumbers() != null " +
-      "=> ContractMethodSignatures.isLineNumberList(getLineNumbers())"
+  "getLineNumbers() == null " +
+      "|| ContractMethodSignatures.isLineNumberList(getLineNumbers())"
 })
 public class ContractHandle {
   protected ContractKind kind;
@@ -70,8 +70,8 @@ public class ContractHandle {
     "kind != null",
     "ClassName.isBinaryName(className)",
     "contractMethod != null",
-    "lineNumbers != null " +
-        "=> ContractMethodSignatures.isLineNumberList(lineNumbers)"
+    "lineNumbers == null " +
+        "|| ContractMethodSignatures.isLineNumberList(lineNumbers)"
   })
   @Ensures({
     "kind == getKind()",

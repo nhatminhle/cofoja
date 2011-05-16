@@ -60,13 +60,13 @@ import java.util.List;
 @Invariant({
   "diagnosticManager != null",
   "oldId >= 0",
-  "oldParameters != null => oldParametersCode != null",
-  "oldParameters != null => oldParametersLineNumbers != null",
-  "oldParameters != null => !oldParameters.contains(null)",
-  "oldParameters != null => !oldParametersCode.contains(null)",
-  "oldParameters != null => oldParameters.size() == oldParametersCode.size()",
-  "oldParameters != null " +
-      "=> oldParameters.size() == oldParametersLineNumbers.size()"
+  "oldParameters == null || oldParametersCode != null",
+  "oldParameters == null || oldParametersLineNumbers != null",
+  "oldParameters == null || !oldParameters.contains(null)",
+  "oldParameters == null || !oldParametersCode.contains(null)",
+  "oldParameters == null || oldParameters.size() == oldParametersCode.size()",
+  "oldParameters == null " +
+      "|| oldParameters.size() == oldParametersLineNumbers.size()"
 })
 public class ContractExpressionTransformer {
   private static final String MAGIC_CAST_METHOD =
@@ -198,7 +198,7 @@ public class ContractExpressionTransformer {
   })
   @Ensures({
     "result == canQueryResults()",
-    "result => newCode.size() == code.size()"
+    "!result || newCode.size() == code.size()"
   })
   @SuppressWarnings("fallthrough")
   public boolean transform(List<String> code, List<Long> lineNumbers,

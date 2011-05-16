@@ -95,7 +95,7 @@ public class SimpleMathTest extends TestCase {
     }
 
     @Requires("n >= 0")
-    @Ensures("result => old (n) % 2 == 0")
+    @Ensures("!result || old (n) % 2 == 0")
     public static boolean even(int n) {
       if (n == 0) {
         return true;
@@ -106,7 +106,7 @@ public class SimpleMathTest extends TestCase {
 
     @Requires("n >= 0")
     @Ensures({
-      "result => old (n) % 2 == 1",
+      "!result || old (n) % 2 == 1",
       /* For testing purposes: check that old () has the right value. */
       "old (n) == n"
     })

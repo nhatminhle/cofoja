@@ -42,10 +42,10 @@ import java.util.Set;
   "!getInterfaces().contains(null)",
   "getSuperArguments() != null",
   "!getSuperArguments().contains(null)",
-  "getSuperclass() == null => superArguments.isEmpty()",
+  "getSuperclass() != null || superArguments.isEmpty()",
   "getImportNames() != null",
   "!getImportNames().contains(null)",
-  "getEnclosingElement() != null => importNames.isEmpty()"
+  "getEnclosingElement() == null || importNames.isEmpty()"
 })
 public class TypeModel extends GenericElementModel {
   /**

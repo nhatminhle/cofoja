@@ -48,11 +48,11 @@ import java.util.Set;
  */
 @AllowUnusedImport({ Iterables.class, Predicates.class })
 @Invariant({
-  "canQueryResults() => getImportNames() != null",
-  "canQueryResults() => !getImportNames().contains(null)",
-  "canQueryResults() => getContractLineNumbers() != null",
-  "canQueryResults() => !getContractLineNumbers().entrySet().contains(null)",
-  "canQueryResults() => " +
+  "!canQueryResults() || getImportNames() != null",
+  "!canQueryResults() || !getImportNames().contains(null)",
+  "!canQueryResults() || getContractLineNumbers() != null",
+  "!canQueryResults() || !getContractLineNumbers().entrySet().contains(null)",
+  "!canQueryResults() || " +
       "Iterables.all(getContractLineNumbers().values(), " +
       "    Predicates.<Long>all(Predicates.between(1L, null)))",
   "source != null"

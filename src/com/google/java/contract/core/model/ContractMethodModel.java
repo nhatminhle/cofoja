@@ -38,8 +38,8 @@ import java.util.List;
   "getId() >= -1",
   "getStatements() != null",
   "!getStatements().contains(null)",
-  "getContractKind().isClassContract() => getContractedMethod() == null",
-  "getContractKind().isMethodContract() => getContractedMethod() != null"
+  "!getContractKind().isClassContract() || getContractedMethod() == null",
+  "!getContractKind().isMethodContract() || getContractedMethod() != null"
 })
 public class ContractMethodModel extends MethodModel {
   private static final ClassName CONTRACT_SIGNATURE_CLASS =
@@ -94,7 +94,7 @@ public class ContractMethodModel extends MethodModel {
     "kind != null",
     "name != null",
     "returnType != null",
-    "kind.isClassContract() => contracted == null"
+    "!kind.isClassContract() || contracted == null"
   })
   public ContractMethodModel(ContractKind kind, String name,
                              TypeName returnType, MethodModel contracted) {

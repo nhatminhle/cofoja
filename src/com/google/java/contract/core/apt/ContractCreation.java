@@ -488,7 +488,7 @@ public class ContractCreation {
    */
   @Requires({
     "kind != null",
-    "kind.isClassContract() => contracted == null"
+    "!kind.isClassContract() || contracted == null"
   })
   @Ensures({
     "result.isEmpty() " +

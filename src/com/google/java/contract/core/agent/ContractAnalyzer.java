@@ -50,7 +50,7 @@ import java.util.Map;
  */
 @AllowUnusedImport({ ClassName.class, Iterables.class, Predicates.class })
 @Invariant({
-  "className != null => ClassName.isBinaryName(className)",
+  "className == null || ClassName.isBinaryName(className)",
   "classHandles != null",
   "!classHandles.contains(null)",
   "methodHandles != null",

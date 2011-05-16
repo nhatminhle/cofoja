@@ -64,7 +64,7 @@ class ContractMethodSignatures {
   }
 
   @Requires("contractMethod != null")
-  @Ensures("result != null => isLineNumberList(result)")
+  @Ensures("result == null || isLineNumberList(result)")
   static List<Long> getLineNumbers(MethodNode contractMethod) {
     Object lines = getMetaData(contractMethod, "lines", Object.class);
     return getLineNumbers(lines);
@@ -81,8 +81,7 @@ class ContractMethodSignatures {
    */
   @SuppressWarnings("unchecked")
   @Ensures({
-    "lines == null => result == null",
-    "lines != null => isLineNumberList(result)"
+    "lines == null ? result == null : isLineNumberList(result)"
   })
   static List<Long> getLineNumbers(Object lines) {
     if (lines == null) {

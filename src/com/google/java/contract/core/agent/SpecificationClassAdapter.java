@@ -40,7 +40,7 @@ import java.util.List;
  */
 @AllowUnusedImport(ClassName.class)
 @Invariant({
-  "getClassName() != null => ClassName.isBinaryName(getClassName())",
+  "getClassName() == null || ClassName.isBinaryName(getClassName())",
   "getContracts() != null",
   "getParent() != null"
 })

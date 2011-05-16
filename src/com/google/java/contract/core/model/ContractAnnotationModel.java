@@ -36,7 +36,7 @@ import java.util.List;
  */
 @AllowUnusedImport({ Iterables.class, Predicates.class })
 @Invariant({
-  "isWeakVirtual() => isVirtual()",
+  "!isWeakVirtual() || isVirtual()",
   "getValues() != null",
   "!getValues().contains(null)",
   "Iterables.all(getLineNumbers(), " +

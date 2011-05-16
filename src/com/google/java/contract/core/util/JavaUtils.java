@@ -350,12 +350,11 @@ public class JavaUtils {
    * identifier
    */
   @Requires("tokenizer != null")
-  @Ensures({
-    "!acceptStar => ClassName.isQualifiedName(result)",
-    "acceptStar " +
-        "=> ClassName.isQualifiedName(result) " +
+  @Ensures(
+    "!acceptStar ? ClassName.isQualifiedName(result)" +
+        ": ClassName.isQualifiedName(result)" +
         "|| ClassName.isQualifiedName(result.substring(0, result.length() - 2))"
-  })
+  )
   public static String parseQualifiedName(JavaTokenizer tokenizer,
                                           boolean acceptStar)
       throws ParseException {

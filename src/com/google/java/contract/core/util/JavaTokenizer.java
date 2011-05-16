@@ -127,8 +127,7 @@ public class JavaTokenizer implements Iterator<JavaTokenizer.Token> {
    * reached
    */
   @Ensures({
-    "!allowEOF => result >= 0",
-    "allowEOF => result >= -1"
+    "!allowEOF ? result >= 0 : result >= -1"
   })
   protected int readChar(boolean allowEOF) throws IOException {
     int c = reader.read();
