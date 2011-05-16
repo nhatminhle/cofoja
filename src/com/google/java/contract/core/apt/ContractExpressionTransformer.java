@@ -29,7 +29,6 @@ import com.google.java.contract.core.util.JavaTokenizer.TokenKind;
 import com.google.java.contract.core.util.JavaUtils;
 
 import java.io.StringReader;
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -56,6 +55,7 @@ import java.util.List;
  * defined in {@link com.google.java.contract.core.util.JavaUtils}.
  *
  * @author nhat.minh.le@huoc.org (Nhat Minh Lê)
+ * @author chatain@google.com (Leonardo Chatain)
  */
 @Invariant({
   "diagnosticManager != null",
@@ -141,8 +141,7 @@ public class ContractExpressionTransformer {
     "tokenizer != null",
     "token != null"
   })
-  @SuppressWarnings("fallthrough")
-  private int transformCommon(StringBuilder currentBuffer,
+  private void transformCommon(StringBuilder currentBuffer,
                               BalancedTokenizer tokenizer, Token token) {
     switch (token.kind) {
       case COMMENT:
@@ -151,33 +150,8 @@ public class ContractExpressionTransformer {
           currentBuffer.append(" ");
         }
         break;
-      case SYMBOL:
-        if (token.text.equals("=")
-            && tokenizer.hasNext()
-            && tokenizer.getNextToken().text.equals(">")) {
-          tokenizer.next();
-          currentBuffer.append("? ");
-          return 1;
-        }
-        /* Fall through. */
       default:
         currentBuffer.append(token.text);
-    }
-    return 0;
-  }
-
-  @Requires({
-    "currentBuffer != null",
-    "impliesCount >= 0"
-  })
-  private void appendImpliesTrail(StringBuilder currentBuffer,
-                                  int impliesCount) {
-    if (impliesCount > 0) {
-      currentBuffer.append(JavaUtils.BEGIN_GENERATED_CODE);
-      for (int i = 0; i < impliesCount; ++i) {
-        currentBuffer.append(" : true");
-      }
-      currentBuffer.append(JavaUtils.END_GENERATED_CODE);
     }
   }
 
@@ -226,9 +200,6 @@ public class ContractExpressionTransformer {
       String oldName = null;
       int oldContext = -1;
 
-      ArrayDeque<Integer> impliesContext = new ArrayDeque<Integer>();
-      int impliesCount = 0;
-
       while (tokenizer.hasNext()) {
         Token token = tokenizer.next();
         newLevel = tokenizer.getCurrentLevel();
@@ -242,15 +213,6 @@ public class ContractExpressionTransformer {
               sourceInfo);
           parsed = false;
           continue code;
-        }
-
-        /* Implies expressions. */
-        if (newLevel < currentLevel) {
-          appendImpliesTrail(currentBuffer, impliesCount);
-          impliesCount = impliesContext.pop();
-        } else if (newLevel > currentLevel) {
-          impliesContext.push(impliesCount);
-          impliesCount = 0;
         }
 
         /* old expressions. */
@@ -299,7 +261,7 @@ public class ContractExpressionTransformer {
                 oldBuffer.append(token.text);
                 break;
               default:
-                impliesCount += transformCommon(oldBuffer, tokenizer, token);
+                transformCommon(oldBuffer, tokenizer, token);
             }
           }
         } else {
@@ -336,15 +298,12 @@ public class ContractExpressionTransformer {
               }
               /* Fall through. */
             default:
-              impliesCount += transformCommon(buffer, tokenizer, token);
+              transformCommon(buffer, tokenizer, token);
           }
         }
 
         currentLevel = newLevel;
       }
-
-      /* Top-level implies operators. */
-      appendImpliesTrail(buffer, impliesCount);
 
       /* Parse errors. */
       if (tokenizer.hasErrors()) {
