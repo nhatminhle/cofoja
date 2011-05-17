@@ -52,6 +52,11 @@ public class MethodModel extends GenericElementModel {
   protected TypeName returnType;
 
   /**
+   * Whether this method accepts variable-length argument lists.
+   */
+  protected boolean variadic;
+
+  /**
    * Constructs a new MethodModel of the specified kind, which is not
    * a constructor, with the specified name and return type.
    */
@@ -66,6 +71,7 @@ public class MethodModel extends GenericElementModel {
     super(kind, name);
     exceptions = new HashSet<TypeName>();
     this.returnType = returnType;
+    variadic = false;
   }
 
   /**
@@ -78,6 +84,7 @@ public class MethodModel extends GenericElementModel {
     super(that);
     exceptions = new HashSet<TypeName>(that.exceptions);
     returnType = that.returnType;
+    variadic = false;
   }
 
   @Override
@@ -92,6 +99,7 @@ public class MethodModel extends GenericElementModel {
     super(ElementKind.CONSTRUCTOR, "<init>");
     exceptions = new HashSet<TypeName>();
     returnType = null;
+    variadic = false;
   }
 
   public Set<? extends TypeName> getExceptions() {
@@ -122,6 +130,14 @@ public class MethodModel extends GenericElementModel {
   })
   public void setReturnType(TypeName type) {
     returnType = type;
+  }
+
+  public boolean isVariadic() {
+    return variadic;
+  }
+
+  public void setVariadic(boolean variadic) {
+    this.variadic = variadic;
   }
 
   public boolean isConstructor() {

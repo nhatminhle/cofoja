@@ -396,6 +396,7 @@ class TypeBuilder extends AbstractTypeBuilder {
 
     /* Add parameters. */
     scan(e.getParameters(), exec);
+    exec.setVariadic(e.isVarArgs());
 
     /* Add throws list. */
     for (TypeMirror tt : e.getThrownTypes()) {

@@ -48,6 +48,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 /**
  * An element visitor that writes the contract Java source associated
@@ -71,6 +72,9 @@ public class ContractWriter extends ElementScanner {
       "com.google.java.contract.core.agent.ContractMethodSignature";
   private static final String CONTRACT_KIND =
       "com.google.java.contract.core.model.ContractKind";
+
+  private static final Pattern VARIADIC_REGEX =
+      Pattern.compile("\\[\\p{javaWhitespace}*\\]\\p{javaWhitespace}*$");
 
   protected boolean debugTrace;
 
@@ -215,9 +219,19 @@ public class ContractWriter extends ElementScanner {
 
   @Requires("variable != null")
   private void appendVariableDeclaration(VariableModel variable) {
+    appendVariableDeclaration(variable, null);
+  }
+
+  @Requires("variable != null")
+  private void appendVariableDeclaration(VariableModel variable,
+                                         String typeNameOverride) {
     appendModifiers(variable.getModifiers());
     append(" ");
-    append(variable.getType().getDeclaredName());
+    if (typeNameOverride == null) {
+      append(variable.getType().getDeclaredName());
+    } else {
+      append(typeNameOverride);
+    }
     append(" ");
     append(variable.getSimpleName());
   }
@@ -245,13 +259,19 @@ public class ContractWriter extends ElementScanner {
     append("(");
     Iterator<? extends VariableModel> it = method.getParameters().iterator();
     if (it.hasNext()) {
-      for (;;) {
-        VariableModel param = it.next();
+      VariableModel param = it.next();
+      while (it.hasNext()) {
         appendVariableDeclaration(param);
-        if (!it.hasNext()) {
-          break;
-        }
         append(", ");
+        param = it.next();
+      }
+      if (!method.isVariadic()) {
+        appendVariableDeclaration(param);
+      } else {
+        String variadicTypeName =
+            VARIADIC_REGEX.matcher(param.getType().getDeclaredName())
+            .replaceFirst("...");
+        appendVariableDeclaration(param, variadicTypeName);
       }
     }
     append(")");
