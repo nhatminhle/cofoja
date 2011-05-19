@@ -460,16 +460,6 @@ public class ContractWriter extends ElementScanner {
       appendImportStatements(type);
     }
 
-    /*
-     * TODO(lenh): Suppress warnings related to com.google.java.contract.util
-     * library use. We should really copy over the SuppressWarnings
-     * annotation from the original source, but which annotations to
-     * copy and which not to is a rather delicate question; besides,
-     * we do not have full support for annotation values in the
-     * abstract tree.
-     */
-    append("@SuppressWarnings(\"unchecked\")");
-
     /* Type and name. */
     appendTypeDeclaration(type);
 

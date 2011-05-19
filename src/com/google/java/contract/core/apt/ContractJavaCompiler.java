@@ -54,7 +54,6 @@ public class ContractJavaCompiler {
   protected static final List<String> OPTIONS =
       Arrays.asList(
           "-g:source,vars", /* Source file name, for debug attributes. */
-          "-nowarn",        /* Inhibit warnings in generated code. */
           "-proc:none",     /* No further annotations to process. */
           "-implicit:none"  /* No class files for implicit dependencies. */
       );

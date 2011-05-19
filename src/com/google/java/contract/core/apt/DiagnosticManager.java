@@ -427,8 +427,17 @@ public class DiagnosticManager
     reports.add(r);
   }
 
+  /**
+   * Reports a compiler diagnostic. This diagnostic manager only
+   * reports errors from the underlying compiler tool invocation,
+   * which calls this method; anything other than an error is
+   * ignored. This prevents the annotation processor from picking up
+   * irrelevant warnings pertaining to generated code.
+   */
   @Override
   public void report(Diagnostic<? extends JavaFileObject> diagnostic) {
+    if (diagnostic.getKind() != Kind.ERROR)
+      return;
     report(new CompilerReport(diagnostic));
   }
 
