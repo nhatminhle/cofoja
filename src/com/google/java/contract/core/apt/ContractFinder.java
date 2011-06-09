@@ -20,6 +20,7 @@ package com.google.java.contract.core.apt;
 import com.google.java.contract.Ensures;
 import com.google.java.contract.Invariant;
 import com.google.java.contract.Requires;
+import com.google.java.contract.core.runtime.BlacklistManager;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -47,19 +48,28 @@ public class ContractFinder
     extends ElementScanner6<Boolean, Void> {
   private FactoryUtils utils;
   private Map<TypeElement, Boolean> contractedElements;
+  private BlacklistManager blackList;
 
   @Requires("utils != null")
   public ContractFinder(FactoryUtils utils) {
     this.utils = utils;
     this.contractedElements = new HashMap<TypeElement, Boolean>();
+    this.blackList = BlacklistManager.getInstance();
   }
 
   @Override
   @Ensures("result != null")
   public Boolean visitType(TypeElement e, Void v) {
     /* The current element has already been analyzed. */
-    if (contractedElements.containsKey(e))
+    if (contractedElements.containsKey(e)) {
       return contractedElements.get(e);
+    }
+
+    /* The element is in the blacklist, do not scan. */
+    if (blackList.isIgnored(e.getQualifiedName().toString())) {
+      contractedElements.put(e, Boolean.FALSE);
+      return Boolean.FALSE;
+    }
 
     /*
      * Before searching for contracts, add the element to the visited cache.
