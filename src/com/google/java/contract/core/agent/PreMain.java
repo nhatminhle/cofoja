@@ -33,6 +33,7 @@ import java.io.IOException;
 import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.IllegalClassFormatException;
 import java.lang.instrument.Instrumentation;
+import java.lang.reflect.InvocationTargetException;
 import java.security.ProtectionDomain;
 import javax.tools.JavaFileObject.Kind;
 
@@ -87,6 +88,9 @@ public class PreMain {
         DebugUtils.warn("agent", "cannot find configurator class");
       } catch (NoSuchMethodException e) {
         DebugUtils.warn("agent", "cannot find configure method");
+      } catch (InvocationTargetException e) {
+        DebugUtils.warn("agent", "configure method threw an exception: "
+                        + e.getTargetException().toString());
       } catch (Exception e) {
         DebugUtils.warn("agent",
                         "error during configure method: " + e.toString());
