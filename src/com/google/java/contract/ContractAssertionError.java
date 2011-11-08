@@ -41,12 +41,42 @@ public abstract class ContractAssertionError extends AssertionError {
    * Constructs a new ContractAssertionError.
    *
    * @param msg the error message.
+   * @param throwable the throwable caught while evaluating contracts, or null
+   *        for none.
+   */
+  public ContractAssertionError(String msg, Throwable throwable) {
+    this(
+        throwable == null
+            ? msg
+            : "evaluating \"" + msg + "\" caused " + throwable.getClass().getSimpleName());
+  }
+
+  /**
+   * Constructs a new ContractAssertionError.
+   *
+   * @param msg the error message.
    * @param cause a previous contract error
    */
   public ContractAssertionError(String msg, ContractAssertionError cause) {
     super(msg);
     initCause(cause);
     cleanStackTrace();
+  }
+
+  /**
+   * Constructs a new ContractAssertionError.
+   *
+   * @param msg the error message.
+   * @param cause a previous contract error
+   * @param throwable the throwable caught while evaluating contracts, or null
+   *        for none.
+   */
+  public ContractAssertionError(String msg, ContractAssertionError cause, Throwable throwable) {
+    this(
+        throwable == null
+            ? msg
+            : "evaluating \"" + msg + "\" caused " + throwable.getClass().getSimpleName(),
+        cause);
   }
 
   /**

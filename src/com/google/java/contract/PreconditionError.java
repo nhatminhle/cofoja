@@ -33,7 +33,19 @@ public class PreconditionError extends ContractAssertionError {
    * @param cause a previously failing precondition
    */
   public PreconditionError(String msg, PreconditionError cause) {
-    super(msg, cause);
+    super(msg, cause, null);
+  }
+
+  /**
+   * Constructs a new PreconditionError.
+   *
+   * @param msg the error message.
+   * @param cause a previously failing precondition
+   * @param throwable the throwable caught while evaluating contracts, or null
+   *        for none.
+   */
+  public PreconditionError(String msg, PreconditionError cause, Throwable throwable) {
+    super(msg, cause, throwable);
   }
 
   @Override

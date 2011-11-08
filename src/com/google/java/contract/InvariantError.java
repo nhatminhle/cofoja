@@ -32,7 +32,18 @@ public class InvariantError extends ContractAssertionError {
    * @param msg the error message.
    */
   public InvariantError(String msg) {
-    super(msg);
+    super(msg, null);
+  }
+
+  /**
+   * Constructs a new InvariantError.
+   *
+   * @param msg the error message.
+   * @param throwable the throwable caught while evaluating contracts, or null
+   *        for none.
+   */
+  public InvariantError(String msg, Throwable throwable) {
+    super(msg, throwable);
   }
 
   @Override

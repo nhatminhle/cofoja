@@ -134,6 +134,13 @@ public class JavaUtils {
       "com$google$java$contract$local$success";
 
   /**
+   * The prefix of all temporary variables for exceptions thrown during
+   * assertion expression evaluation.
+   */
+  public static final String EXCEPTION_VARIABLE_PREFIX =
+      "com$google$java$contract$local$exception";
+
+  /**
    * The name of a temporary variable that keeps track of failed
    * contravariant conditions.
    */
