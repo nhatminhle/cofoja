@@ -418,10 +418,12 @@ public class JavaUtils {
   }
 
   /**
-   * Returns a {@link URLClassLoader} that searches {@code path}.
+   * Returns a {@link URLClassLoader} that searches {@code path} and
+   * delegates to {@code parent}.
    */
   @Requires("path != null")
-  public static URLClassLoader getLoaderForPath(String path) {
+  public static URLClassLoader getLoaderForPath(String path,
+                                                ClassLoader parent) {
     String[] parts = path.split(Pattern.quote(File.pathSeparator));
     URL[] urls = new URL[parts.length];
     for (int i = 0; i < parts.length; ++i) {
@@ -431,7 +433,16 @@ public class JavaUtils {
         /* Ignore erroneous paths. */
       }
     }
-    return new URLClassLoader(urls);
+    if (parent == null) {
+      return new URLClassLoader(urls);
+    } else {
+      return new URLClassLoader(urls, parent);
+    }
+  }
+
+  @Requires("path != null")
+  public static URLClassLoader getLoaderForPath(String path) {
+    return getLoaderForPath(path, null);
   }
 
   /**
