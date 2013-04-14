@@ -446,6 +446,45 @@ public class JavaUtils {
   }
 
   /**
+   * Reads the class file of the specified class, as a stream. The
+   * class file is searched in the following places, in order:
+   *
+   * <ol>
+   * <li>The resources of the current class loader, if any.
+   * <li>The resources of the system class loader.
+   * </ol>
+   *
+   * @param loader the class loader used to load resources
+   * @param className the class name, in binary format
+   * @return the content of the contract class file, as a stream, or
+   * {@code null} if none was found
+   */
+  @Requires("ClassName.isBinaryName(className)")
+  public static InputStream getClassInputStream(ClassLoader loader,
+                                                String className) {
+    String fileName = className + Kind.CLASS.extension;
+    URL url;
+
+    if (loader != null) {
+      url = loader.getResource(fileName);
+      if (url == null) {
+        return null;
+      } else {
+        DebugUtils.info("loader", "found " + url);
+        return loader.getResourceAsStream(fileName);
+      }
+    } else {
+      url = ClassLoader.getSystemResource(fileName);
+      if (url == null) {
+        return null;
+      } else {
+        DebugUtils.info("loader", "found " + url);
+        return ClassLoader.getSystemResourceAsStream(fileName);
+      }
+    }
+  }
+
+  /**
    * Reads the contract class file of the specified class, as a
    * stream. The contract class file is searched in the following
    * places, in order:
