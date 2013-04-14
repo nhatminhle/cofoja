@@ -19,7 +19,6 @@ package com.google.java.contract.core.agent;
 
 import com.google.java.contract.Invariant;
 import com.google.java.contract.Requires;
-import org.objectweb.asm.ClassAdapter;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
@@ -32,7 +31,7 @@ import java.util.List;
  * @author nhat.minh.le@huoc.org (Nhat Minh Lê)
  */
 @Invariant("ContractMethodSignatures.isLineNumberList(lineNumbers)")
-class LineNumberingClassAdapter extends ClassAdapter {
+class LineNumberingClassAdapter extends ClassVisitor {
   protected List<Long> lineNumbers;
 
   /**
@@ -46,7 +45,7 @@ class LineNumberingClassAdapter extends ClassAdapter {
     "ContractMethodSignatures.isLineNumberList(lineNumbers)"
   })
   public LineNumberingClassAdapter(ClassVisitor cv, List<Long> lineNumbers) {
-    super(cv);
+    super(Opcodes.ASM4, cv);
     this.lineNumbers = lineNumbers;
   }
 

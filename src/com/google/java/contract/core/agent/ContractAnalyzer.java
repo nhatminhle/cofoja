@@ -26,9 +26,10 @@ import com.google.java.contract.core.model.ClassName;
 import com.google.java.contract.core.model.ContractKind;
 import com.google.java.contract.util.Iterables;
 import com.google.java.contract.util.Predicates;
+import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
-import org.objectweb.asm.commons.EmptyVisitor;
 import org.objectweb.asm.tree.MethodNode;
 
 import java.util.ArrayList;
@@ -58,7 +59,7 @@ import java.util.Map;
   "Iterables.all(methodHandles.values(), " +
       "Predicates.<MethodContractHandle>all(Predicates.nonNull()))"
 })
-class ContractAnalyzer extends EmptyVisitor {
+class ContractAnalyzer extends ClassVisitor {
   protected List<ClassContractHandle> classHandles;
   protected Map<String, ArrayList<MethodContractHandle>> methodHandles;
 
@@ -70,6 +71,7 @@ class ContractAnalyzer extends EmptyVisitor {
    * intended to be filled through its visitor interface.
    */
   ContractAnalyzer() {
+    super(Opcodes.ASM4);
     classHandles = new ArrayList<ClassContractHandle>();
     methodHandles = new HashMap<String, ArrayList<MethodContractHandle>>();
   }

@@ -20,9 +20,7 @@ package com.google.java.contract.core.agent;
 
 import com.google.java.contract.Requires;
 import com.google.java.contract.core.util.JavaUtils;
-import org.objectweb.asm.ClassAdapter;
 import org.objectweb.asm.ClassVisitor;
-import org.objectweb.asm.MethodAdapter;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 
@@ -37,7 +35,7 @@ import org.objectweb.asm.Opcodes;
  *
  * @author nhat.minh.le@huoc.org (Nhat Minh Lê)
  */
-class ContractFixingClassAdapter extends ClassAdapter {
+class ContractFixingClassAdapter extends ClassVisitor {
   /**
    * A method adapter that amends calls to {@code access$n} synthetic
    * methods. These methods are generated for access to members from
@@ -46,7 +44,7 @@ class ContractFixingClassAdapter extends ClassAdapter {
    * bytecode during instrumentation. Calls to these methods need to
    * be fixed to use the new names.
    */
-  protected static class AccessMethodAdapter extends MethodAdapter {
+  protected static class AccessMethodAdapter extends MethodVisitor {
     /**
      * Constructs a new AccessMethodAdapter.
      *
@@ -54,7 +52,7 @@ class ContractFixingClassAdapter extends ClassAdapter {
      */
     @Requires("mv != null")
     public AccessMethodAdapter(MethodVisitor mv) {
-      super(mv);
+      super(Opcodes.ASM4, mv);
     }
 
     /**
@@ -80,7 +78,7 @@ class ContractFixingClassAdapter extends ClassAdapter {
    */
   @Requires("cv != null")
   public ContractFixingClassAdapter(ClassVisitor cv) {
-    super(cv);
+    super(Opcodes.ASM4, cv);
   }
 
   /**

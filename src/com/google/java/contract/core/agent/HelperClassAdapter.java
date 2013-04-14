@@ -20,11 +20,10 @@ package com.google.java.contract.core.agent;
 import com.google.java.contract.Requires;
 import com.google.java.contract.core.util.JavaUtils;
 import org.objectweb.asm.AnnotationVisitor;
-import org.objectweb.asm.ClassAdapter;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
-import org.objectweb.asm.commons.EmptyVisitor;
 
 import javax.tools.JavaFileObject.Kind;
 
@@ -33,7 +32,7 @@ import javax.tools.JavaFileObject.Kind;
  *
  * @author nhat.minh.le@huoc.org (Nhat Minh Lê)
  */
-class HelperClassAdapter extends ClassAdapter {
+class HelperClassAdapter extends ClassVisitor {
   protected class HelperMethodAdapter extends LineNumberingMethodAdapter {
     /**
      * Constructs a new HelperMethodAdapter.
@@ -57,7 +56,7 @@ class HelperClassAdapter extends ClassAdapter {
     public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
       if (Type.getType(desc).getInternalName().equals(
               "com/google/java/contract/core/agent/ContractMethodSignature")) {
-        return new EmptyVisitor() {
+        return new AnnotationVisitor(Opcodes.ASM4) {
           @Override
           public void visit(String name, Object value) {
             if (name.equals("lines")) {
@@ -72,7 +71,7 @@ class HelperClassAdapter extends ClassAdapter {
 
   @Requires("cv != null")
   public HelperClassAdapter(ClassVisitor cv) {
-    super(cv);
+    super(Opcodes.ASM4, cv);
   }
 
   @Override

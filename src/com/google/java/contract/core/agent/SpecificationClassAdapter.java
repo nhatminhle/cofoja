@@ -23,7 +23,6 @@ import com.google.java.contract.Invariant;
 import com.google.java.contract.core.model.ClassName;
 import com.google.java.contract.core.model.ContractKind;
 import com.google.java.contract.core.util.DebugUtils;
-import org.objectweb.asm.ClassAdapter;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
@@ -44,13 +43,13 @@ import java.util.List;
   "getContracts() != null",
   "getParent() != null"
 })
-class SpecificationClassAdapter extends ClassAdapter {
+class SpecificationClassAdapter extends ClassVisitor {
   protected String className;
   protected ContractAnalyzer contracts;
 
   public SpecificationClassAdapter(ClassVisitor cv,
                                    ContractAnalyzer contracts) {
-    super(cv);
+    super(Opcodes.ASM4, cv);
     this.contracts = contracts;
   }
 

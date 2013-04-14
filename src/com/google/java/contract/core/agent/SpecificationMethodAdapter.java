@@ -31,6 +31,7 @@ import com.google.java.contract.util.Predicates;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.AdviceAdapter;
 import org.objectweb.asm.commons.Method;
@@ -132,7 +133,7 @@ public class SpecificationMethodAdapter extends AdviceAdapter {
                                     MethodVisitor mv,
                                     int access, String methodName,
                                     String methodDesc) {
-    super(mv, access, methodName, methodDesc);
+    super(Opcodes.ASM4, mv, access, methodName, methodDesc);
 
     methodStart = new Label();
     methodEnd = new Label();

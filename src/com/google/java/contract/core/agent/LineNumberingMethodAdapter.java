@@ -22,6 +22,7 @@ import com.google.java.contract.Requires;
 import com.google.java.contract.core.util.JavaUtils;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.commons.AdviceAdapter;
 
 import java.util.List;
@@ -60,7 +61,7 @@ abstract class LineNumberingMethodAdapter extends AdviceAdapter {
   })
   public LineNumberingMethodAdapter(MethodVisitor mv, int access,
                                     String name, String desc) {
-    super(mv, access, name, desc);
+    super(Opcodes.ASM4, mv, access, name, desc);
     lineNumbers = null;
   }
 
