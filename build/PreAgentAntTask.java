@@ -67,8 +67,12 @@ public class PreAgentAntTask extends MatchingTask {
         System.out.println("Instrumenting " + n
                            + " class file" + (n == 1 ? "" : "s")
                            + " to " + destdir);
+        ClassLoader loader =
+            JavaUtils.getLoaderForPath(srcdir.toString(),
+                                       getClass().getClassLoader());
         PreMain.instrument(absSrcs.toArray(new String[0]),
-                           destdir.toString());
+                           destdir.toString(),
+                           loader);
       }
     } catch (Exception e) {
       throw new BuildException(e);

@@ -115,13 +115,19 @@ public class PreMain {
       throws IllegalClassFormatException, IOException {
     String classout =
       System.getProperty("com.google.java.contract.classoutput");
-    instrument(args, classout);
+    /* TODO(lenh): Separate class loader for source files. */
+    instrument(args, classout, null);
   }
 
-  public static void instrument(String[] args, String classout)
+  public static void instrument(String[] args, String classout,
+                                ClassLoader loader)
       throws IllegalClassFormatException, IOException {
-    ContractClassFileTransformer transformer =
-        new ContractClassFileTransformer();
+    ContractClassFileTransformer transformer;
+    if (loader == null) {
+      transformer = new ContractClassFileTransformer();
+    } else {
+      transformer = new ContractClassFileTransformer(loader);
+    }
     configure();
 
     for (String arg : args) {
