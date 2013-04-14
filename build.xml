@@ -30,6 +30,10 @@
 
   <!-- Build macros. -->
 
+  <presetdef name="ujavac">
+    <javac encoding="utf-8" debug="${debug}" includeantruntime="false" />
+  </presetdef>
+
   <macrodef name="checkjar">
     <attribute name="label" />
     <attribute name="property" />
@@ -92,14 +96,13 @@
     <sequential>
       <mkdir dir="${obj.dir}/tmp@{stage}" />
       <mkdir dir="${obj.dir}/stage@{stage}" />
-      <javac srcdir="${src.dir}" destdir="${obj.dir}/tmp@{stage}"
-             debug="true" includeantruntime="false">
+      <ujavac srcdir="${src.dir}" destdir="${obj.dir}/tmp@{stage}" debug="true">
         <classpath refid="base.class.path" />
         <compilerarg value="-processorpath" />
         <compilerarg value="@{bootstrappath}:${asm.jar}" />
         <compilerarg value="-processor" />
         <compilerarg value="${apt.class}" />
-      </javac>
+      </ujavac>
       <cofojab srcdir="${obj.dir}/tmp@{stage}"
                destdir="${obj.dir}/stage@{stage}" />
     </sequential>
@@ -146,11 +149,9 @@
   <target name="build" depends="init"
           description="build class files">
     <mkdir dir="${obj.dir}/bare" />
-    <javac srcdir="${src.dir}" destdir="${obj.dir}/bare"
-           debug="${debug}"
-           includeantruntime="false">
+    <ujavac srcdir="${src.dir}" destdir="${obj.dir}/bare">
       <classpath refid="base.class.path" />
-    </javac>
+    </ujavac>
   </target>
 
   <target name="dist" depends="build"
@@ -164,14 +165,13 @@
   <target name="antinit" depends="init">
     <requirejar property="bootstrap.jar" />
     <mkdir dir="${obj.dir}/build" />
-    <javac srcdir="${build.dir}" destdir="${obj.dir}/build"
-           debug="true" includeantruntime="false">
+    <ujavac srcdir="${build.dir}" destdir="${obj.dir}/build">
       <classpath>
         <path refid="base.class.path" />
         <pathelement path="${java.class.path}" />
         <pathelement path="${bootstrap.jar}" />
       </classpath>
-    </javac>
+    </ujavac>
     <taskdef name="cofojab" classname="PreAgentAntTask"
              classpath="${obj.dir}/build:${bootstrap.jar}:${asm.jar}" />
   </target>
@@ -201,8 +201,7 @@
   <target name="buildtest1" depends="stage2">
     <requirejar property="junit.jar" />
     <mkdir dir="${obj.dir}/test" />
-    <javac srcdir="${test.dir}" destdir="${obj.dir}/test"
-           debug="true" includeantruntime="false">
+    <ujavac srcdir="${test.dir}" destdir="${obj.dir}/test">
       <classpath>
         <path refid="test.class.path" />
         <pathelement path="${obj.dir}/stage2" />
@@ -211,12 +210,11 @@
       <compilerarg value="${apt.class}" />
       <include name="**/SeparateGenericSuperclass.java" />
       <include name="**/SeparateInterface.java" />
-    </javac>
+    </ujavac>
   </target>
 
   <target name="buildtest2" depends="buildtest1,stage2">
-    <javac srcdir="${test.dir}" destdir="${obj.dir}/test"
-           debug="true" includeantruntime="false">
+    <ujavac srcdir="${test.dir}" destdir="${obj.dir}/test">
       <classpath>
         <path refid="test.class.path" />
         <pathelement path="${obj.dir}/stage2" />
@@ -227,7 +225,7 @@
       <compilerarg value="-Acom.google.java.contract.dump=${obj.dir}/test/dump" />
       <exclude name="**/SeparateGenericSuperclass.java" />
       <exclude name="**/SeparateInterface.java" />
-    </javac>
+    </ujavac>
   </target>
 
   <target name="test" depends="buildtest2,bootstrap"
