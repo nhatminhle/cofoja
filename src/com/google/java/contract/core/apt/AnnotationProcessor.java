@@ -63,7 +63,6 @@ import javax.tools.JavaFileObject.Kind;
  */
 @AllowUnusedImport(ElementKind.class)
 @SupportedAnnotationTypes("*")
-@SupportedSourceVersion(SourceVersion.RELEASE_6)
 @SupportedOptions({
   AnnotationProcessor.OPT_DEBUG,
   AnnotationProcessor.OPT_DUMP,
@@ -147,6 +146,11 @@ public class AnnotationProcessor extends AbstractProcessor {
     factory = new TypeFactory(utils, options.get(OPT_DEPSPATH));
 
     setupPaths();
+  }
+
+  @Override
+  public SourceVersion getSupportedSourceVersion() {
+    return SourceVersion.latest();
   }
 
   @Override
