@@ -136,7 +136,48 @@ public class DiagnosticManager
     protected int position;
     protected int startPosition;
     protected int endPosition;
-    protected AnnotationSourceInfo sourceInfo;
+    protected Element sourceElement;
+    protected AnnotationMirror annotationMirror;
+    protected AnnotationValue annotationValue;
+
+    /**
+     * Constructs a new ContractDiagnostic.
+     *
+     * @param kind the kind of this diagnostic
+     * @param message the message of this diagnostic
+     * @param sourceString the code of the contract
+     * @param position the position of the error
+     * @param startPosition the start position of the error
+     * @param endPosition the end position of the error
+     * @param sourceElement the source of this diagnostic
+     * @param annotationMirror the source annotation of this diagnostic
+     * @param annotationValue the source annotation value of this diagnostic
+     */
+    @Requires({
+      "kind != null",
+      "message != null",
+      "position >= startPosition",
+      "position <= endPosition",
+      "startPosition >= 0",
+      "startPosition <= endPosition"
+    })
+    @Ensures({
+      "kind == getKind()"
+    })
+    public AnnotationReport(Kind kind, String message, String sourceString,
+        int position, int startPosition, int endPosition,
+        Element sourceElement,
+        AnnotationMirror annotationMirror, AnnotationValue annotationValue) {
+      this.kind = kind;
+      this.message = message;
+      this.sourceString = sourceString;
+      this.position = position;
+      this.startPosition = startPosition;
+      this.endPosition = endPosition;
+      this.sourceElement = sourceElement;
+      this.annotationMirror = annotationMirror;
+      this.annotationValue = annotationValue;
+    }
 
     /**
      * Constructs a new ContractDiagnostic.
@@ -152,7 +193,6 @@ public class DiagnosticManager
     @Requires({
       "kind != null",
       "message != null",
-      "sourceString != null",
       "position >= startPosition",
       "position <= endPosition",
       "startPosition >= 0",
@@ -163,14 +203,13 @@ public class DiagnosticManager
     })
     public AnnotationReport(Kind kind, String message, String sourceString,
         int position, int startPosition, int endPosition, Object info) {
-      this.kind = kind;
-      this.message = message;
-      this.sourceString = sourceString;
-      this.position = position;
-      this.startPosition = startPosition;
-      this.endPosition = endPosition;
+      this(kind, message, sourceString, position, startPosition, endPosition,
+           null, null, null);
       if (info instanceof AnnotationSourceInfo) {
-        sourceInfo = (AnnotationSourceInfo) info;
+        AnnotationSourceInfo sourceInfo = (AnnotationSourceInfo) info;
+        sourceElement = sourceInfo.getElement();
+        annotationMirror = sourceInfo.getAnnotationMirror();
+        annotationValue = sourceInfo.getAnnotationValue();
       }
     }
 
@@ -181,6 +220,9 @@ public class DiagnosticManager
 
     @Override
     public String getMessage(Locale locale) {
+      if (sourceString == null) {
+        return message;
+      }
       StringBuilder buffer = new StringBuilder("clause: ");
       buffer.append(sourceString);
       buffer.append("\n        ");
@@ -191,17 +233,17 @@ public class DiagnosticManager
 
     @Override
     public Element getElement() {
-      return sourceInfo == null ? null : sourceInfo.getElement();
+      return sourceElement;
     }
 
     @Override
     public AnnotationMirror getAnnotationMirror() {
-      return sourceInfo == null ? null : sourceInfo.getAnnotationMirror();
+      return annotationMirror;
     }
 
     @Override
     public AnnotationValue getAnnotationValue() {
-      return sourceInfo == null ? null : sourceInfo.getAnnotationValue();
+      return annotationValue;
     }
   }
 
@@ -451,14 +493,33 @@ public class DiagnosticManager
                                 position, startPosition, endPosition, info));
   }
 
+  public void error(String message, String sourceString,
+                    int position, int startPosition, int endPosition,
+                    Element sourceElement, AnnotationMirror annotationMirror,
+                    AnnotationValue annotationValue) {
+    report(new AnnotationReport(Kind.ERROR, message, sourceString,
+                                position, startPosition, endPosition,
+                                sourceElement, annotationMirror,
+                                annotationValue));
+  }
+
   /**
    * Reports a warning.
    */
   public void warning(String message, String sourceString,
                       int position, int startPosition, int endPosition,
                       Object info) {
-    report(new AnnotationReport(Kind.WARNING,
-                                message, sourceString,
+    report(new AnnotationReport(Kind.WARNING, message, sourceString,
                                 position, startPosition, endPosition, info));
+  }
+
+  public void warning(String message, String sourceString,
+                      int position, int startPosition, int endPosition,
+                      Element sourceElement, AnnotationMirror annotationMirror,
+                      AnnotationValue annotationValue) {
+    report(new AnnotationReport(Kind.WARNING, message, sourceString,
+                                position, startPosition, endPosition,
+                                sourceElement, annotationMirror,
+                                annotationValue));
   }
 }
