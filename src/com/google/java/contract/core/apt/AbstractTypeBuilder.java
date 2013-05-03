@@ -51,9 +51,13 @@ abstract class AbstractTypeBuilder
     extends ElementScanner6<Void, ElementModel> {
   protected FactoryUtils utils;
 
+  protected DiagnosticManager diagnosticManager;
+
   @Requires("utils != null")
-  protected AbstractTypeBuilder(FactoryUtils utils) {
+  protected AbstractTypeBuilder(FactoryUtils utils,
+                                DiagnosticManager diagnosticManager) {
     this.utils = utils;
+    this.diagnosticManager = diagnosticManager;
   }
 
   /**

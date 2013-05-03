@@ -86,7 +86,7 @@ class TypeBuilder extends AbstractTypeBuilder {
     protected TypeElement mirror;
 
     public ContractExtensionBuilder() {
-      super(TypeBuilder.this.utils);
+      super(TypeBuilder.this.utils, TypeBuilder.this.diagnosticManager);
     }
 
     @Override
@@ -123,8 +123,6 @@ class TypeBuilder extends AbstractTypeBuilder {
     }
   }
 
-  protected DiagnosticManager diagnosticManager;
-
   protected ClassLoader sourceDependencyLoader;
 
   /**
@@ -153,9 +151,8 @@ class TypeBuilder extends AbstractTypeBuilder {
               FactoryUtils utils,
               ClassLoader sourceDependencyLoader,
               DiagnosticManager diagnosticManager) {
-    super(utils);
+    super(utils, diagnosticManager);
     this.sourceDependencyLoader = sourceDependencyLoader;
-    this.diagnosticManager = diagnosticManager;
     type = null;
     rootMirror = null;
     this.importNames = importNames;
