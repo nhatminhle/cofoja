@@ -278,6 +278,9 @@ class TypeBuilder extends AbstractTypeBuilder {
     if (utils.isContractAnnotation(annotation)) {
       ContractAnnotationModel model =
           createContractModel(parent, annotation, primary, owner);
+      if (model == null) {
+        return;
+      }
       if (type.getKind() == ElementKind.ANNOTATION_TYPE) {
         AnnotationSourceInfo asi = (AnnotationSourceInfo) model.getSourceInfo();
         /* Do not add contracts to annotations. Warn the user instead. */

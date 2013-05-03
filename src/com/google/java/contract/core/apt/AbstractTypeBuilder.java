@@ -135,7 +135,8 @@ abstract class AbstractTypeBuilder
    * @param annotation the annotation
    * @param primary whether this is a primary contract annotation
    * @param owner the owner of this annotation
-   * @return the contract model of this annotation
+   * @return the contract model of this annotation, or {@code null} if
+   * the annotation contains no contract (no or empty value)
    */
   @Requires({
     "parent != null",
@@ -143,7 +144,6 @@ abstract class AbstractTypeBuilder
     "owner != null",
     "utils.isContractAnnotation(annotation)"
   })
-  @Ensures("result != null")
   protected ContractAnnotationModel createContractModel(Element parent,
       AnnotationMirror annotation, boolean primary, ClassName owner) {
     ContractAnnotationModel model = createBlankContractModel(
@@ -174,6 +174,12 @@ abstract class AbstractTypeBuilder
         model.addValue(value, lineNumber);
       }
       lastAnnotationValue = annotationValue;
+    }
+    if (model.getValues().isEmpty()) {
+      diagnosticManager.warning("No contracts specified in annotation.",
+                                null, 0, 0, 0,
+                                parent, annotation, lastAnnotationValue);
+      return null;
     }
     AnnotationSourceInfo sourceInfo =
         new AnnotationSourceInfo(parent, annotation, lastAnnotationValue,
@@ -209,7 +215,9 @@ abstract class AbstractTypeBuilder
     if (utils.isContractAnnotation(annotation)) {
       ContractAnnotationModel model =
           createContractModel(parent, annotation, primary, owner);
-      p.addEnclosedElement(model);
+      if (model != null) {
+        p.addEnclosedElement(model);
+      }
     }
   }
 
