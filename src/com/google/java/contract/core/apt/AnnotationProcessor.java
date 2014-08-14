@@ -18,9 +18,6 @@
  */
 package com.google.java.contract.core.apt;
 
-import com.sun.tools.javac.main.OptionName;
-import com.sun.tools.javac.processing.JavacProcessingEnvironment;
-import com.sun.tools.javac.util.Options;
 import com.google.java.contract.AllowUnusedImport;
 import com.google.java.contract.Ensures;
 import com.google.java.contract.Requires;
@@ -207,42 +204,6 @@ public class AnnotationProcessor extends AbstractProcessor {
     sourcePath = processingEnv.getOptions().get(OPT_SOURCEPATH);
     classPath = processingEnv.getOptions().get(OPT_CLASSPATH);
     outputDirectory = processingEnv.getOptions().get(OPT_CLASSOUTPUT);
-
-    /*
-     * Not using instanceof here because than in every case the JVM
-     * tries to load the JavacProcessingEnvironment-class file which,
-     * for instance, is not possible with an IBM JVM.
-     *
-     * TODO(lenh): This may not work; use reflection call instead.
-     */
-    if (processingEnv.getClass().getName().equals(
-            "com.sun.tools.javac.processing.JavacProcessingEnvironment")) {
-      JavacProcessingEnvironment javacEnv =
-          (JavacProcessingEnvironment) processingEnv;
-      Options options = Options.instance(javacEnv.getContext());
-
-      if (sourcePath == null) {
-        sourcePath = options.get(OptionName.SOURCEPATH);
-      }
-
-      if (classPath == null) {
-        String classPath1 = options.get(OptionName.CP);
-        String classPath2 = options.get(OptionName.CLASSPATH);
-        if (classPath1 != null) {
-          if (classPath2 != null) {
-            classPath = classPath1 + File.pathSeparator + classPath2;
-          } else {
-            classPath = classPath1;
-          }
-        } else {
-          classPath = classPath2;
-        }
-      }
-
-      if (outputDirectory == null) {
-        outputDirectory = options.get(OptionName.D);
-      }
-    }
   }
 
   /**

@@ -1,4 +1,6 @@
-<project name="Cofoja" default="dist" basedir=".">
+<project name="Cofoja" default="dist" basedir="."
+         xmlns:if="ant:if"
+         xmlns:unless="ant:unless">
   <!-- Configurable properties. -->
   <property file="local.properties" />
   <property file="default.properties" />
@@ -28,11 +30,44 @@
     <pathelement path="${junit.jar}" />
   </path>
 
+  <path id="test1.class.path">
+    <path refid="test.class.path" />
+    <pathelement path="${obj.dir}/stage2" />
+  </path>
+
+  <path id="test2.class.path">
+    <path refid="test.class.path" />
+    <pathelement path="${obj.dir}/stage2" />
+    <pathelement path="${obj.dir}/test" />
+  </path>
+
   <!-- Build macros. -->
 
   <presetdef name="ujavac">
     <javac encoding="utf-8" debug="${debug}" includeantruntime="false" />
   </presetdef>
+
+  <macrodef name="cofojavac">
+    <attribute name="srcdir" />
+    <attribute name="destdir" />
+    <attribute name="debug" default="false" />
+    <attribute name="bootstrappath" default="" />
+    <attribute name="classpathid" />
+    <element name="contents" optional="true" implicit="true" />
+    <sequential>
+      <ujavac srcdir="@{srcdir}" destdir="@{destdir}" debug="@{debug}">
+        <classpath refid="@{classpathid}" />
+        <compilerarg value="-processorpath" unless:blank="@{bootstrappath}" />
+        <compilerarg value="@{bootstrappath}:${asm.jar}" unless:blank="@{bootstrappath}" />
+        <compilerarg value="-processor" />
+        <compilerarg value="${apt.class}" />
+        <compilerarg value="-Acom.google.java.contract.classpath=${toString:@{classpathid}}" />
+        <compilerarg value="-Acom.google.java.contract.sourcepath=@{srcdir}" />
+        <compilerarg value="-Acom.google.java.contract.classoutput=@{destdir}" />
+        <contents />
+      </ujavac>
+    </sequential>
+  </macrodef>
 
   <macrodef name="checkjar">
     <attribute name="label" />
@@ -96,13 +131,8 @@
     <sequential>
       <mkdir dir="${obj.dir}/tmp@{stage}" />
       <mkdir dir="${obj.dir}/stage@{stage}" />
-      <ujavac srcdir="${src.dir}" destdir="${obj.dir}/tmp@{stage}" debug="true">
-        <classpath refid="base.class.path" />
-        <compilerarg value="-processorpath" />
-        <compilerarg value="@{bootstrappath}:${asm.jar}" />
-        <compilerarg value="-processor" />
-        <compilerarg value="${apt.class}" />
-      </ujavac>
+      <cofojavac srcdir="${src.dir}" destdir="${obj.dir}/tmp@{stage}" debug="true"
+                 bootstrappath="@{bootstrappath}" classpathid="base.class.path" />
       <cofojab srcdir="${obj.dir}/tmp@{stage}"
                destdir="${obj.dir}/stage@{stage}" />
     </sequential>
@@ -201,31 +231,20 @@
   <target name="buildtest1" depends="stage2">
     <requirejar property="junit.jar" />
     <mkdir dir="${obj.dir}/test" />
-    <ujavac srcdir="${test.dir}" destdir="${obj.dir}/test">
-      <classpath>
-        <path refid="test.class.path" />
-        <pathelement path="${obj.dir}/stage2" />
-      </classpath>
-      <compilerarg value="-processor" />
-      <compilerarg value="${apt.class}" />
+    <cofojavac srcdir="${test.dir}" destdir="${obj.dir}/test"
+               classpathid="test1.class.path">
       <include name="**/SeparateGenericSuperclass.java" />
       <include name="**/SeparateInterface.java" />
-    </ujavac>
+    </cofojavac>
   </target>
 
   <target name="buildtest2" depends="buildtest1,stage2">
-    <ujavac srcdir="${test.dir}" destdir="${obj.dir}/test">
-      <classpath>
-        <path refid="test.class.path" />
-        <pathelement path="${obj.dir}/stage2" />
-        <pathelement path="${obj.dir}/test" />
-      </classpath>
-      <compilerarg value="-processor" />
-      <compilerarg value="${apt.class}" />
+    <cofojavac srcdir="${test.dir}" destdir="${obj.dir}/test"
+               classpathid="test2.class.path">
       <compilerarg value="-Acom.google.java.contract.dump=${obj.dir}/test/dump" />
       <exclude name="**/SeparateGenericSuperclass.java" />
       <exclude name="**/SeparateInterface.java" />
-    </ujavac>
+    </cofojavac>
   </target>
 
   <target name="test" depends="buildtest2,bootstrap"
