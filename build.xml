@@ -55,10 +55,14 @@
     <attribute name="classpathid" />
     <element name="contents" optional="true" implicit="true" />
     <sequential>
+      <path id="processor.path">
+        <pathelement location="@{bootstrappath}" />
+        <pathelement location="${asm.jar}" />
+      </path>
       <ujavac srcdir="@{srcdir}" destdir="@{destdir}" debug="@{debug}">
         <classpath refid="@{classpathid}" />
         <compilerarg value="-processorpath" unless:blank="@{bootstrappath}" />
-        <compilerarg value="@{bootstrappath}:${asm.jar}" unless:blank="@{bootstrappath}" />
+        <compilerarg value="${toString:processor.path}" unless:blank="@{bootstrappath}" />
         <compilerarg value="-processor" />
         <compilerarg value="${apt.class}" />
         <compilerarg value="-Acom.google.java.contract.classpath=${toString:@{classpathid}}" />
