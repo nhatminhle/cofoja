@@ -107,7 +107,7 @@ public class GenericsTest extends TestCase {
     }
   }
 
-  private static class T<X extends Throwable> {
+  private static class TT<X extends Throwable> {
     /* Test ability to contract methods that throw type parameters. */
     @Requires("true")
     public void f(X x) throws X {
@@ -115,7 +115,7 @@ public class GenericsTest extends TestCase {
     }
   }
 
-  private static class Npe extends T<NullPointerException> {
+  private static class Npe extends TT<NullPointerException> {
     @Override
     @Ensures("true")
     public void f(NullPointerException x) throws NullPointerException {
