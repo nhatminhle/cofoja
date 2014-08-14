@@ -23,7 +23,6 @@ import com.google.java.contract.PreconditionError;
 import com.google.java.contract.Requires;
 import junit.framework.TestCase;
 
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
 /**
@@ -82,10 +81,11 @@ public class ConstructorTest extends TestCase {
     }
   }
 
-  private static class In extends FileInputStream {
-    @Requires("!name.equals(\"/dev/null\")")
+  private static class In {
+    @Requires("!\"/dev/null\".equals(name)")
     public In(String name) throws FileNotFoundException {
-      super(name);
+      if (!"/dev/null".equals(name))
+        throw new FileNotFoundException(name);
     }
   }
 
@@ -154,7 +154,7 @@ public class ConstructorTest extends TestCase {
       In in = new In("/dev/null");
       fail();
     } catch (PreconditionError expected) {
-      assertEquals("[!name.equals(\"/dev/null\")]", expected.getMessages().toString());
+      assertEquals("[!\"/dev/null\".equals(name)]", expected.getMessages().toString());
     }
   }
 }
