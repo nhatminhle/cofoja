@@ -257,14 +257,14 @@
       <classpath>
         <path refid="test.class.path" />
         <pathelement path="${obj.dir}/stage2" />
-        <pathelement location="${obj.dir}/test"/>
+        <pathelement location="${obj.dir}/test" />
       </classpath>
       <jvmarg value="-javaagent:${cofoja.contracted.bare.jar}" />
       <jvmarg value="-Dcom.google.java.contract.configurator=${test.configurator.class}" />
       <formatter type="plain" />
       <batchtest fork="yes" todir="${obj.dir}/test">
         <fileset dir="${obj.dir}/test">
-          <include name="**/*Test.class"/>
+          <include name="**/*Test.class" />
         </fileset>
       </batchtest>
     </junit>
