@@ -7,7 +7,8 @@ run-time checking.
 
 Contracts fo Java requires Java version 6 for annotation processing
 and bytecode instrumentation. The bytecode rewriter depends on the ASM
-bytecode manipulation library, version 5.x or higher.
+bytecode manipulation library, version 5.x or higher. The build script
+is written for Ant 1.9.1 and above.
 
 Since the Java agent rewrites bytecode in order to inject contracts
 into the loaded code, the ASM library needs to be available in the
