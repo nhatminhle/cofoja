@@ -61,7 +61,7 @@ abstract class LineNumberingMethodAdapter extends AdviceAdapter {
   })
   public LineNumberingMethodAdapter(MethodVisitor mv, int access,
                                     String name, String desc) {
-    super(Opcodes.ASM4, mv, access, name, desc);
+    super(Opcodes.ASM5, mv, access, name, desc);
     lineNumbers = null;
   }
 

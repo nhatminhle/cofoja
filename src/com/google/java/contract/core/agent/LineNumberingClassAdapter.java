@@ -45,7 +45,7 @@ class LineNumberingClassAdapter extends ClassVisitor {
     "ContractMethodSignatures.isLineNumberList(lineNumbers)"
   })
   public LineNumberingClassAdapter(ClassVisitor cv, List<Long> lineNumbers) {
-    super(Opcodes.ASM4, cv);
+    super(Opcodes.ASM5, cv);
     this.lineNumbers = lineNumbers;
   }
 

@@ -50,7 +50,7 @@ class SpecificationClassAdapter extends ClassVisitor {
 
   public SpecificationClassAdapter(ClassVisitor cv,
                                    ContractAnalyzer contracts) {
-    super(Opcodes.ASM4, cv);
+    super(Opcodes.ASM5, cv);
     this.contracts = contracts;
   }
 

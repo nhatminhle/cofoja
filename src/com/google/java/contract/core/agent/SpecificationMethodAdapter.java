@@ -133,7 +133,7 @@ public class SpecificationMethodAdapter extends AdviceAdapter {
                                     MethodVisitor mv,
                                     int access, String methodName,
                                     String methodDesc) {
-    super(Opcodes.ASM4, mv, access, methodName, methodDesc);
+    super(Opcodes.ASM5, mv, access, methodName, methodDesc);
 
     methodStart = new Label();
     methodEnd = new Label();
@@ -543,10 +543,10 @@ public class SpecificationMethodAdapter extends AdviceAdapter {
   protected void invokeContractMethod(MethodNode contractMethod) {
     if (!statik) {
       mv.visitMethodInsn(INVOKESPECIAL, className,
-                         contractMethod.name, contractMethod.desc);
+                         contractMethod.name, contractMethod.desc, false);
     } else {
       mv.visitMethodInsn(INVOKESTATIC, className,
-                         contractMethod.name, contractMethod.desc);
+                         contractMethod.name, contractMethod.desc, false);
     }
   }
 

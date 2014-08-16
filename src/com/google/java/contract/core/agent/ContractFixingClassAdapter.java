@@ -53,7 +53,7 @@ class ContractFixingClassAdapter extends ClassVisitor {
      */
     @Requires("mv != null")
     public AccessMethodAdapter(MethodVisitor mv) {
-      super(Opcodes.ASM4, mv);
+      super(Opcodes.ASM5, mv);
     }
 
     /**
@@ -62,12 +62,12 @@ class ContractFixingClassAdapter extends ClassVisitor {
      */
     @Override
     public void visitMethodInsn(int opcode, String owner, String name,
-                                String desc) {
+                                String desc, boolean itf) {
       if (!name.startsWith("access$")) {
-        mv.visitMethodInsn(opcode, owner, name, desc);
+        mv.visitMethodInsn(opcode, owner, name, desc, itf);
       } else {
-        mv.visitMethodInsn(opcode, owner,
-                           JavaUtils.SYNTHETIC_MEMBER_PREFIX + name, desc);
+        String newName = JavaUtils.SYNTHETIC_MEMBER_PREFIX + name;
+        mv.visitMethodInsn(opcode, owner, newName, desc, itf);
       }
     }
 
@@ -101,7 +101,7 @@ class ContractFixingClassAdapter extends ClassVisitor {
    */
   @Requires("cv != null")
   public ContractFixingClassAdapter(ClassVisitor cv) {
-    super(Opcodes.ASM4, cv);
+    super(Opcodes.ASM5, cv);
   }
 
   /**
