@@ -51,6 +51,8 @@ class ContractMethodSignatures {
       return Enum.valueOf(ContractKind.class, pair[1]);
     } else if (contractMethod.name.startsWith("access$")) {
       return ContractKind.ACCESS;
+    } else if (contractMethod.name.startsWith("lambda$")) {
+      return ContractKind.LAMBDA;
     } else {
       return null;
     }

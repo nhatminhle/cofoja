@@ -21,6 +21,7 @@ package com.google.java.contract.core.agent;
 import com.google.java.contract.Requires;
 import com.google.java.contract.core.util.JavaUtils;
 import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.Handle;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 
@@ -68,6 +69,28 @@ class ContractFixingClassAdapter extends ClassVisitor {
         mv.visitMethodInsn(opcode, owner,
                            JavaUtils.SYNTHETIC_MEMBER_PREFIX + name, desc);
       }
+    }
+
+    /**
+     * Converts calls to {@code lambda$n} synthetic methods to the
+     * equivalent injected methods.
+     */
+    @Override
+    public void visitInvokeDynamicInsn(String name, String desc,
+                                       Handle bsm, Object... bsmArgs) {
+      for (int i = 0; i < bsmArgs.length; ++i) {
+        if (!(bsmArgs[i] instanceof Handle)) {
+          continue;
+        }
+        Handle h = (Handle)bsmArgs[i];
+        if (!h.getName().startsWith("lambda$")) {
+          continue;
+        }
+        String newName = JavaUtils.SYNTHETIC_MEMBER_PREFIX + h.getName();
+        bsmArgs[i] = new Handle(h.getTag(), h.getOwner(),
+                                newName, h.getDesc());
+      }
+      mv.visitInvokeDynamicInsn(name, desc, bsm, bsmArgs);
     }
   }
 

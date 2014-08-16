@@ -28,6 +28,7 @@ import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.MethodNode;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -75,9 +76,10 @@ class SpecificationClassAdapter extends ClassVisitor {
   @Override
   public void visitEnd() {
     if (contracts != null) {
-      List<ClassContractHandle> accesses =
-          contracts.getClassHandles(ContractKind.ACCESS);
-      for (ClassContractHandle h : accesses) {
+      List<ClassContractHandle> synths = new ArrayList<ClassContractHandle>();
+      synths.addAll(contracts.getClassHandles(ContractKind.ACCESS));
+      synths.addAll(contracts.getClassHandles(ContractKind.LAMBDA));
+      for (ClassContractHandle h : synths) {
         h.getContractMethod().accept(cv);
       }
 

@@ -7,6 +7,9 @@
 
   <!-- Private properties. -->
 
+  <available property="java8"
+             classname="java.lang.invoke.LambdaMetafactory" />
+
   <property name="src.dir" location="src" />
   <property name="test.dir" location="test" />
   <property name="build.dir" location="build" />
@@ -248,6 +251,7 @@
       <compilerarg value="-Acom.google.java.contract.dump=${obj.dir}/test/dump" />
       <exclude name="**/SeparateGenericSuperclass.java" />
       <exclude name="**/SeparateInterface.java" />
+      <exclude name="**/Java8*.java" unless:true="${java8}" />
     </cofojavac>
   </target>
 
