@@ -193,13 +193,13 @@
       <equals arg1="${snapshot}" arg2="true" />
     </condition>
     <property name="cofoja.jar"
-              value="${dist.dir}/cofoja-${cofoja.version}.jar" />
+              value="${dist.dir}/cofoja+asm-${cofoja.version}.jar" />
     <property name="cofoja.bare.jar"
-              value="${dist.dir}/cofoja-${cofoja.version}-bare.jar" />
+              value="${dist.dir}/cofoja-${cofoja.version}.jar" />
     <property name="cofoja.contracted.jar"
-              value="${dist.dir}/ccofoja-${cofoja.version}.jar" />
+              value="${dist.dir}/cofoja+contracts+asm-${cofoja.version}.jar" />
     <property name="cofoja.contracted.bare.jar"
-              value="${dist.dir}/ccofoja-${cofoja.version}-bare.jar" />
+              value="${dist.dir}/cofoja+contracts-${cofoja.version}.jar" />
 
     <mkdir dir="${obj.dir}" />
     <mkdir dir="${dist.dir}" />
