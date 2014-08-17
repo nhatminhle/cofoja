@@ -18,7 +18,7 @@
  */
 package com.google.java.contract.core.apt;
 
-import com.google.java.contract.AllowUnusedImport;
+import com.google.java.contract.ContractImport;
 import com.google.java.contract.Ensures;
 import com.google.java.contract.Invariant;
 import com.google.java.contract.Requires;
@@ -33,8 +33,6 @@ import com.google.java.contract.core.model.TypeName;
 import com.google.java.contract.core.model.VariableModel;
 import com.google.java.contract.core.util.ElementScanner;
 import com.google.java.contract.core.util.Elements;
-import com.google.java.contract.util.Iterables;
-import com.google.java.contract.util.Predicates;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -57,7 +55,11 @@ import java.util.regex.Pattern;
  * @author nhat.minh.le@huoc.org (Nhat Minh Lê)
  * @author chatain@google.com (Leonardo Chatain)
  */
-@AllowUnusedImport({ Iterables.class, Predicates.class })
+@ContractImport({
+  "com.google.java.contract.core.model.ElementKind",
+  "com.google.java.contract.util.Iterables",
+  "com.google.java.contract.util.Predicates"
+})
 @Invariant({
   "getLineNumberMap() != null",
   "Iterables.all(getLineNumberMap().keySet(), Predicates.between(1L, null))",

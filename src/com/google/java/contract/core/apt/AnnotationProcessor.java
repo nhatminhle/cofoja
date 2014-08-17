@@ -18,7 +18,7 @@
  */
 package com.google.java.contract.core.apt;
 
-import com.google.java.contract.AllowUnusedImport;
+import com.google.java.contract.ContractImport;
 import com.google.java.contract.Ensures;
 import com.google.java.contract.Requires;
 import com.google.java.contract.core.model.ContractAnnotationModel;
@@ -44,7 +44,6 @@ import javax.annotation.processing.SupportedOptions;
 import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
-import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.ElementScanner6;
 import javax.tools.JavaCompiler.CompilationTask;
@@ -58,7 +57,7 @@ import javax.tools.JavaFileObject.Kind;
  * @author johannes.rieken@gmail.com (Johannes Rieken)
  * @author chatain@google.com (Leonardo Chatain)
  */
-@AllowUnusedImport(ElementKind.class)
+@ContractImport("javax.lang.model.element.ElementKind")
 @SupportedAnnotationTypes("*")
 @SupportedOptions({
   AnnotationProcessor.OPT_DEBUG,

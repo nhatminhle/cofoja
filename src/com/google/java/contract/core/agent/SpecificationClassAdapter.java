@@ -18,9 +18,8 @@
  */
 package com.google.java.contract.core.agent;
 
-import com.google.java.contract.AllowUnusedImport;
+import com.google.java.contract.ContractImport;
 import com.google.java.contract.Invariant;
-import com.google.java.contract.core.model.ClassName;
 import com.google.java.contract.core.model.ContractKind;
 import com.google.java.contract.core.util.DebugUtils;
 import org.objectweb.asm.ClassVisitor;
@@ -38,7 +37,7 @@ import java.util.List;
  * @author nhat.minh.le@huoc.org (Nhat Minh Lê)
  * @author johannes.rieken@gmail.com (Johannes Rieken)
  */
-@AllowUnusedImport(ClassName.class)
+@ContractImport("com.google.java.contract.core.model.ClassName")
 @Invariant({
   "getClassName() == null || ClassName.isBinaryName(getClassName())",
   "getContracts() != null",

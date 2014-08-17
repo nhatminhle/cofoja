@@ -18,7 +18,7 @@
  */
 package com.google.java.contract.core.agent;
 
-import com.google.java.contract.AllowUnusedImport;
+import com.google.java.contract.ContractImport;
 import com.google.java.contract.Ensures;
 import com.google.java.contract.Requires;
 import com.google.java.contract.core.model.ClassName;
@@ -58,7 +58,7 @@ import javax.tools.JavaFileObject.Kind;
  * @author nhat.minh.le@huoc.org (Nhat Minh Lê)
  * @author johannes.rieken@gmail.com (Johannes Rieken)
  */
-@AllowUnusedImport(ClassName.class)
+@ContractImport("com.google.java.contract.core.model.ClassName")
 public class ContractClassFileTransformer implements ClassFileTransformer {
   /**
    * Find and store superclass information.

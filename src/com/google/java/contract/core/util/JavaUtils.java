@@ -17,10 +17,9 @@
  */
 package com.google.java.contract.core.util;
 
-import com.google.java.contract.AllowUnusedImport;
+import com.google.java.contract.ContractImport;
 import com.google.java.contract.Ensures;
 import com.google.java.contract.Requires;
-import com.google.java.contract.core.model.ClassName;
 
 import java.io.File;
 import java.io.InputStream;
@@ -37,7 +36,7 @@ import javax.tools.JavaFileObject.Kind;
  *
  * @author nhat.minh.le@huoc.org (Nhat Minh Lê)
  */
-@AllowUnusedImport(ClassName.class)
+@ContractImport("com.google.java.contract.core.model.ClassName")
 public class JavaUtils {
   /**
    * A parse error; thrown by the parsing functions whenever they read

@@ -17,10 +17,9 @@
  */
 package com.google.java.contract.core.apt;
 
-import com.google.java.contract.AllowUnusedImport;
+import com.google.java.contract.ContractImport;
 import com.google.java.contract.Ensures;
 import com.google.java.contract.Requires;
-import com.google.java.contract.core.model.ClassName;
 import com.google.java.contract.core.model.ContractAnnotationModel;
 import com.google.java.contract.core.model.VariableModel;
 
@@ -32,7 +31,7 @@ import java.util.List;
  *
  * @author nhat.minh.le@huoc.org (Nhat Minh Lê)
  */
-@AllowUnusedImport(ClassName.class)
+@ContractImport("com.google.java.contract.core.model.ClassName")
 interface ContractCreationTrait {
   /**
    * Called before any of the query methods of this object. Queries

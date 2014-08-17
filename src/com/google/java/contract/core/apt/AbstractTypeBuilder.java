@@ -29,6 +29,7 @@ import com.google.java.contract.core.model.TypeName;
 import com.google.java.contract.core.util.JavaUtils;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -256,19 +257,37 @@ abstract class AbstractTypeBuilder
   @Ensures("result != null")
   @SuppressWarnings("unchecked")
   protected Set<String> getImportNames(Element element) {
+    HashSet<String> importNames = new HashSet<String>();
     if (JavaUtils.classExists("com.sun.source.util.Trees")) {
       try {
-        return (Set<String>) Class
+        Set<String> classImportNames = (Set<String>) Class
             .forName("com.google.java.contract.core.apt.JavacUtils")
             .getMethod("getImportNames", ProcessingEnvironment.class,
                        Element.class)
             .invoke(null, utils.processingEnv, element);
+        importNames.addAll(classImportNames);
       } catch (Exception e) {
-        return Collections.emptySet();
+        /* Ignore. */
       }
-    } else {
-      return Collections.emptySet();
     }
+
+    /* Add import statements from explicit annotations. */
+    for (AnnotationMirror ann : element.getAnnotationMirrors()) {
+      if (!ann.getAnnotationType().toString()
+          .equals("com.google.java.contract.ContractImport")) {
+        continue;
+      }
+      for (AnnotationValue annotationValue :
+           ann.getElementValues().values()) {
+        @SuppressWarnings("unchecked")
+        List<? extends AnnotationValue> values =
+            (List<? extends AnnotationValue>) annotationValue.getValue();
+        for (AnnotationValue value : values)
+        importNames.add((String) value.getValue());
+      }
+    }
+
+    return importNames;
   }
 
   /**

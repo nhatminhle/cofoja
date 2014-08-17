@@ -17,7 +17,7 @@
  */
 package com.google.java.contract.core.apt;
 
-import com.google.java.contract.AllowUnusedImport;
+import com.google.java.contract.ContractImport;
 import com.google.java.contract.Ensures;
 import com.google.java.contract.Invariant;
 import com.google.java.contract.Requires;
@@ -26,8 +26,6 @@ import com.google.java.contract.core.util.BalancedTokenizer;
 import com.google.java.contract.core.util.JavaTokenizer;
 import com.google.java.contract.core.util.JavaUtils;
 import com.google.java.contract.core.util.JavaUtils.ParseException;
-import com.google.java.contract.util.Iterables;
-import com.google.java.contract.util.Predicates;
 
 import java.io.Reader;
 import java.util.ArrayList;
@@ -46,7 +44,10 @@ import java.util.Set;
  *
  * @author nhat.minh.le@huoc.org (Nhat Minh Lê)
  */
-@AllowUnusedImport({ Iterables.class, Predicates.class })
+@ContractImport({
+  "com.google.java.contract.util.Iterables",
+  "com.google.java.contract.util.Predicates"
+})
 @Invariant({
   "!canQueryResults() || getImportNames() != null",
   "!canQueryResults() || !getImportNames().contains(null)",

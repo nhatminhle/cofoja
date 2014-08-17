@@ -18,11 +18,9 @@
  */
 package com.google.java.contract.core.util;
 
-import com.google.java.contract.AllowUnusedImport;
+import com.google.java.contract.ContractImport;
 import com.google.java.contract.Invariant;
 import com.google.java.contract.Requires;
-import com.google.java.contract.util.Iterables;
-import com.google.java.contract.util.Predicates;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -35,7 +33,10 @@ import javax.tools.SimpleJavaFileObject;
  *
  * @author nhat.minh.le@huoc.org (Nhat Minh Lê)
  */
-@AllowUnusedImport({ Iterables.class, Predicates.class })
+@ContractImport({
+  "com.google.java.contract.util.Iterables",
+  "com.google.java.contract.util.Predicates"
+})
 @Invariant({
   "content != null",
   "lineNumberMap == null " +

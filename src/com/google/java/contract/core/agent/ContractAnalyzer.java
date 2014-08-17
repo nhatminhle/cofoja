@@ -18,14 +18,11 @@
  */
 package com.google.java.contract.core.agent;
 
-import com.google.java.contract.AllowUnusedImport;
+import com.google.java.contract.ContractImport;
 import com.google.java.contract.Ensures;
 import com.google.java.contract.Invariant;
 import com.google.java.contract.Requires;
-import com.google.java.contract.core.model.ClassName;
 import com.google.java.contract.core.model.ContractKind;
-import com.google.java.contract.util.Iterables;
-import com.google.java.contract.util.Predicates;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
@@ -49,7 +46,11 @@ import java.util.Map;
  * @author nhat.minh.le@huoc.org (Nhat Minh Lê)
  * @author johannes.rieken@gmail.com (Johannes Rieken)
  */
-@AllowUnusedImport({ ClassName.class, Iterables.class, Predicates.class })
+@ContractImport({
+  "com.google.java.contract.core.model.ClassName",
+  "com.google.java.contract.util.Iterables",
+  "com.google.java.contract.util.Predicates"
+})
 @Invariant({
   "className == null || ClassName.isBinaryName(className)",
   "classHandles != null",

@@ -18,6 +18,7 @@
  */
 package com.google.java.contract.core.apt;
 
+import com.google.java.contract.ContractImport;
 import com.google.java.contract.Ensures;
 import com.google.java.contract.Requires;
 import com.google.java.contract.core.model.ClassName;
@@ -47,6 +48,7 @@ import java.util.Set;
  *
  * @author nhat.minh.le@huoc.org (Nhat Minh Lê)
  */
+@ContractImport("com.google.java.contract.core.model.ClassName")
 public class ContractCreation {
   static final String RAISE_METHOD =
       "com.google.java.contract.core.runtime.ContractRuntime.raise";

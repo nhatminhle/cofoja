@@ -18,12 +18,10 @@
  */
 package com.google.java.contract.core.model;
 
-import com.google.java.contract.AllowUnusedImport;
+import com.google.java.contract.ContractImport;
 import com.google.java.contract.Ensures;
 import com.google.java.contract.Invariant;
 import com.google.java.contract.Requires;
-import com.google.java.contract.util.Iterables;
-import com.google.java.contract.util.Predicates;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -34,7 +32,10 @@ import java.util.List;
  *
  * @author nhat.minh.le@huoc.org (Nhat Minh Lê)
  */
-@AllowUnusedImport({ Iterables.class, Predicates.class })
+@ContractImport({
+  "com.google.java.contract.util.Iterables",
+  "com.google.java.contract.util.Predicates"
+})
 @Invariant({
   "!isWeakVirtual() || isVirtual()",
   "getValues() != null",
