@@ -436,8 +436,12 @@ Method                  | Description
 `unignore`              | Search class for contracts
 
 
-## Bugs
+## Help
 
 Contracts for Java is a not-so-young project. Please help make it
 better by reporting bugs at:
 https://github.com/nhatminhle/cofoja/issues
+
+For general questions and help with using Cofoja, you can reach out to
+the dedicated Google discussion group:
+http://groups.google.com/group/cofoja
