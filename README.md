@@ -83,8 +83,8 @@ http://en.wikipedia.org/wiki/Design_by_Contract
 
 In Cofoja, contracts are written as Java code within quoted strings,
 embedded in annotations. E.g., `@Requires("x < 100")` states that `x`
-must be less than 100. Any Java expression may be used, provided the
-string is escaped properly.
+must be less than 100. Any Java expression, except anonymous classes,
+may be used, provided the string is properly escaped.
 
 An annotation binds a contract to a code element: either a method or
 a type. Cofoja defines three main annotation types, which live in the
@@ -228,6 +228,30 @@ contracts are kept separately from those of the main file. The
 contract code within the associated type. It must be put on the
 enclosing type and accepts an array of strings, each one containing an
 import pattern, compatible with the `import` Java statement.
+
+#### Java expressions
+
+Contracts are made of Java expressions, with the addition of several
+keywords. Cofoja uses the Java compiler from the standard tools
+package and hence supports the same language as provided by that
+compiler (which should usually be the same as that of the top-level
+compiler).
+
+However, some expressions may generate bridges or other synthetic
+methods in addition to their direct translations to bytecode. Such
+artifacts need to be identified and handled specially by Cofoja. The
+following features are currently known to require particular
+processing:
+
+Feature                   | Supported | Description
+------------------------- | --------- | -------------------------------
+Inner class accesses      | Yes       | May generate `access$` methods
+Anonymous classes         | No        | Generate additional class files
+Java 8 lambda expressions | Yes       | Generate `lambda$` methods
+
+Since uses of synthetic methods follow no set rules, compilers other
+than Javac may opt for different compilation strategies. At the
+moment, no such incompatible scheme has been reported.
 
 #### Constructors
 
