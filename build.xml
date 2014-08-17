@@ -2,19 +2,38 @@
          xmlns:if="ant:if"
          xmlns:unless="ant:unless">
   <!-- Configurable properties. -->
+  <condition property="platform.suffix" value=".${platform}" else="">
+    <isset property="platform" />
+  </condition>
   <property file="local.properties" />
+  <property file="local${platform.suffix}.properties" if:set="platform" />
   <property file="default.properties" />
 
   <!-- Private properties. -->
 
-  <available property="java8"
-             classname="java.lang.invoke.LambdaMetafactory" />
+  <condition property="java8">
+    <or>
+      <and>
+        <isset property="rt.jar" />
+        <available ignoresystemclasses="true"
+                   classname="java.lang.invoke.LambdaMetafactory">
+          <classpath location="${rt.jar}" />
+        </available>
+      </and>
+      <and>
+        <not>
+          <isset property="rt.jar" />
+        </not>
+        <available classname="java.lang.invoke.LambdaMetafactory" />
+      </and>
+    </or>
+  </condition>
 
   <property name="src.dir" location="src" />
   <property name="test.dir" location="test" />
   <property name="build.dir" location="build" />
-  <property name="obj.dir" location="obj" />
-  <property name="dist.dir" location="dist" />
+  <property name="obj.dir" location="obj${platform.suffix}" />
+  <property name="dist.dir" location="dist${platform.suffix}" />
 
   <property name="manifest.path"
             value="${src.dir}/META-INF/MANIFEST.MF" />
@@ -47,7 +66,9 @@
   <!-- Build macros. -->
 
   <presetdef name="ujavac">
-    <javac encoding="utf-8" debug="${debug}" includeantruntime="false" />
+    <javac encoding="utf-8" debug="${debug}" includeantruntime="false">
+      <bootclasspath location="${rt.jar}" if:set="rt.jar" />
+    </javac>
   </presetdef>
 
   <macrodef name="cofojavac">
@@ -152,6 +173,9 @@
     <echo message="-------------" />
     <checkjar label="ASM JAR:       " property="asm.jar" />
     <checkjar label="JUnit JAR:     " property="junit.jar" />
+    <sequential if:set="rt.jar">
+      <checkjar label="JRE RT JAR:    " property="rt.jar" />
+    </sequential>
     <checkjar label="JDK Tools JAR: " property="tools.jar" />
     <checkjar label="Bootstrap JAR: " property="bootstrap.jar" />
     <echo message="Snapshot:      ${snapshot}" />
@@ -269,6 +293,7 @@
       <batchtest fork="yes" todir="${obj.dir}/test">
         <fileset dir="${obj.dir}/test">
           <include name="**/*Test.class" />
+          <exclude name="**/Java8*.class" unless:true="${java8}" />
         </fileset>
       </batchtest>
     </junit>
