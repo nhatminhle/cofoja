@@ -9,6 +9,36 @@ I originally wrote Cofoja when interning at Google in 2010, based on
 prior work on Modern Jass. It was open-sourced in early 2011, and has
 since been maintained by myself, with the help of a small community.
 
+**Contents**
+
+* [Download](#download)
+* [Build](#build)
+  * [Dependencies](#dependencies)
+  * [Configuration](#configuration)
+  * [Ant targets](#ant-targets)
+* [Usage](#usage)
+  * [Annotations](#annotations)
+  * [Method contracts](#method-contracts)
+  * [Class and interface contracts](#class-and-interface-contracts)
+  * [Inheritance](#inheritance)
+  * [Other features](#other-features)
+    * [Import annotations](#import-annotations)
+    * [Java expressions](#java-expressions)
+    * [Constructors](#constructors)
+    * [Exception handling](#exception-handling)
+* [Invocation](#invocation)
+* [Run-time contract configuration](#run-time-contract-configuration)
+  * [Selective contracts](#selective-contracts)
+  * [Blacklist](#blacklist)
+  * [Debug tracing](#debug-tracing)
+* [Quick reference](#quick-reference)
+  * [Annotations](#annotations-1)
+  * [Keywords](#keywords)
+  * [Annotation processor options](#annotation-processor-options)
+  * [Java agent properties](#java-agent-properties)
+  * [Run-time contract configuration methods](#run-time-contract-configuration-methods)
+* [Help](#help)
+
 
 ## Download
 
