@@ -177,7 +177,9 @@
       <checkjar label="JRE RT JAR:    " property="rt.jar" />
     </sequential>
     <checkjar label="JDK Tools JAR: " property="tools.jar" />
-    <checkjar label="Bootstrap JAR: " property="bootstrap.jar" />
+    <sequential if:set="bootstrap.jar">
+      <checkjar label="Bootstrap JAR: " property="bootstrap.jar" />
+    </sequential>
     <echo message="Snapshot:      ${snapshot}" />
     <echo message="Debug:         ${debug}" />
   </target>
@@ -215,16 +217,16 @@
     </ujavac>
   </target>
 
-  <target name="dist" depends="build"
-          description="build JAR files for distribution">
+  <target name="nobootstrap" depends="build"
+          description="build JAR files without self-contracts">
     <barejar jarfile="${cofoja.bare.jar}" basedir="${obj.dir}/bare" />
     <fulljar jarfile="${cofoja.jar}" barejarfile="${cofoja.bare.jar}" />
+    <property name="bootstrap.jar" value="${cofoja.bare.jar}" />
   </target>
 
   <!-- Bootstrap. -->
 
-  <target name="antinit" depends="init">
-    <requirejar property="bootstrap.jar" />
+  <target name="antinit" depends="init,nobootstrap">
     <mkdir dir="${obj.dir}/build" />
     <ujavac srcdir="${build.dir}" destdir="${obj.dir}/build">
       <classpath>
@@ -249,8 +251,8 @@
     <bootstrapcomp stage="2" bootstrappath="${obj.dir}/stage1" />
   </target>
 
-  <target name="bootstrap" depends="stage2"
-          description="build bootstrap-contracted JAR files">
+  <target name="dist" depends="stage2"
+          description="build JAR files for distribution">
     <barejar jarfile="${cofoja.contracted.bare.jar}"
              basedir="${obj.dir}/stage2" />
     <fulljar jarfile="${cofoja.contracted.jar}"
@@ -279,7 +281,7 @@
     </cofojavac>
   </target>
 
-  <target name="test" depends="buildtest2,bootstrap"
+  <target name="test" depends="buildtest2,dist"
           description="run tests">
     <junit printsummary="yes" haltonfailure="yes">
       <classpath>
