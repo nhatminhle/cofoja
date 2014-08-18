@@ -70,7 +70,15 @@ Building Cofoja requires:
   instrumentation.
 * ASM 5.x (or higher versions with ASM5-compatible API), for bytecode
   instrumentation. http://asm.ow2.org
+* JUnit 3.8 or 4.x if you want to run tests.
 * Ant 1.9.1 or higher for the build script.
+
+If Ivy is installed, calling the `resolve` Ant target retrieves the
+dependencies automatically.
+
+Alternatively, put JAR files from dependencies under the `lib` folder,
+in the current directory. The directory does not exist by default and
+must be created.
 
 In order to enable contract checking at run time, Cofoja binaries and
 dependencies are needed. Normal execution (with contracts disabled)
@@ -82,7 +90,8 @@ does not require Cofoja or any of its dependencies.
 The build script reads properties from the user-provided
 `local.properties` file. See `default.properties` for a list of
 configuration options to adjust to fit your build environment. Most
-importantly, paths to the required JAR files must be provided.
+importantly, you may want to adjust the path to the `tools.jar`
+(`classes.jar` on Mac OS) file, which should be provided by the JDK.
 
 
 ### Ant targets

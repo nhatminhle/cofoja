@@ -1,6 +1,7 @@
 <project name="Cofoja" default="dist" basedir="."
          xmlns:if="ant:if"
-         xmlns:unless="ant:unless">
+         xmlns:unless="ant:unless"
+         xmlns:ivy="antlib:org.apache.ivy.ant">
   <!-- Configurable properties. -->
   <condition property="platform.suffix" value=".${platform}" else="">
     <isset property="platform" />
@@ -29,6 +30,7 @@
     </or>
   </condition>
 
+  <property name="lib.dir" location="lib" />
   <property name="src.dir" location="src" />
   <property name="test.dir" location="test" />
   <property name="build.dir" location="build" />
@@ -43,13 +45,21 @@
             value="com.google.java.contract.tests.Cofoja" />
 
   <path id="base.class.path">
-    <pathelement path="${asm.jar}" />
+    <fileset dir="${lib.dir}">
+      <include name="asm-*.jar" />
+    </fileset>
+  </path>
+
+  <path id="build.class.path">
+    <path refid="base.class.path" />
     <pathelement path="${tools.jar}" />
   </path>
 
   <path id="test.class.path">
     <path refid="base.class.path" />
-    <pathelement path="${junit.jar}" />
+    <fileset dir="${lib.dir}">
+      <include name="*.jar" />
+    </fileset>
   </path>
 
   <path id="test1.class.path">
@@ -80,8 +90,8 @@
     <element name="contents" optional="true" implicit="true" />
     <sequential>
       <path id="processor.path">
+        <path refid="base.class.path" />
         <pathelement location="@{bootstrappath}" />
-        <pathelement location="${asm.jar}" />
       </path>
       <ujavac srcdir="@{srcdir}" destdir="@{destdir}" debug="@{debug}">
         <classpath refid="@{classpathid}" />
@@ -148,7 +158,11 @@
                  provider="${apt.class}" />
         <zipfileset includes="**/*.class"
                     src="@{barejarfile}" />
-        <zipfileset includes="**/*.class" src="${asm.jar}" />
+        <zipfileset includes="**/*.class">
+          <fileset dir="${lib.dir}">
+            <include name="asm-*.jar" />
+          </fileset>
+        </zipfileset>
       </jar>
     </sequential>
   </macrodef>
@@ -160,19 +174,30 @@
       <mkdir dir="${obj.dir}/tmp@{stage}" />
       <mkdir dir="${obj.dir}/stage@{stage}" />
       <cofojavac srcdir="${src.dir}" destdir="${obj.dir}/tmp@{stage}" debug="true"
-                 bootstrappath="@{bootstrappath}" classpathid="base.class.path" />
+                 bootstrappath="@{bootstrappath}" classpathid="build.class.path" />
       <cofojab srcdir="${obj.dir}/tmp@{stage}"
                destdir="${obj.dir}/stage@{stage}" />
     </sequential>
   </macrodef>
+
+  <!-- Dependency management. -->
+
+  <target name="resolve" description="retrieve dependencies with Ivy">
+    <ivy:retrieve pattern="${lib.dir}/[artifact]-[revision].[ext]"
+                  type="jar" conf="test" />
+  </target>
+
+  <target name="publish" depends="resolve,dist"
+          description="publish artifacts with Ivy">
+    <ivy:publish resolver="local" pubrevision="${version}"
+                 artifactspattern="dist/[artifact]-${cofoja.version}.[ext]" />
+  </target>
 
   <!-- Initialization. -->
 
   <target name="configure">
     <echo message="Configuration" />
     <echo message="-------------" />
-    <checkjar label="ASM JAR:       " property="asm.jar" />
-    <checkjar label="JUnit JAR:     " property="junit.jar" />
     <sequential if:set="rt.jar">
       <checkjar label="JRE RT JAR:    " property="rt.jar" />
     </sequential>
@@ -185,7 +210,6 @@
   </target>
 
   <target name="init" depends="configure">
-    <requirejar property="asm.jar" />
     <requirejar property="tools.jar" />
 
     <tstamp />
@@ -213,7 +237,7 @@
           description="build class files">
     <mkdir dir="${obj.dir}/bare" />
     <ujavac srcdir="${src.dir}" destdir="${obj.dir}/bare">
-      <classpath refid="base.class.path" />
+      <classpath refid="build.class.path" />
     </ujavac>
   </target>
 
@@ -232,11 +256,16 @@
       <classpath>
         <path refid="base.class.path" />
         <pathelement path="${java.class.path}" />
-        <pathelement path="${bootstrap.jar}" />
+        <pathelement location="${bootstrap.jar}" />
       </classpath>
     </ujavac>
-    <taskdef name="cofojab" classname="PreAgentAntTask"
-             classpath="${obj.dir}/build:${bootstrap.jar}:${asm.jar}" />
+    <taskdef name="cofojab" classname="PreAgentAntTask">
+      <classpath>
+        <path refid="base.class.path" />
+        <pathelement location="${obj.dir}/build" />
+        <pathelement location="${bootstrap.jar}" />
+      </classpath>
+    </taskdef>
   </target>
 
   <target name="stage0" depends="antinit">
@@ -262,7 +291,6 @@
   <!-- Tests. -->
 
   <target name="buildtest1" depends="stage2">
-    <requirejar property="junit.jar" />
     <mkdir dir="${obj.dir}/test" />
     <cofojavac srcdir="${test.dir}" destdir="${obj.dir}/test"
                classpathid="test1.class.path">
