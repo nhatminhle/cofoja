@@ -29,6 +29,7 @@ import com.google.java.contract.core.util.SyntheticJavaFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -126,6 +127,61 @@ public class AnnotationProcessor extends AbstractProcessor {
   protected boolean debug;
   protected boolean dump;
 
+  private Class<?> javacProcessingEnvironmentClass;
+  private Method getContextMethod;
+  private Method optionsInstanceMethod;
+  private Method optionsGetMethod;
+
+  /**
+   * Initialize classes and methods needed for OpenJDK javac reflection.
+   */
+  private void setupReflection() {
+    try {
+      javacProcessingEnvironmentClass = Class.forName(
+          "com.sun.tools.javac.processing.JavacProcessingEnvironment");
+    } catch (ClassNotFoundException e) {
+      /* Javac isn't on the classpath. */
+      return;
+    }
+
+    try {
+      Class<?> contextClass = Class.forName("com.sun.tools.javac.util.Context");
+      getContextMethod = javacProcessingEnvironmentClass.getMethod("getContext");
+      Class<?> optionsClass = Class.forName("com.sun.tools.javac.util.Options");
+      optionsInstanceMethod = optionsClass.getMethod("instance", contextClass);
+      optionsGetMethod = optionsClass.getMethod("get", String.class);
+    } catch (Exception e) {
+      throw new LinkageError(e.getMessage(), e);
+    }
+  }
+
+  /**
+   * Calls {@code com.sun.tools.javac.util.Options.get(String)} reflectively.
+   */
+  private String getJavacOption(Object options, String name) {
+    try {
+      return (String) optionsGetMethod.invoke(options, name);
+    } catch (Exception e) {
+      throw new LinkageError(e.getMessage(), e);
+    }
+  }
+
+  /**
+   * Calls {@code com.sun.tools.javac.util.Options.instance(Context)}
+   * reflectively.
+   */
+  private Object getJavacOptions() {
+    if (!javacProcessingEnvironmentClass.isInstance(processingEnv)) {
+      return null;
+    }
+    try {
+      return optionsInstanceMethod.invoke(null,
+          getContextMethod.invoke(processingEnv));
+    } catch (Exception e) {
+      throw new LinkageError(e.getMessage(), e);
+    }
+  }
+
   @Override
   public synchronized void init(ProcessingEnvironment processingEnv) {
     super.init(processingEnv);
@@ -141,6 +197,7 @@ public class AnnotationProcessor extends AbstractProcessor {
     utils = new FactoryUtils(processingEnv);
     factory = new TypeFactory(utils, options.get(OPT_DEPSPATH));
 
+    setupReflection();
     setupPaths();
   }
 
@@ -203,6 +260,37 @@ public class AnnotationProcessor extends AbstractProcessor {
     sourcePath = processingEnv.getOptions().get(OPT_SOURCEPATH);
     classPath = processingEnv.getOptions().get(OPT_CLASSPATH);
     outputDirectory = processingEnv.getOptions().get(OPT_CLASSOUTPUT);
+
+    /*
+     * Load classes in com.sun.tools reflectively for graceful fallback when
+     * the OpenJDK javac isn't available (e.g. with J9, or ecj).
+     */
+    Object options = getJavacOptions();
+    if (options == null) {
+      return;
+    }
+
+    if (sourcePath == null) {
+      sourcePath = getJavacOption(options, "-sourcepath");
+    }
+
+    if (classPath == null) {
+      String classPath1 = getJavacOption(options, "-cp");
+      String classPath2 = getJavacOption(options, "-classpath");
+      if (classPath1 != null) {
+        if (classPath2 != null) {
+          classPath = classPath1 + File.pathSeparator + classPath2;
+        } else {
+          classPath = classPath1;
+        }
+      } else {
+        classPath = classPath2;
+      }
+    }
+
+    if (outputDirectory == null) {
+      outputDirectory = getJavacOption(options, "-d");
+    }
   }
 
   /**
