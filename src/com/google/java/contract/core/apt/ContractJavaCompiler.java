@@ -48,6 +48,9 @@ import javax.tools.ToolProvider;
   "fileManager != null"
 })
 public class ContractJavaCompiler {
+  private static final String JAVA_VERSION =
+      System.getProperty("java.specification.version");
+
   /**
    * The compiler options passed to the internal compiler.
    */
@@ -55,7 +58,11 @@ public class ContractJavaCompiler {
       Arrays.asList(
           "-g:source,vars", /* Source file name, for debug attributes. */
           "-proc:none",     /* No further annotations to process. */
-          "-implicit:none"  /* No class files for implicit dependencies. */
+          "-implicit:none", /* No class files for implicit dependencies. */
+          /* Target the highest Java version supported by the runtime, instead
+           * of the highest supported by the compiler. */
+          "-source", JAVA_VERSION,
+          "-target", JAVA_VERSION
       );
 
   /**
