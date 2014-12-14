@@ -151,7 +151,7 @@ public class AnnotationProcessor extends AbstractProcessor {
       optionsInstanceMethod = optionsClass.getMethod("instance", contextClass);
       optionsGetMethod = optionsClass.getMethod("get", String.class);
     } catch (Exception e) {
-      throw new LinkageError(e.getMessage(), e);
+      throw new LinkageError(e.getMessage());
     }
   }
 
@@ -162,7 +162,7 @@ public class AnnotationProcessor extends AbstractProcessor {
     try {
       return (String) optionsGetMethod.invoke(options, name);
     } catch (Exception e) {
-      throw new LinkageError(e.getMessage(), e);
+      throw new LinkageError(e.getMessage());
     }
   }
 
@@ -178,7 +178,7 @@ public class AnnotationProcessor extends AbstractProcessor {
       return optionsInstanceMethod.invoke(null,
           getContextMethod.invoke(processingEnv));
     } catch (Exception e) {
-      throw new LinkageError(e.getMessage(), e);
+      throw new LinkageError(e.getMessage());
     }
   }
 
