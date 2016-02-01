@@ -91,4 +91,34 @@ public class ConstantContractsTest extends TestCase {
   public void testPostSuccess3() {
     sample.postSuccess3();
   }
+
+  public void testOldSuccess() {
+    sample.oldSuccess();
+  }
+
+  public void testOldSuccess1() {
+    sample.oldSuccess1();
+  }
+
+  public void testOldSuccess2() {
+    sample.oldSuccess2();
+  }
+
+  public void testOldSuccess3() {
+    try {
+      sample.oldSuccess3();
+      fail();
+    } catch (RuntimeException expected) {
+      /* Expected. */
+    }
+  }
+
+  public void testOldFailure() {
+    try {
+      sample.oldFailure();
+      fail();
+    } catch (PostconditionError expected) {
+      /* Expected. */
+    }
+  }
 }

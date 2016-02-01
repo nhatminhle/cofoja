@@ -20,6 +20,7 @@ package com.google.java.contract.tests;
 
 import com.google.java.contract.Ensures;
 import com.google.java.contract.Requires;
+import com.google.java.contract.ThrowEnsures;
 
 /**
  * This class exposes some constant contracts.
@@ -66,5 +67,28 @@ class ConstantContracts {
   @Requires({ "true", "true" })
   @Ensures("true")
   public void postSuccess3() {
+  }
+
+  @Ensures("old (true)")
+  public void oldSuccess() {
+  }
+
+  @Ensures({ "old (true)", "old (true)" })
+  public void oldSuccess1() {
+  }
+
+  @Ensures("old (true)")
+  @ThrowEnsures({ "RuntimeException", "old (true)" })
+  public void oldSuccess2() {
+  }
+
+  @Ensures("old (true)")
+  @ThrowEnsures({ "RuntimeException", "old (true)" })
+  public void oldSuccess3() {
+    throw new RuntimeException();
+  }
+
+  @Ensures("old (false)")
+  public void oldFailure() {
   }
 }
