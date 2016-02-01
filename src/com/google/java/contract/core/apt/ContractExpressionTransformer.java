@@ -132,10 +132,6 @@ public class ContractExpressionTransformer {
     oldId = 0;
   }
 
-  public void setAcceptOld(boolean acceptOld) {
-    this.acceptOld = acceptOld;
-  }
-
   @Requires({
     "currentBuffer != null",
     "tokenizer != null",

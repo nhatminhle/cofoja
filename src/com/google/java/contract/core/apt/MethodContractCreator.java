@@ -50,7 +50,9 @@ import java.util.NoSuchElementException;
  */
 @Invariant({
   "diagnosticManager != null",
-  "transformer != null"
+  "preTransformer != null",
+  "postTransformer != null",
+  "postSignalTransformer != null"
 })
 public class MethodContractCreator extends ElementScanner {
   /**
@@ -67,7 +69,6 @@ public class MethodContractCreator extends ElementScanner {
     @Override
     public boolean transform(List<String> code, List<Long> lineNumbers,
                              Object sourceInfo) {
-      transformer.setAcceptOld(false);
       return super.transform(code, lineNumbers, sourceInfo);
     }
 
@@ -93,7 +94,6 @@ public class MethodContractCreator extends ElementScanner {
     public boolean transform(List<String> code, List<Long> lineNumbers,
                               Object sourceInfo) {
       int id = transformer.getNextOldId();
-      transformer.setAcceptOld(true);
       boolean success = super.transform(code, lineNumbers, sourceInfo);
 
       if (success) {
@@ -242,7 +242,9 @@ public class MethodContractCreator extends ElementScanner {
   protected ContractMethodModel postMethod;
   protected ContractMethodModel postSignalMethod;
 
-  protected ContractExpressionTransformer transformer;
+  protected ContractExpressionTransformer preTransformer;
+  protected ContractExpressionTransformer postTransformer;
+  protected ContractExpressionTransformer postSignalTransformer;
 
   /**
    * Constructs a new MethodContractCreator.
@@ -254,7 +256,12 @@ public class MethodContractCreator extends ElementScanner {
     preMethod = null;
     postMethod = null;
     postSignalMethod = null;
-    transformer = new ContractExpressionTransformer(diagnosticManager, true);
+    preTransformer =
+        new ContractExpressionTransformer(diagnosticManager, false);
+    postTransformer =
+        new ContractExpressionTransformer(diagnosticManager, true);
+    postSignalTransformer =
+        new ContractExpressionTransformer(diagnosticManager, true);
   }
 
   @Override
@@ -271,14 +278,15 @@ public class MethodContractCreator extends ElementScanner {
     List<String> code = annotation.getValues();
 
     if (annotation.getKind().equals(ElementKind.REQUIRES)) {
-      PreMethodCreationTrait trait = new PreMethodCreationTrait(transformer);
+      PreMethodCreationTrait trait = new PreMethodCreationTrait(preTransformer);
       preMethod = createContractMethods(trait, preMethod, annotation);
     } else if (annotation.getKind().equals(ElementKind.ENSURES)) {
-      PostMethodCreationTrait trait = new PostMethodCreationTrait(transformer);
+      PostMethodCreationTrait trait =
+          new PostMethodCreationTrait(postTransformer);
       postMethod = createContractMethods(trait, postMethod, annotation);
     } else if (annotation.getKind().equals(ElementKind.THROW_ENSURES)) {
       PostSignalMethodCreationTrait trait =
-          new PostSignalMethodCreationTrait(transformer);
+          new PostSignalMethodCreationTrait(postSignalTransformer);
       postSignalMethod = createContractMethods(trait, postSignalMethod,
                                                annotation);
     } else {
