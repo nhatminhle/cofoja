@@ -171,7 +171,8 @@ public class AnnotationProcessor extends AbstractProcessor {
    * reflectively.
    */
   private Object getJavacOptions() {
-    if (!javacProcessingEnvironmentClass.isInstance(processingEnv)) {
+    if (javacProcessingEnvironmentClass == null ||
+        !javacProcessingEnvironmentClass.isInstance(processingEnv)) {
       return null;
     }
     try {
