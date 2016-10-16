@@ -244,6 +244,11 @@
     <property name="cofoja.contracted.bare.jar"
               value="${dist.dir}/cofoja+contracts-${cofoja.version}.jar" />
 
+    <property name="cofoja.javadoc.jar"
+              value="${dist.dir}/cofoja-${cofoja.version}-javadoc.jar" />
+    <property name="cofoja.sources.jar"
+              value="${dist.dir}/cofoja-${cofoja.version}-sources.jar" />
+
     <mkdir dir="${obj.dir}" />
     <mkdir dir="${dist.dir}" />
   </target>
@@ -297,12 +302,24 @@
     <bootstrapcomp stage="2" bootstrappath="${obj.dir}/stage1" />
   </target>
 
-  <target name="dist" depends="stage2"
-          description="build JAR files for distribution">
+  <target name="fullbootstrap" depends="stage2">
     <barejar jarfile="${cofoja.contracted.bare.jar}"
              basedir="${obj.dir}/stage2" />
     <fulljar jarfile="${cofoja.contracted.jar}"
              barejarfile="${cofoja.contracted.bare.jar}" />
+  </target>
+
+  <target name="dist" depends="fullbootstrap"
+          description="build JAR files for distribution">
+    <javadoc sourcepath="${src.dir}" destdir="${obj.dir}/javadoc">
+      <classpath refid="build.class.path" />
+    </javadoc>
+    <jar jarfile="${cofoja.javadoc.jar}">
+      <fileset dir="${obj.dir}/javadoc" />
+    </jar>
+    <jar jarfile="${cofoja.sources.jar}">
+      <fileset dir="${src.dir}" />
+    </jar>
   </target>
 
   <!-- Tests. -->
