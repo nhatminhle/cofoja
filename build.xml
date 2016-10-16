@@ -184,15 +184,30 @@
 
   <!-- Dependency management. -->
 
-  <target name="resolve" description="retrieve dependencies with Ivy">
-    <ivy:retrieve pattern="${lib.dir}/[artifact]-[revision].[ext]"
-                  type="jar" conf="test" />
+  <target name="resolve" description="initialize Ivy from ivy.xml">
+    <ivy:resolve />
   </target>
 
-  <target name="publish" depends="resolve,dist"
+  <target name="fetch" depends="resolve"
+          description="retrieve dependencies with Ivy">
+    <ivy:retrieve pattern="${lib.dir}/[artifact]-[revision].[ext]"
+                  type="jar" />
+  </target>
+
+  <target name="publish" depends="fetch,dist"
           description="publish artifacts with Ivy">
     <ivy:publish resolver="local" pubrevision="${version}"
-                 artifactspattern="dist/[artifact]-${cofoja.version}.[ext]" />
+                 artifactspattern="${dist.dir}/[artifact]-${version}.[ext]" />
+  </target>
+
+  <target name="pom" depends="resolve">
+    <ivy:deliver deliverpattern="${obj.dir}/ivy.xml" pubrevision="${version}" />
+    <ivy:makepom ivyfile="${obj.dir}/ivy.xml"
+                 pomfile="${dist.dir}/cofoja-${version}.pom"
+                 description="Eiffel-like contract annotations for Java.">
+      <mapping conf="*" scope="compile" />
+      <mapping conf="test" scope="test" />
+    </ivy:makepom>
   </target>
 
   <!-- Initialization. -->

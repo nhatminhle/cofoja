@@ -73,7 +73,7 @@ Building Cofoja requires:
 * JUnit 3.8 or 4.x if you want to run tests.
 * Ant 1.9.1 or higher for the build script.
 
-If Ivy is installed, calling the `resolve` Ant target retrieves the
+If Ivy is installed, calling the `fetch` Ant target retrieves the
 dependencies automatically.
 
 Alternatively, put JAR files from dependencies under the `lib` folder,
