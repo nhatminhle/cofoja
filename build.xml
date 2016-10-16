@@ -174,7 +174,9 @@
       <mkdir dir="${obj.dir}/tmp@{stage}" />
       <mkdir dir="${obj.dir}/stage@{stage}" />
       <cofojavac srcdir="${src.dir}" destdir="${obj.dir}/tmp@{stage}" debug="true"
-                 bootstrappath="@{bootstrappath}" classpathid="build.class.path" />
+                 bootstrappath="@{bootstrappath}" classpathid="build.class.path">
+        <compilerarg value="-Acom.google.java.contract.dump=${obj.dir}/dump@{stage}" />
+      </cofojavac>
       <cofojab srcdir="${obj.dir}/tmp@{stage}"
                destdir="${obj.dir}/stage@{stage}" />
     </sequential>
