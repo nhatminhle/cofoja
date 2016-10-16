@@ -203,8 +203,8 @@
   <target name="pom" depends="resolve">
     <ivy:deliver deliverpattern="${obj.dir}/ivy.xml" pubrevision="${version}" />
     <ivy:makepom ivyfile="${obj.dir}/ivy.xml"
-                 pomfile="${dist.dir}/cofoja-${version}.pom"
-                 description="Eiffel-like contract annotations for Java.">
+                 templatefile="cofoja.pom"
+                 pomfile="${dist.dir}/cofoja-${version}.pom">
       <mapping conf="*" scope="compile" />
       <mapping conf="test" scope="test" />
     </ivy:makepom>

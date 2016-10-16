@@ -1,0 +1,31 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>${ivy.pom.groupId}</groupId>
+  <artifactId>${ivy.pom.artifactId}</artifactId>
+  <packaging>${ivy.pom.packaging}</packaging>
+  <version>${ivy.pom.version}</version>
+  <name>${ivy.pom.groupId}:${ivy.pom.artifactId}</name>
+  <description>Eiffel-like contract annotations for Java.</description>
+  <url>https://github.com/nhatminhle/cofoja</url>
+  <licenses>
+    <license>
+      <name>GNU Lesser General Public License</name>
+      <url>https://www.gnu.org/licenses/lgpl.html</url>
+    </license>
+  </licenses>
+  <developers>
+    <developer>
+      <name>Nhat Minh Lê</name>
+      <email>nhat.minh.le@huoc.org</email>
+      <organization>huoc.org</organization>
+      <organizationUrl>http://huoc.org</organizationUrl>
+    </developer>
+  </developers>
+  <scm>
+    <connection>scm:git:git://github.com/nhatminhle/cofoja.git</connection>
+    <developerConnection>scm:git:ssh://github.com:nhatminhle/cofoja.git</developerConnection>
+    <url>https://github.com/nhatminhle/cofoja</url>
+  </scm>
+</project>
