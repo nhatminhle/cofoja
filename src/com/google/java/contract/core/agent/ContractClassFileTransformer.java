@@ -50,7 +50,7 @@ import javax.tools.JavaFileObject.Kind;
  *
  * <ol>
  * <li>The contract methods are extracted recursively from the
- * contract class files and stored in the {@link ContractCodePool}.
+ * contract class files and stored in the {@link ContractAnalyzer}.
  * <li>Each individual class is instrumented with its contracts, taken
  * from the pool.
  * </ol>
@@ -367,7 +367,7 @@ public class ContractClassFileTransformer implements ClassFileTransformer {
   /**
    * Instruments the passed class file so that it contains contract
    * methods and calls to these methods. The contract information is
-   * retrieved from the {@link ContractCodePool}.
+   * retrieved from the {@link ContractAnalyzer}.
    *
    * @param bytecode the bytecode of the class
    * @param contracts the extracted contracts for the class

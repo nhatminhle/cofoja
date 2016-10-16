@@ -77,9 +77,8 @@ interface ContractCreationTrait {
    * Returns the list of extra parameters to add to the end of the
    * contract method parameter list. These parameters are added to the
    * contract method regardless of whether it is new or not, after
-   * parameters returned by
-   * {@link #getInitialParameters(ContractAnnotationModel)},
-   * if applicable.
+   * parameters returned by {@link #getInitialParameters()}, if
+   * applicable.
    */
   @Ensures("result != null")
   public List<? extends VariableModel> getExtraParameters();
@@ -88,7 +87,7 @@ interface ContractCreationTrait {
    * Returns the list of initial extra parameters for mock
    * definitions.
    *
-   * @see getInitialParameters()
+   * @see #getInitialParameters()
    */
   @Ensures("result != null")
   public List<? extends VariableModel> getInitialMockParameters();
@@ -96,7 +95,7 @@ interface ContractCreationTrait {
   /**
    * Returns the list of extra parameters for mock definitions.
    *
-   * @see getExtraParameters()
+   * @see #getExtraParameters()
    */
   @Ensures("result != null")
   public List<? extends VariableModel> getExtraMockParameters();

@@ -50,7 +50,7 @@ import java.util.regex.Pattern;
 
 /**
  * An element visitor that writes the contract Java source associated
- * with a given {@link Type} as Java source code to an output stream.
+ * with a given {@link TypeModel} as Java source code to an output stream.
  *
  * @author nhat.minh.le@huoc.org (Nhat Minh Lê)
  * @author chatain@google.com (Leonardo Chatain)

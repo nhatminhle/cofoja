@@ -230,7 +230,7 @@ public class SpecificationMethodAdapter extends AdviceAdapter {
 
   /**
    * Advises the method by injecting postconditions and invariants
-   * on exit from the original code ({@code return} or {@throw}).
+   * on exit from the original code ({@code return} or {@code throw}).
    */
   @Override
   protected void onMethodExit(int opcode) {

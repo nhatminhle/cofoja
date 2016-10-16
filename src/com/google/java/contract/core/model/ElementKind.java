@@ -20,7 +20,7 @@ package com.google.java.contract.core.model;
 import com.google.java.contract.Requires;
 
 /**
- * The kind of an {@link Element}.
+ * The kind of an {@link ElementModel}.
  */
 public enum ElementKind {
   /*

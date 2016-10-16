@@ -47,7 +47,7 @@ class ContractExpressionCreationTrait
   /**
    * Checks and transforms {@code code} through {@link #transformer}.
    *
-   * @see ContractExpressionTransformer#transform(List<String>,List<Long>,Object)
+   * @see ContractExpressionTransformer#transform(List,List,Object)
    */
   @Requires({
     "code != null",

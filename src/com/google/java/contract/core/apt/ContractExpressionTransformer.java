@@ -104,7 +104,7 @@ public class ContractExpressionTransformer {
   protected List<String> newCode;
 
   /**
-   * Whether the last call to {@link #transform(List<String>,Object)}
+   * Whether the last call to {@link #transform(List,Object)}
    * was successful.
    */
   protected boolean parsed;

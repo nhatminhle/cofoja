@@ -414,7 +414,6 @@ public class AnnotationProcessor extends AbstractProcessor {
    * Contracts can have been directly declared as annotations or inherited
    * through the hierarchy.
    *
-   * @param annotations the set of annotations to look for
    * @param roundEnv the environment to get elements from
    */
   @Requires("roundEnv != null")

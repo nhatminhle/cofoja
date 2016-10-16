@@ -25,7 +25,7 @@ import com.google.java.contract.Requires;
  * The kind of a contract method. This information is at the bytecode
  * level. There are more contract method kinds than there are
  * annotations; some of them, such as {@link #OLD} and
- * {@link SIGNAL_OLD} are used for internal purposes.
+ * {@link #SIGNAL_OLD} are used for internal purposes.
  *
  * @author nhat.minh.le@huoc.org (Nhat Minh Lê)
  */
@@ -83,7 +83,7 @@ public enum ContractKind {
   /**
    * A contract helper, for indirect contract evaluation.
    *
-   * @see ContractCreator
+   * @see ContractCreation
    */
   HELPER;
 

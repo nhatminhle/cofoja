@@ -211,7 +211,7 @@ public class JavaUtils {
   /**
    * Deletes generated Java code from {@code code} and returns the
    * resulting string. Generated code is delimited by matching
-   * {@link #BEGIN_DEBUG_COMMENT} and {@link #END_GENERATED_CODE}
+   * {@link #BEGIN_GENERATED_CODE} and {@link #END_GENERATED_CODE}
    * comments.
    */
   @Requires("code != null")

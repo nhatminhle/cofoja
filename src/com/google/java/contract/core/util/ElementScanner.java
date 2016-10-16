@@ -30,7 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A scanner that recursively descends into an {@link Element}.
+ * A scanner that recursively descends into an {@link ElementModel}.
  *
  * @author nhat.minh.le@huoc.org (Nhat Minh Lê)
  * @author johannes.rieken@gmail.com (Johannes Rieken)
