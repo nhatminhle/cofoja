@@ -42,6 +42,9 @@ since been maintained by myself, with the help of a small community.
 
 ## Download
 
+You can get official Cofoja builds from the Central Repository, group
+ID: `org.huoc`, artefact ID: `cofoja`.
+
 Pre-built JAR files are available on the GitHub release page:
 https://github.com/nhatminhle/cofoja/releases
 
