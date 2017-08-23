@@ -226,9 +226,15 @@
     <echo message="Debug:         ${debug}" />
   </target>
 
-  <target name="init" depends="configure">
-    <requirejar property="tools.jar" />
+  <condition property="needs-tools-jar">
+    <matches pattern="1\.[5678].*" string="${ant.java.version}"/>
+  </condition>
 
+  <target name="check-tools-jar" if="needs-tools-jar">
+    <requirejar property="tools.jar" />
+  </target>
+
+  <target name="init" depends="configure,check-tools-jar">
     <tstamp />
     <condition property="cofoja.version"
                value="${version}-${DSTAMP}"
