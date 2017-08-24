@@ -340,6 +340,7 @@
           description="build JAR files for distribution">
     <javadoc sourcepath="${src.dir}" destdir="${obj.dir}/javadoc">
       <classpath refid="build.class.path" />
+      <arg value="-Xdoclint:all,-missing" if:set="java8" />
     </javadoc>
     <jar jarfile="${cofoja.javadoc.jar}">
       <fileset dir="${obj.dir}/javadoc" />
