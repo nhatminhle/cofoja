@@ -30,6 +30,10 @@
     </or>
   </condition>
 
+  <condition property="needs-tools-jar">
+    <matches pattern="1\.[5678].*" string="${ant.java.version}"/>
+  </condition>
+
   <property name="lib.dir" location="lib" />
   <property name="src.dir" location="src" />
   <property name="test.dir" location="test" />
@@ -218,17 +222,18 @@
     <sequential if:set="rt.jar">
       <checkjar label="JRE RT JAR:    " property="rt.jar" />
     </sequential>
-    <checkjar label="JDK Tools JAR: " property="tools.jar" />
+    <sequential if:true="${needs-tools-jar}">
+      <checkjar label="JDK Tools JAR: " property="tools.jar" />
+    </sequential>
+    <sequential unless:true="${needs-tools-jar}">
+      <echo message="JDK Tools JAR: not needed" />
+    </sequential>
     <sequential if:set="bootstrap.jar">
       <checkjar label="Bootstrap JAR: " property="bootstrap.jar" />
     </sequential>
     <echo message="Snapshot:      ${snapshot}" />
     <echo message="Debug:         ${debug}" />
   </target>
-
-  <condition property="needs-tools-jar">
-    <matches pattern="1\.[5678].*" string="${ant.java.version}"/>
-  </condition>
 
   <target name="check-tools-jar" if="needs-tools-jar">
     <requirejar property="tools.jar" />
