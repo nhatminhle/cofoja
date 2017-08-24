@@ -222,10 +222,10 @@
     <sequential if:set="rt.jar">
       <checkjar label="JRE RT JAR:    " property="rt.jar" />
     </sequential>
-    <sequential if:true="${needs-tools-jar}">
+    <sequential if:set="needs-tools-jar">
       <checkjar label="JDK Tools JAR: " property="tools.jar" />
     </sequential>
-    <sequential unless:true="${needs-tools-jar}">
+    <sequential unless:set="needs-tools-jar">
       <echo message="JDK Tools JAR: not needed" />
     </sequential>
     <sequential if:set="bootstrap.jar">
@@ -350,7 +350,7 @@
       <compilerarg value="-Acom.google.java.contract.dump=${obj.dir}/test/dump" />
       <exclude name="**/SeparateGenericSuperclass.java" />
       <exclude name="**/SeparateInterface.java" />
-      <exclude name="**/Java8*.java" unless:true="${java8}" />
+      <exclude name="**/Java8*.java" unless:set="java8" />
     </cofojavac>
   </target>
 
@@ -368,7 +368,7 @@
       <batchtest fork="yes" todir="${obj.dir}/test">
         <fileset dir="${obj.dir}/test">
           <include name="**/*Test.class" />
-          <exclude name="**/Java8*.class" unless:true="${java8}" />
+          <exclude name="**/Java8*.class" unless:set="java8" />
         </fileset>
       </batchtest>
     </junit>
