@@ -34,6 +34,15 @@
     <matches pattern="1\.[5678].*" string="${ant.java.version}"/>
   </condition>
 
+  <condition property="add-opens-tools">
+    <and>
+      <istrue value="${add-opens}" />
+      <not>
+        <isset property="needs-tools-jar" />
+      </not>
+    </and>
+  </condition>
+
   <property name="lib.dir" location="lib" />
   <property name="src.dir" location="src" />
   <property name="test.dir" location="test" />
@@ -80,8 +89,14 @@
   <!-- Build macros. -->
 
   <presetdef name="ujavac">
-    <javac encoding="utf-8" debug="${debug}" includeantruntime="false">
+    <javac encoding="utf-8" debug="${debug}" includeantruntime="false" fork="true">
       <bootclasspath location="${rt.jar}" if:set="rt.jar" />
+      <compilerarg value="-J--add-opens" if:set="add-opens-tools" />
+      <compilerarg value="-Jjdk.compiler/com.sun.tools.javac.processing=ALL-UNNAMED"
+                   if:set="add-opens-tools" />
+      <compilerarg value="-J--add-opens" if:set="add-opens-tools" />
+      <compilerarg value="-Jjdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED"
+                   if:set="add-opens-tools" />
     </javac>
   </presetdef>
 
@@ -220,19 +235,20 @@
     <echo message="Configuration" />
     <echo message="-------------" />
     <sequential if:set="rt.jar">
-      <checkjar label="JRE RT JAR:    " property="rt.jar" />
+      <checkjar label="JRE RT JAR:        " property="rt.jar" />
     </sequential>
     <sequential if:set="needs-tools-jar">
-      <checkjar label="JDK Tools JAR: " property="tools.jar" />
+      <checkjar label="JDK Tools JAR:     " property="tools.jar" />
     </sequential>
     <sequential unless:set="needs-tools-jar">
-      <echo message="JDK Tools JAR: not needed" />
+      <echo message="JDK Tools JAR:     not needed" />
+      <echo message="Java9 --add-opens: ${add-opens}" />
     </sequential>
     <sequential if:set="bootstrap.jar">
-      <checkjar label="Bootstrap JAR: " property="bootstrap.jar" />
+      <checkjar label="Bootstrap JAR:     " property="bootstrap.jar" />
     </sequential>
-    <echo message="Snapshot:      ${snapshot}" />
-    <echo message="Debug:         ${debug}" />
+    <echo message="Snapshot:          ${snapshot}" />
+    <echo message="Debug:             ${debug}" />
   </target>
 
   <target name="check-tools-jar" if="needs-tools-jar">
