@@ -177,11 +177,14 @@
                  provider="${apt.class}" />
         <zipfileset includes="**/*.class"
                     src="@{barejarfile}" />
+        <!--
         <zipfileset includes="**/*.class">
           <fileset dir="${lib.dir}">
             <include name="asm-*.jar" />
           </fileset>
         </zipfileset>
+        -->
+        <zipgroupfileset includes="**/*.jar" dir="${lib.dir}" />
       </jar>
     </sequential>
   </macrodef>
