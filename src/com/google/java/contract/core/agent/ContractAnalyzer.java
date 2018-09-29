@@ -72,7 +72,7 @@ class ContractAnalyzer extends ClassVisitor {
    * intended to be filled through its visitor interface.
    */
   ContractAnalyzer() {
-    super(Opcodes.ASM5);
+    super(Opcodes.ASM7);
     classHandles = new ArrayList<ClassContractHandle>();
     methodHandles = new HashMap<String, ArrayList<MethodContractHandle>>();
   }

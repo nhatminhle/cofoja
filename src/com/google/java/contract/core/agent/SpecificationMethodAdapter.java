@@ -134,7 +134,7 @@ public class SpecificationMethodAdapter extends AdviceAdapter {
                                     MethodVisitor mv,
                                     int access, String methodName,
                                     String methodDesc) {
-    super(Opcodes.ASM5, mv, access, methodName, methodDesc);
+    super(Opcodes.ASM7, mv, access, methodName, methodDesc);
 
     methodStart = new Label();
     methodEnd = new Label();

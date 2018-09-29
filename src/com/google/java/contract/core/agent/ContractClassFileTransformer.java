@@ -65,7 +65,7 @@ public class ContractClassFileTransformer implements ClassFileTransformer {
    */
   private class SuperInfoFinder extends ClassVisitor {
     private SuperInfoFinder() {
-      super(Opcodes.ASM5);
+      super(Opcodes.ASM7);
     }
 
     @Override

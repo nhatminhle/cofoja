@@ -53,7 +53,7 @@ class ContractFixingClassAdapter extends ClassVisitor {
      */
     @Requires("mv != null")
     public AccessMethodAdapter(MethodVisitor mv) {
-      super(Opcodes.ASM5, mv);
+      super(Opcodes.ASM7, mv);
     }
 
     /**
@@ -101,7 +101,7 @@ class ContractFixingClassAdapter extends ClassVisitor {
    */
   @Requires("cv != null")
   public ContractFixingClassAdapter(ClassVisitor cv) {
-    super(Opcodes.ASM5, cv);
+    super(Opcodes.ASM7, cv);
   }
 
   /**

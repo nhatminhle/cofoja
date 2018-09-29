@@ -56,7 +56,7 @@ class HelperClassAdapter extends ClassVisitor {
     public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
       if (Type.getType(desc).getInternalName().equals(
               "com/google/java/contract/core/agent/ContractMethodSignature")) {
-        return new AnnotationVisitor(Opcodes.ASM5) {
+        return new AnnotationVisitor(Opcodes.ASM7) {
           @Override
           public void visit(String name, Object value) {
             if (name.equals("lines")) {
@@ -71,7 +71,7 @@ class HelperClassAdapter extends ClassVisitor {
 
   @Requires("cv != null")
   public HelperClassAdapter(ClassVisitor cv) {
-    super(Opcodes.ASM5, cv);
+    super(Opcodes.ASM7, cv);
   }
 
   @Override
