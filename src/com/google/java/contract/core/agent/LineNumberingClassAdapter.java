@@ -32,7 +32,7 @@ import java.util.List;
  */
 @Invariant("ContractMethodSignatures.isLineNumberList(lineNumbers)")
 class LineNumberingClassAdapter extends ClassVisitor {
-  protected List<Long> lineNumbers;
+  protected final List<Long> lineNumbers;
 
   /**
    * Constructs a new LineNumberingClassAdapter.

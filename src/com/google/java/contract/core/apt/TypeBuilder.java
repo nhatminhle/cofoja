@@ -21,38 +21,21 @@ package com.google.java.contract.core.apt;
 import com.google.java.contract.Ensures;
 import com.google.java.contract.Invariant;
 import com.google.java.contract.Requires;
-import com.google.java.contract.core.model.ClassName;
-import com.google.java.contract.core.model.ContractAnnotationModel;
 import com.google.java.contract.core.model.ElementKind;
-import com.google.java.contract.core.model.ElementModel;
-import com.google.java.contract.core.model.ElementModifier;
-import com.google.java.contract.core.model.MethodModel;
-import com.google.java.contract.core.model.TypeModel;
-import com.google.java.contract.core.model.VariableModel;
+import com.google.java.contract.core.model.*;
 import com.google.java.contract.core.util.JavaUtils;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-
-import javax.lang.model.element.AnnotationMirror;
-import javax.lang.model.element.Element;
-import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.TypeElement;
-import javax.lang.model.element.TypeParameterElement;
-import javax.lang.model.element.VariableElement;
+import javax.lang.model.element.*;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.ExecutableType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.util.*;
 
 /**
  * An element visitor that builds a {@link TypeModel} object. It
@@ -67,9 +50,9 @@ import javax.lang.model.util.ElementFilter;
   "methodMap != null"
 })
 class TypeBuilder extends AbstractTypeBuilder {
-  protected class ContractableMethod {
-    protected ExecutableElement mirror;
-    protected MethodModel element;
+  protected static class ContractableMethod {
+    protected final ExecutableElement mirror;
+    protected final MethodModel element;
 
     public ContractableMethod(ExecutableElement mirror,
                               MethodModel element) {
@@ -123,7 +106,7 @@ class TypeBuilder extends AbstractTypeBuilder {
     }
   }
 
-  protected ClassLoader sourceDependencyLoader;
+  protected final ClassLoader sourceDependencyLoader;
 
   /**
    * The resulting top-level type.
@@ -144,7 +127,7 @@ class TypeBuilder extends AbstractTypeBuilder {
    * A map of resulting methods; used internally for contract
    * inheritance propagation.
    */
-  protected HashMap<String, ArrayList<ContractableMethod>> methodMap;
+  protected final HashMap<String, ArrayList<ContractableMethod>> methodMap;
 
   TypeBuilder(Set<String> importNames,
               Iterator<Long> rootLineNumberIterator,
@@ -157,7 +140,7 @@ class TypeBuilder extends AbstractTypeBuilder {
     rootMirror = null;
     this.importNames = importNames;
     this.rootLineNumberIterator = rootLineNumberIterator;
-    methodMap = new HashMap<String, ArrayList<ContractableMethod>>();
+    methodMap = new HashMap<>();
   }
 
   TypeBuilder(FactoryUtils utils,
@@ -187,7 +170,7 @@ class TypeBuilder extends AbstractTypeBuilder {
     rootMirror = e;
 
     /* Create type. */
-    ElementKind kind = null;
+    ElementKind kind;
     switch (e.getKind()) {
       case INTERFACE:
         kind = ElementKind.INTERFACE;
@@ -329,7 +312,7 @@ class TypeBuilder extends AbstractTypeBuilder {
 
   @Override
   public Void visitVariable(VariableElement e, ElementModel p) {
-    ElementKind kind = null;
+    ElementKind kind;
     switch (e.getKind()) {
       case ENUM_CONSTANT:
         kind = ElementKind.CONSTANT;
@@ -354,7 +337,7 @@ class TypeBuilder extends AbstractTypeBuilder {
 
   @Override
   public Void visitExecutable(ExecutableElement e, ElementModel p) {
-    MethodModel exec = null;
+    MethodModel exec;
     String name = e.getSimpleName().toString();
 
     /*
@@ -380,7 +363,7 @@ class TypeBuilder extends AbstractTypeBuilder {
     }
 
     /* Create element; decide if constructor or not. */
-    if (name.toString().equals("<init>")) {
+    if (name.equals("<init>")) {
       exec = new MethodModel();
     } else {
       exec = new MethodModel(ElementKind.METHOD, name,
@@ -419,7 +402,7 @@ class TypeBuilder extends AbstractTypeBuilder {
   protected void addMethod(String k, ExecutableElement e, MethodModel exec) {
     ArrayList<ContractableMethod> list = methodMap.get(k);
     if (list == null) {
-      list = new ArrayList<ContractableMethod>();
+      list = new ArrayList<>();
       methodMap.put(k, list);
     }
     list.add(new ContractableMethod(e, exec));

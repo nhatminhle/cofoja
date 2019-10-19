@@ -38,7 +38,7 @@ public class PushbackTokenizer extends JavaTokenizer {
   /**
    * Pushback queue.
    */
-  protected Deque<Token> queue;
+  protected final Deque<Token> queue;
 
   /**
    * Constructs a new PushbackTokenizer reading characters from
@@ -47,7 +47,7 @@ public class PushbackTokenizer extends JavaTokenizer {
   @Requires("reader != null")
   public PushbackTokenizer(Reader reader) {
     super(reader);
-    queue = new ArrayDeque<Token>();
+    queue = new ArrayDeque<>();
   }
 
   @Requires("token != null")
@@ -101,7 +101,7 @@ public class PushbackTokenizer extends JavaTokenizer {
    */
   @Requires("lookahead >= 0")
   public Token peek(int lookahead) {
-    ArrayDeque<Token> tmp = new ArrayDeque<Token>();
+    ArrayDeque<Token> tmp = new ArrayDeque<>();
     for (int i = 0; i <= lookahead; ++i) {
       if (hasNext()) {
         tmp.push(next());

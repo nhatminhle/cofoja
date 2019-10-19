@@ -60,18 +60,18 @@ public class PatternMap<R> {
     "!children.values().contains(null)"
   })
   protected class TernaryNode {
-    protected TreeMap<String, TernaryNode> children;
+    protected final TreeMap<String, TernaryNode> children;
     protected R rule;
     protected boolean exact;
 
     protected TernaryNode(R rule, boolean exact) {
-      children = new TreeMap<String, TernaryNode>();
+      children = new TreeMap<>();
       this.rule = rule;
       this.exact = exact;
     }
   }
 
-  protected TernaryNode root;
+  protected final TernaryNode root;
 
   public PatternMap() {
     root = new TernaryNode(null, false);
@@ -134,8 +134,8 @@ public class PatternMap<R> {
 
     String[] parts = canon.split("\\.");
     TernaryNode current = root;
-    for (int i = 0; i < parts.length; ++i) {
-      TernaryNode next = current.children.get(parts[i]);
+    for (String part : parts) {
+      TernaryNode next = current.children.get(part);
       if (next == null) {
         return false;
       }

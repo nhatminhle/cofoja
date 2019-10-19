@@ -23,11 +23,6 @@ import com.google.java.contract.Requires;
 import com.google.java.contract.core.util.JavaUtils;
 import com.google.java.contract.core.util.SyntheticJavaFile;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
@@ -35,6 +30,11 @@ import javax.tools.Diagnostic;
 import javax.tools.Diagnostic.Kind;
 import javax.tools.DiagnosticListener;
 import javax.tools.JavaFileObject;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
 
 /**
  * A collection of diagnostic messages with facilities to manage
@@ -58,7 +58,7 @@ public class DiagnosticManager
     "getAnnotationMirror() == null || getElement() != null",
     "getAnnotationValue() == null || getAnnotationMirror() != null"
   })
-  public abstract class Report {
+  public abstract static class Report {
     /**
      * Returns the kind of this diagnostic.
      */
@@ -129,13 +129,13 @@ public class DiagnosticManager
    *
    * @author nhat.minh.le@huoc.org (Nhat Minh Lê)
    */
-  public class AnnotationReport extends Report {
-    protected Kind kind;
-    protected String message;
-    protected String sourceString;
-    protected int position;
-    protected int startPosition;
-    protected int endPosition;
+  public static class AnnotationReport extends Report {
+    protected final Kind kind;
+    protected final String message;
+    protected final String sourceString;
+    protected final int position;
+    protected final int startPosition;
+    protected final int endPosition;
     protected Element sourceElement;
     protected AnnotationMirror annotationMirror;
     protected AnnotationValue annotationValue;
@@ -253,8 +253,8 @@ public class DiagnosticManager
    * @author nhat.minh.le@huoc.org (Nhat Minh Lê)
    */
   @Invariant("diagnostic != null")
-  public class CompilerReport extends Report {
-    protected Diagnostic<? extends JavaFileObject> diagnostic;
+  public static class CompilerReport extends Report {
+    protected final Diagnostic<? extends JavaFileObject> diagnostic;
 
     /**
      * Constructs a new CompilerReport based on
@@ -431,11 +431,11 @@ public class DiagnosticManager
     }
   }
 
-  protected List<Report> reports;
+  protected final List<Report> reports;
   protected int errorCount;
 
   public DiagnosticManager() {
-    reports = new ArrayList<Report>();
+    reports = new ArrayList<>();
     errorCount = 0;
   }
 
@@ -490,7 +490,7 @@ public class DiagnosticManager
                     int position, int startPosition, int endPosition,
                     Object info) {
     report(new AnnotationReport(Kind.ERROR, message, sourceString,
-                                position, startPosition, endPosition, info));
+            position, startPosition, endPosition, info));
   }
 
   public void error(String message, String sourceString,
@@ -498,9 +498,9 @@ public class DiagnosticManager
                     Element sourceElement, AnnotationMirror annotationMirror,
                     AnnotationValue annotationValue) {
     report(new AnnotationReport(Kind.ERROR, message, sourceString,
-                                position, startPosition, endPosition,
-                                sourceElement, annotationMirror,
-                                annotationValue));
+            position, startPosition, endPosition,
+            sourceElement, annotationMirror,
+            annotationValue));
   }
 
   /**
@@ -510,7 +510,7 @@ public class DiagnosticManager
                       int position, int startPosition, int endPosition,
                       Object info) {
     report(new AnnotationReport(Kind.WARNING, message, sourceString,
-                                position, startPosition, endPosition, info));
+            position, startPosition, endPosition, info));
   }
 
   public void warning(String message, String sourceString,
@@ -518,8 +518,8 @@ public class DiagnosticManager
                       Element sourceElement, AnnotationMirror annotationMirror,
                       AnnotationValue annotationValue) {
     report(new AnnotationReport(Kind.WARNING, message, sourceString,
-                                position, startPosition, endPosition,
-                                sourceElement, annotationMirror,
-                                annotationValue));
+            position, startPosition, endPosition,
+            sourceElement, annotationMirror,
+            annotationValue));
   }
 }

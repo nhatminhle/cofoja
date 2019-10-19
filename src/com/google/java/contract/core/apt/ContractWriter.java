@@ -78,9 +78,9 @@ public class ContractWriter extends ElementScanner {
   private static final Pattern VARIADIC_REGEX =
       Pattern.compile("\\[\\p{javaWhitespace}*\\]\\p{javaWhitespace}*$");
 
-  protected boolean debugTrace;
+  protected final boolean debugTrace;
 
-  protected ByteArrayOutputStream output;
+  protected final ByteArrayOutputStream output;
 
   protected long lineNumber;
 
@@ -88,13 +88,13 @@ public class ContractWriter extends ElementScanner {
    * The resulting mapping between contract annotations and generated
    * line numbers.
    */
-  protected Map<Long, Object> lineNumberMap;
+  protected final Map<Long, Object> lineNumberMap;
 
   /**
    * {@code true} if this visitor is currently visiting the root
    * (top-level) class definition.
    */
-  protected boolean isRootClass;
+  protected final boolean isRootClass;
 
   protected TypeModel type;
 
@@ -106,7 +106,7 @@ public class ContractWriter extends ElementScanner {
     this.debugTrace = debugTrace;
     output = new ByteArrayOutputStream();
     lineNumber = 1;
-    lineNumberMap = new HashMap<Long, Object>();
+    lineNumberMap = new HashMap<>();
     isRootClass = true;
     type = null;
   }
@@ -189,7 +189,7 @@ public class ContractWriter extends ElementScanner {
 
   @Requires("modifiers != null")
   private void appendModifiers(EnumSet<ElementModifier> modifiers) {
-    List<ElementModifier> list = new ArrayList<ElementModifier>(modifiers);
+    List<ElementModifier> list = new ArrayList<>(modifiers);
     Collections.sort(list);
     appendJoin(list, " ");
   }

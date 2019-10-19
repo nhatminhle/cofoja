@@ -49,12 +49,12 @@ import java.util.List;
       "|| ContractMethodSignatures.isLineNumberList(getLineNumbers())"
 })
 public class ContractHandle {
-  protected ContractKind kind;
-  protected String className;
-  protected int key;
+  protected final ContractKind kind;
+  protected final String className;
+  protected final int key;
 
-  protected MethodNode contractMethod;
-  protected List<Long> lineNumbers;
+  protected final MethodNode contractMethod;
+  protected final List<Long> lineNumbers;
 
   protected boolean injected;
 

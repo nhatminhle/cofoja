@@ -49,7 +49,7 @@ public class PreMain {
   @Invariant("transformer != null")
   private static class DumpClassFileTransformer
       implements ClassFileTransformer {
-    protected ClassFileTransformer transformer;
+    protected final ClassFileTransformer transformer;
 
     @Requires({
       "parent != null",

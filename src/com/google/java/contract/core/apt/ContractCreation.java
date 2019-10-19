@@ -205,8 +205,7 @@ public class ContractCreation {
                                   ContractAnnotationModel annotation) {
     StringBuilder buffer = new StringBuilder();
     if (!annotation.isPrimary() && !annotation.isVirtual()) {
-      buffer.append(annotation.getOwner().getQualifiedName()
-                    + JavaUtils.HELPER_CLASS_SUFFIX);
+      buffer.append(annotation.getOwner().getQualifiedName()).append(JavaUtils.HELPER_CLASS_SUFFIX);
       buffer.append(".");
     }
     buffer.append(helper.getSimpleName());
@@ -378,8 +377,8 @@ public class ContractCreation {
       ContractKind kind, ContractAnnotationModel annotation,
       String nameSuffix) {
     TypeModel type = Elements.getTypeOf(annotation);
-    MethodModel method = null;
-    ContractMethodModel contract = null;
+    MethodModel method;
+    ContractMethodModel contract;
 
     MethodModel contracted = null;
     if (kind.isMethodContract()) {

@@ -89,7 +89,7 @@ public class InheritanceTest extends TestCase {
   }
 
   @Invariant("k() == 1")
-  private static interface I {
+  private interface I {
     int k();
 
     @Requires("y > x")

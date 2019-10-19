@@ -30,17 +30,16 @@ import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Opcodes;
 
+import javax.tools.JavaFileObject.Kind;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.IllegalClassFormatException;
 import java.security.ProtectionDomain;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import javax.tools.JavaFileObject.Kind;
 
 /**
  * A class transformer responsible for instrumenting classes with
@@ -73,7 +72,7 @@ public class ContractClassFileTransformer implements ClassFileTransformer {
                       String superName, String[] interfaces) {
       super.visit(version, access, name, signature, superName, interfaces);
 
-      HashSet<String> assignable = new HashSet<String>();
+      HashSet<String> assignable = new HashSet<>();
       assignable.add(name);
       assignableToNames.put(name, assignable);
 
@@ -138,7 +137,7 @@ public class ContractClassFileTransformer implements ClassFileTransformer {
         return;
       }
 
-      HashSet<String> assignable = new HashSet<String>();
+      HashSet<String> assignable = new HashSet<>();
       assignable.add(className);
       assignableToNames.put(className, assignable);
 
@@ -167,7 +166,7 @@ public class ContractClassFileTransformer implements ClassFileTransformer {
       if (!superClassNames.containsKey(className)) {
         superClassNames.put(className, "java/lang/Object");
       }
-      HashSet<String> assignable = new HashSet<String>();
+      HashSet<String> assignable = new HashSet<>();
       assignable.add(className);
       assignable.add("java/lang/Object");
       assignableToNames.put(className, assignable);
@@ -219,7 +218,7 @@ public class ContractClassFileTransformer implements ClassFileTransformer {
     }
   }
 
-  protected BlacklistManager blacklistManager;
+  protected final BlacklistManager blacklistManager;
 
   protected ClassLoader loader;
 
@@ -228,10 +227,10 @@ public class ContractClassFileTransformer implements ClassFileTransformer {
    * with some caching mechanism.
    */
 
-  protected Map<String, Set<String>> assignableToNames =
-      new HashMap<String, Set<String>>();
+  protected final Map<String, Set<String>> assignableToNames =
+          new HashMap<>();
 
-  protected Map<String, String> superClassNames = new HashMap<String, String>();
+  protected final Map<String, String> superClassNames = new HashMap<>();
 
   /**
    * Constructs a new ContractClassFileTransformer.

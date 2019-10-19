@@ -33,7 +33,7 @@ import javax.tools.JavaFileObject.Kind;
  * @author nhat.minh.le@huoc.org (Nhat Minh Lê)
  */
 class HelperClassAdapter extends ClassVisitor {
-  protected class HelperMethodAdapter extends LineNumberingMethodAdapter {
+  protected static class HelperMethodAdapter extends LineNumberingMethodAdapter {
     /**
      * Constructs a new HelperMethodAdapter.
      *

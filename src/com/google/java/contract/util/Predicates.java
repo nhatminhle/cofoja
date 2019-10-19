@@ -19,45 +19,27 @@ package com.google.java.contract.util;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
+import java.util.function.Predicate;
 
 /**
  * Utilities for predicates.
  *
  * <p>These methods are intentionally name-compatible with
- * {@link com.google.common.base.Predicates}, so as to make it easy
+ * com.google.common.base.Predicates, so as to make it easy
  * to switch between them.
  *
  * @author nhat.minh.le@huoc.org (Nhat Minh Lê)
  */
 public final class Predicates {
-  private static final Predicate<Object> TRUE = new Predicate<Object>() {
-    @Override
-    public boolean apply(Object obj) {
-      return true;
-    }
-  };
+  private static final Predicate<Object> TRUE = obj -> true;
 
-  private static final Predicate<Object> FALSE = new Predicate<Object>() {
-    @Override
-    public boolean apply(Object obj) {
-      return false;
-    }
-  };
+  private static final Predicate<Object> FALSE = obj -> false;
 
-  private static final Predicate<Object> IS_NULL = new Predicate<Object>() {
-    @Override
-    public boolean apply(Object obj) {
-      return obj == null;
-    }
-  };
+  private static final Predicate<Object> IS_NULL = java.util.Objects::isNull;
 
-  private static final Predicate<Object> NON_NULL = new Predicate<Object>() {
-    @Override
-    public boolean apply(Object obj) {
-      return obj != null;
-    }
-  };
+  private static final Predicate<Object> NON_NULL = java.util.Objects::nonNull;
 
   private Predicates() {
   }
@@ -75,8 +57,8 @@ public final class Predicates {
    */
   public static <T> Predicate<T> constant(final boolean b) {
     return b
-        ? Predicates.<Object, T>narrow(TRUE)
-        : Predicates.<Object, T>narrow(FALSE);
+        ? Predicates.narrow(TRUE)
+        : Predicates.narrow(FALSE);
   }
 
   /**
@@ -84,12 +66,7 @@ public final class Predicates {
    * argument is equal to {@code obj}.
    */
   public static <T> Predicate<T> equalTo(final T obj) {
-    return new Predicate<T>() {
-      @Override
-      public boolean apply(T o) {
-        return Objects.equal(o, obj);
-      }
-    };
+    return o -> Objects.equals(o, obj);
   }
 
   /**
@@ -97,7 +74,7 @@ public final class Predicates {
    * argument is {@code null}.
    */
   public static <T> Predicate<T> isNull() {
-    return Predicates.<Object, T>narrow(IS_NULL);
+    return Predicates.narrow(IS_NULL);
   }
 
   /**
@@ -105,7 +82,7 @@ public final class Predicates {
    * argument is not {@code null}.
    */
   public static <T> Predicate<T> nonNull() {
-    return Predicates.<Object, T>narrow(NON_NULL);
+    return Predicates.narrow(NON_NULL);
   }
 
   /**
@@ -115,14 +92,9 @@ public final class Predicates {
    */
   public static <T extends Comparable<T>> Predicate<T> between(
       final T low, final T high) {
-    return new Predicate<T>() {
-      @Override
-      public boolean apply(T obj) {
-        return obj != null
-            && (low == null || obj.compareTo(low) >= 0)
-            && (high == null || obj.compareTo(high) < 0);
-      }
-    };
+    return obj -> obj != null
+        && (low == null || obj.compareTo(low) >= 0)
+        && (high == null || obj.compareTo(high) < 0);
   }
 
   /**
@@ -130,16 +102,13 @@ public final class Predicates {
    * argument is a member of {@code it}.
    */
   public static <T> Predicate<T> in(final Iterable<T> it) {
-    return new Predicate<T>() {
-      @Override
-      public boolean apply(T obj) {
-        for (T elem : it) {
-          if (Objects.equal(elem, obj)) {
-            return true;
-          }
+    return obj -> {
+      for (T elem : it) {
+        if (Objects.equals(elem, obj)) {
+          return true;
         }
-        return false;
       }
+      return false;
     };
   }
 
@@ -148,12 +117,7 @@ public final class Predicates {
    * argument is a member of {@code c}.
    */
   public static <T> Predicate<T> in(final Collection<T> c) {
-    return new Predicate<T>() {
-      @Override
-      public boolean apply(T obj) {
-        return c.contains(obj);
-      }
-    };
+    return c::contains;
   }
 
   /**
@@ -161,29 +125,22 @@ public final class Predicates {
    * argument does not satisfy {@code p}.
    */
   public static <T> Predicate<T> not(final Predicate<? super T> p) {
-    return new Predicate<T>() {
-      @Override
-      public boolean apply(T obj) {
-        return !p.apply(obj);
-      }
-    };
+    return obj -> !p.test(obj);
   }
 
   /**
    * Returns a predicate that evaluates to {@code true} if its
    * argument satisfies all predicates {@code ps}.
    */
+  @SafeVarargs
   public static <T> Predicate<T> and(final Predicate<? super T>... ps) {
-    return new Predicate<T>() {
-      @Override
-      public boolean apply(T obj) {
-        for (Predicate<? super T> p : ps) {
-          if (!p.apply(obj)) {
-            return false;
-          }
+    return obj -> {
+      for (Predicate<? super T> p : ps) {
+        if (!p.test(obj)) {
+          return false;
         }
-        return true;
       }
+      return true;
     };
   }
 
@@ -191,17 +148,15 @@ public final class Predicates {
    * Returns a predicate that evaluates to {@code true} if its
    * argument satisfies any of the predicates {@code ps}.
    */
+  @SafeVarargs
   public static <T> Predicate<T> or(final Predicate<? super T>... ps) {
-    return new Predicate<T>() {
-      @Override
-      public boolean apply(T obj) {
-        for (Predicate<? super T> p : ps) {
-          if (p.apply(obj)) {
-            return true;
-          }
+    return obj -> {
+      for (Predicate<? super T> p : ps) {
+        if (p.test(obj)) {
+          return true;
         }
-        return false;
       }
+      return false;
     };
   }
 
@@ -211,12 +166,7 @@ public final class Predicates {
    */
   public static <T> Predicate<Iterable<T>> all(
       final Predicate<? super T> p) {
-    return new Predicate<Iterable<T>>() {
-      @Override
-      public boolean apply(Iterable<T> obj) {
-        return Iterables.all(obj, p);
-      }
-    };
+    return obj -> Iterables.all(obj, p);
   }
 
   /**
@@ -225,12 +175,7 @@ public final class Predicates {
    */
   public static <T> Predicate<Iterable<T>> any(
       final Predicate<? super T> p) {
-    return new Predicate<Iterable<T>>() {
-      @Override
-      public boolean apply(Iterable<T> obj) {
-        return Iterables.any(obj, p);
-      }
-    };
+    return obj -> Iterables.any(obj, p);
   }
 
   /**
@@ -239,12 +184,7 @@ public final class Predicates {
    */
   public static <K, V> Predicate<Map<K, V>> forEntries(
       final Predicate<? super Set<Map.Entry<K, V>>> p) {
-    return new Predicate<Map<K, V>>() {
-      @Override
-      public boolean apply(Map<K, V> obj) {
-        return p.apply(obj.entrySet());
-      }
-    };
+    return obj -> p.test(obj.entrySet());
   }
 
   /**
@@ -253,12 +193,7 @@ public final class Predicates {
    */
   public static <K, V> Predicate<Map<K, V>> forKeys(
       final Predicate<? super Set<K>> p) {
-    return new Predicate<Map<K, V>>() {
-      @Override
-      public boolean apply(Map<K, V> obj) {
-        return p.apply(obj.keySet());
-      }
-    };
+    return obj -> p.test(obj.keySet());
   }
 
   /**
@@ -267,12 +202,7 @@ public final class Predicates {
    */
   public static <K, V> Predicate<Map<K, V>> forValues(
       final Predicate<? super Collection<V>> p) {
-    return new Predicate<Map<K, V>>() {
-      @Override
-      public boolean apply(Map<K, V> obj) {
-        return p.apply(obj.values());
-      }
-    };
+    return obj -> p.test(obj.values());
   }
 
   /**
@@ -281,7 +211,7 @@ public final class Predicates {
    */
   public static <K, V> Predicate<Map<K, V>> anyEntry(
       Predicate<? super Map.Entry<K, V>> p) {
-    return forEntries(Predicates.<Map.Entry<K, V>>any(p));
+    return forEntries(Predicates.any(p));
   }
 
   /**
@@ -289,7 +219,7 @@ public final class Predicates {
    * its argument.
    */
   public static <K, V> Predicate<Map<K, V>> anyKey(Predicate<? super K> p) {
-    return forKeys(Predicates.<K>any(p));
+    return forKeys(Predicates.any(p));
   }
 
   /**
@@ -297,7 +227,7 @@ public final class Predicates {
    * its argument.
    */
   public static <K, V> Predicate<Map<K, V>> anyValue(Predicate<? super V> p) {
-    return forValues(Predicates.<V>any(p));
+    return forValues(Predicates.any(p));
   }
 
   /**
@@ -306,7 +236,7 @@ public final class Predicates {
    */
   public static <K, V> Predicate<Map<K, V>> allEntries(
       Predicate<? super Map.Entry<K, V>> p) {
-    return forEntries(Predicates.<Map.Entry<K, V>>all(p));
+    return forEntries(Predicates.all(p));
   }
 
   /**
@@ -314,7 +244,7 @@ public final class Predicates {
    * its argument.
    */
   public static <K, V> Predicate<Map<K, V>> allKeys(Predicate<? super K> p) {
-    return forKeys(Predicates.<K>all(p));
+    return forKeys(Predicates.all(p));
   }
 
   /**
@@ -322,6 +252,6 @@ public final class Predicates {
    * its argument.
    */
   public static <K, V> Predicate<Map<K, V>> allValues(Predicate<? super V> p) {
-    return forValues(Predicates.<V>all(p));
+    return forValues(Predicates.all(p));
   }
 }

@@ -75,13 +75,13 @@ public class ContractExpressionTransformer {
   /**
    * The diagnostic manager to report errors to.
    */
-  protected DiagnosticManager diagnosticManager;
+  protected final DiagnosticManager diagnosticManager;
 
   /**
    * {@code true} if old expressions should be transformed.
    * If {@code false}, old constructs are ignored.
    */
-  protected boolean acceptOld;
+  protected final boolean acceptOld;
 
   /**
    * The extra parameters needed to hold the extracted old values.
@@ -104,7 +104,7 @@ public class ContractExpressionTransformer {
   protected List<String> newCode;
 
   /**
-   * Whether the last call to {@link #transform(List,Object)}
+   * Whether the last call to {@link #transform(List,List,Object)}
    * was successful.
    */
   protected boolean parsed;
@@ -170,13 +170,12 @@ public class ContractExpressionTransformer {
     "result == canQueryResults()",
     "!result || newCode.size() == code.size()"
   })
-  @SuppressWarnings("fallthrough")
   public boolean transform(List<String> code, List<Long> lineNumbers,
                            Object sourceInfo) {
-    oldParameters = new ArrayList<VariableModel>();
-    oldParametersCode = new ArrayList<String>();
-    oldParametersLineNumbers = new ArrayList<Long>();
-    newCode = new ArrayList<String>();
+    oldParameters = new ArrayList<>();
+    oldParametersCode = new ArrayList<>();
+    oldParametersLineNumbers = new ArrayList<>();
+    newCode = new ArrayList<>();
     parsed = true;
 
     Iterator<Long> iterLineNumber = lineNumbers.iterator();
@@ -307,7 +306,7 @@ public class ContractExpressionTransformer {
         diagnosticManager.error(tokenizer.getErrorMessage(),
             expr, errorPos, errorPos, errorPos, sourceInfo);
         parsed = false;
-        continue code;
+        continue;
       }
       newCode.add(buffer.toString());
     }

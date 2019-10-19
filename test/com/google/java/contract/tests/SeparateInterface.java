@@ -27,14 +27,14 @@ import com.google.java.contract.Requires;
  */
 interface SeparateInterface {
   @Requires("x >= 0")
-  public void f(int x);
+  void f(int x);
 
   @Requires("x < y")
-  public void g(int x, int y);
+  void g(int x, int y);
 
   @Requires("x < y + z")
-  public void h(int x, int y, int z);
+  void h(int x, int y, int z);
 
   @Requires("x > y")
-  public void k(int x, int y);
+  void k(int x, int y);
 }

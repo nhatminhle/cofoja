@@ -28,7 +28,7 @@ import junit.framework.TestCase;
  * @author nhat.minh.le@huoc.org (Nhat Minh Lê)
  */
 public class EnumTest extends TestCase {
-  private static enum E {
+  private enum E {
     X, Y, Z;
 
     @Requires("this != Z")
@@ -37,10 +37,10 @@ public class EnumTest extends TestCase {
     }
   }
 
-  private static enum F {
+  private enum F {
     X(1), Y(2), Z(3);
 
-    private F(int x) {
+    F(int x) {
     }
 
     @Requires("this != Z")

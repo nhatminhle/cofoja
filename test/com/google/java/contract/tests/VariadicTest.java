@@ -56,14 +56,14 @@ public class VariadicTest extends TestCase {
 
     public int addMultiSub(int[]... xss) {
       int acc = 0;
-      for (int i = 0; i < xss.length; ++i) {
-        acc += sub(xss[i]);
+      for (int[] ints : xss) {
+        acc += sub(ints);
       }
       return acc;
     }
 
     public boolean testSubs(int... xs) {
-      return xs.length < 2 ? true : sub(xs) == subOrNeg(xs);
+      return xs.length < 2 || sub(xs) == subOrNeg(xs);
     }
 
     @Requires("testSubs(1, 2, 3, 4, 5, 6)")

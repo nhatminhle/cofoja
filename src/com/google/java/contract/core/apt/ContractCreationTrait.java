@@ -41,20 +41,20 @@ interface ContractCreationTrait {
    * @return {@code true} if there was no error
    */
   @Requires("annotation != null")
-  public boolean visit(ContractAnnotationModel annotation);
+  boolean visit(ContractAnnotationModel annotation);
 
   /**
    * Returns the list of expressions to be evaluated by the contract.
    */
   @Ensures("result != null")
-  public List<String> getExpressions();
+  List<String> getExpressions();
 
   /**
    * Returns the list of failure messages associated with the
    * assertions of the contract.
    */
   @Ensures("result != null")
-  public List<String> getMessages();
+  List<String> getMessages();
 
   /**
    * Returns the list of expressions to be used in error
@@ -62,7 +62,7 @@ interface ContractCreationTrait {
    * original annotation.
    */
   @Ensures("result != null")
-  public List<String> getSourceExpressions();
+  List<String> getSourceExpressions();
 
   /**
    * Returns the list of extra parameters to add to the end of the
@@ -71,7 +71,7 @@ interface ContractCreationTrait {
    * method.
    */
   @Ensures("result != null")
-  public List<? extends VariableModel> getInitialParameters();
+  List<? extends VariableModel> getInitialParameters();
 
   /**
    * Returns the list of extra parameters to add to the end of the
@@ -81,7 +81,7 @@ interface ContractCreationTrait {
    * applicable.
    */
   @Ensures("result != null")
-  public List<? extends VariableModel> getExtraParameters();
+  List<? extends VariableModel> getExtraParameters();
 
   /**
    * Returns the list of initial extra parameters for mock
@@ -90,7 +90,7 @@ interface ContractCreationTrait {
    * @see #getInitialParameters()
    */
   @Ensures("result != null")
-  public List<? extends VariableModel> getInitialMockParameters();
+  List<? extends VariableModel> getInitialMockParameters();
 
   /**
    * Returns the list of extra parameters for mock definitions.
@@ -98,12 +98,12 @@ interface ContractCreationTrait {
    * @see #getExtraParameters()
    */
   @Ensures("result != null")
-  public List<? extends VariableModel> getExtraMockParameters();
+  List<? extends VariableModel> getExtraMockParameters();
 
   /**
    * Returns the name of the exception type to throw when a failure
    * occurs.
    */
   @Ensures("ClassName.isQualifiedName(result)")
-  public String getExceptionName();
+  String getExceptionName();
 }

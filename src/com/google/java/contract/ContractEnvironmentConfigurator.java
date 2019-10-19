@@ -34,5 +34,5 @@ public interface ContractEnvironmentConfigurator {
    * to store {@code contractEnv} for later use, if needed.
    */
   @Requires("contractEnv != null")
-  public void configure(ContractEnvironment contractEnv);
+  void configure(ContractEnvironment contractEnv);
 }

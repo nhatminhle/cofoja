@@ -27,7 +27,7 @@ import com.google.java.contract.core.runtime.RuntimeContractEnvironment;
  */
 @Invariant("activationManager != null")
 public class AgentContractEnvironment extends RuntimeContractEnvironment {
-  protected ActivationRuleManager activationManager;
+  protected final ActivationRuleManager activationManager;
 
   public AgentContractEnvironment() {
     activationManager = ActivationRuleManager.getInstance();

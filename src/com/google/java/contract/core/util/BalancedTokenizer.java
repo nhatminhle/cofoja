@@ -49,7 +49,7 @@ public class BalancedTokenizer extends LineNumberingTokenizer {
    * Balanced punctuation stack. Opening punctuationm symbols are
    * stored in this stack.
    */
-  protected Deque<Character> stack;
+  protected final Deque<Character> stack;
 
   /**
    * Constructs a new BalancedTokenizer reading characters from
@@ -58,7 +58,7 @@ public class BalancedTokenizer extends LineNumberingTokenizer {
   @Requires("reader != null")
   public BalancedTokenizer(Reader reader) {
     super(reader);
-    stack = new ArrayDeque<Character>();
+    stack = new ArrayDeque<>();
   }
 
   @Ensures({

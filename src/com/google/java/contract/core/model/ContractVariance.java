@@ -38,5 +38,5 @@ public enum ContractVariance {
   /**
    * A covariant contract.
    */
-  COVARIANT;
+  COVARIANT
 }

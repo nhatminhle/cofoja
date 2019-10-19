@@ -31,7 +31,7 @@ public class PatternMapTest extends TestCase {
 
   @Override
   protected void setUp() {
-    map = new PatternMap<Integer>();
+    map = new PatternMap<>();
   }
 
   public void testExactMatch() {

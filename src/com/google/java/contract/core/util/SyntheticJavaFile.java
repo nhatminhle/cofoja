@@ -44,7 +44,7 @@ import javax.tools.SimpleJavaFileObject;
 })
 public class SyntheticJavaFile extends SimpleJavaFileObject {
   protected byte[] content;
-  protected Map<Long, ?> lineNumberMap;
+  protected final Map<Long, ?> lineNumberMap;
 
   /**
    * Constructs a new SyntheticJavaFile. This constructor wraps its

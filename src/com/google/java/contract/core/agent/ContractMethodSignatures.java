@@ -90,7 +90,7 @@ class ContractMethodSignatures {
       return null;
     }
 
-    ArrayList<Long> lineNumbers = new ArrayList<Long>();
+    ArrayList<Long> lineNumbers = new ArrayList<>();
     if (lines.getClass().isArray()) {
       for (long line : (long[]) lines) {
         lineNumbers.add(line < 1 ? null : line);

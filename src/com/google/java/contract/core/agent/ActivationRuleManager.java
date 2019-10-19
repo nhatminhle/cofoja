@@ -36,15 +36,9 @@ import com.google.java.contract.core.util.PatternMap;
 public class ActivationRuleManager {
   protected static ActivationRuleManager instance = null;
 
-  protected PatternMap<Boolean> assertPre = new PatternMap<Boolean>();
-  protected PatternMap<Boolean> assertPost = new PatternMap<Boolean>();
-  protected PatternMap<Boolean> assertInvariant = new PatternMap<Boolean>();
-
-  protected ActivationRuleManager() {
-    assertPre = new PatternMap<Boolean>();
-    assertPost = new PatternMap<Boolean>();
-    assertInvariant = new PatternMap<Boolean>();
-  }
+  protected final PatternMap<Boolean> assertPre = new PatternMap<>();
+  protected final PatternMap<Boolean> assertPost = new PatternMap<>();
+  protected final PatternMap<Boolean> assertInvariant = new PatternMap<>();
 
   public static ActivationRuleManager getInstance() {
     if (instance == null) {

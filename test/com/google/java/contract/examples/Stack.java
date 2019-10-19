@@ -36,13 +36,13 @@ public interface Stack<T> {
   /**
    * Returns the number of elements in this stack.
    */
-  public int size();
+  int size();
 
   /**
    * Returns the topmost element of this stack without removing it.
    */
   @Requires("size() >= 1")
-  public T peek();
+  T peek();
 
   /**
    * Pops the topmost element off this stack.
@@ -52,7 +52,7 @@ public interface Stack<T> {
     "size() == old (size()) - 1",
     "result == old (peek())"
   })
-  public T pop();
+  T pop();
 
   /**
    * Pushes an element onto the stack.
@@ -61,5 +61,5 @@ public interface Stack<T> {
     "size() == old (size()) + 1",
     "peek() == old (obj)"
   })
-  public void push(T obj);
+  void push(T obj);
 }

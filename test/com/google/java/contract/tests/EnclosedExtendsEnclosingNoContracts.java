@@ -25,7 +25,7 @@ package com.google.java.contract.tests;
  */
 public class EnclosedExtendsEnclosingNoContracts {
   static class Enclosed extends EnclosedExtendsEnclosingNoContracts {
-    private int field;
+    private final int field;
     Enclosed(int field) {
       this.field = field;
     }

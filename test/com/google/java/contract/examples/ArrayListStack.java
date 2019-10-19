@@ -31,10 +31,10 @@ import java.util.ArrayList;
  */
 @Invariant("elements != null")
 public class ArrayListStack<T> implements Stack<T> {
-  protected ArrayList<T> elements;
+  protected final ArrayList<T> elements;
 
   public ArrayListStack() {
-    elements = new ArrayList<T>();
+    elements = new ArrayList<>();
   }
 
   @Override

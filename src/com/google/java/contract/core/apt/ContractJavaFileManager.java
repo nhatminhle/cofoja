@@ -24,17 +24,13 @@ import com.google.java.contract.core.model.ClassName;
 import com.google.java.contract.core.util.Elements;
 import com.google.java.contract.core.util.JavaUtils;
 
+import javax.tools.*;
+import javax.tools.JavaFileObject.Kind;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
-import javax.tools.FileObject;
-import javax.tools.ForwardingJavaFileManager;
-import javax.tools.JavaFileObject;
-import javax.tools.JavaFileObject.Kind;
-import javax.tools.SimpleJavaFileObject;
-import javax.tools.StandardJavaFileManager;
 
 /**
  * A file manager that handles output (class) files from contract
@@ -50,8 +46,8 @@ public class ContractJavaFileManager
    * An output file to a plain contract class file.
    */
   @Invariant("file != null")
-  protected class SimpleOutputJavaFileObject extends SimpleJavaFileObject {
-    protected FileObject file;
+  protected static class SimpleOutputJavaFileObject extends SimpleJavaFileObject {
+    protected final FileObject file;
 
     @Requires({
       "binaryName != null",
@@ -106,7 +102,7 @@ public class ContractJavaFileManager
       return null;
     }
 
-    ArrayList<File> locations = new ArrayList<File>();
+    ArrayList<File> locations = new ArrayList<>();
     for (File entry : path) {
       locations.add(entry);
     }

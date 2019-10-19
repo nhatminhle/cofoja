@@ -51,14 +51,14 @@ public class ContractAnnotationModel extends ElementModel {
    * annotated element, that is, it is not inherited through any of
    * its interfaces or its superclass.
    */
-  protected boolean primary;
+  protected final boolean primary;
 
   /**
    * {@code true} if this annotation denotes a virtual contract. A
    * virtual contract is one that is inherited through the normal
    * (virtual) class hierarchy, and not through an interface.
    */
-  protected boolean virtual;
+  protected final boolean virtual;
 
   /**
    * {@code true} if this annotation denotes a contract that is
@@ -70,27 +70,27 @@ public class ContractAnnotationModel extends ElementModel {
    * The name of the owner type of this annotation, from which it is
    * inherited.
    */
-  protected ClassName owner;
+  protected final ClassName owner;
 
   /**
    * The return type of the method contracted by this annotation; it
    * is required for stubbing since return types may change
    * covariantly with subtyping in Java.
    */
-  protected TypeName returnType;
+  protected final TypeName returnType;
 
   /**
    * The values of this annotation. These are assertion expressions,
    * as strings.
    */
-  protected List<String> values;
+  protected final List<String> values;
 
   /**
    * The line numbers associated with the values of this expression,
    * in the original source file (each line number may be
    * {@code null}).
    */
-  protected List<Long> lineNumbers;
+  protected final List<Long> lineNumbers;
 
   /**
    * Constructs a new ContractAnnotationModel.
@@ -119,8 +119,8 @@ public class ContractAnnotationModel extends ElementModel {
     weakVirtual = false;
     this.owner = owner;
     this.returnType = returnType;
-    values = new ArrayList<String>();
-    lineNumbers = new ArrayList<Long>();
+    values = new ArrayList<>();
+    lineNumbers = new ArrayList<>();
   }
 
   /**
@@ -136,8 +136,8 @@ public class ContractAnnotationModel extends ElementModel {
     weakVirtual = that.weakVirtual;
     owner = that.owner;
     returnType = that.returnType;
-    values = new ArrayList<String>(that.values);
-    lineNumbers = new ArrayList<Long>(that.lineNumbers);
+    values = new ArrayList<>(that.values);
+    lineNumbers = new ArrayList<>(that.lineNumbers);
   }
 
   @Override

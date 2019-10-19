@@ -27,28 +27,17 @@ import com.google.java.contract.core.util.DebugUtils;
 import com.google.java.contract.core.util.ElementScanner;
 import com.google.java.contract.core.util.SyntheticJavaFile;
 
-import java.io.File;
-import java.io.IOException;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import javax.annotation.processing.AbstractProcessor;
-import javax.annotation.processing.Messager;
-import javax.annotation.processing.ProcessingEnvironment;
-import javax.annotation.processing.RoundEnvironment;
-import javax.annotation.processing.SupportedAnnotationTypes;
-import javax.annotation.processing.SupportedOptions;
-import javax.annotation.processing.SupportedSourceVersion;
+import javax.annotation.processing.*;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
-import javax.lang.model.util.ElementScanner6;
+import javax.lang.model.util.ElementScanner8;
 import javax.tools.JavaCompiler.CompilationTask;
 import javax.tools.JavaFileObject.Kind;
+import java.io.File;
+import java.io.IOException;
+import java.lang.reflect.Method;
+import java.util.*;
 
 /**
  * A JSR 269 annotation processor that builds contract Java source
@@ -221,7 +210,7 @@ public class AnnotationProcessor extends AbstractProcessor {
     boolean success = diagnosticManager.getErrorCount() == 0;
 
     ArrayList<SyntheticJavaFile> sources =
-        new ArrayList<SyntheticJavaFile>(types.size());
+            new ArrayList<>(types.size());
     if (success) {
       for (TypeModel type : types) {
         ContractWriter writer = new ContractWriter(debug);
@@ -353,10 +342,10 @@ public class AnnotationProcessor extends AbstractProcessor {
      * Extract all type names that will be part of this compilation
      * task.
      */
-    final HashSet<String> knownTypeNames = new HashSet<String>();
+    final HashSet<String> knownTypeNames = new HashSet<>();
     for (TypeElement r : roots) {
-      ElementScanner6<Void, Void> visitor =
-          new ElementScanner6<Void, Void>() {
+      ElementScanner8<Void, Void> visitor =
+          new ElementScanner8<Void, Void>() {
             @Override
             public Void visitType(TypeElement e, Void p) {
               knownTypeNames.add(e.getQualifiedName().toString());
@@ -371,7 +360,7 @@ public class AnnotationProcessor extends AbstractProcessor {
      * prevents name clashes due to erasure.
      */
     ArrayList<TypeModel> undecoratedTypes =
-        new ArrayList<TypeModel>(roots.size());
+            new ArrayList<>(roots.size());
     for (TypeElement r : roots) {
       TypeModel type = factory.createType(r, diagnosticManager);
       ElementScanner annotator =
@@ -394,7 +383,7 @@ public class AnnotationProcessor extends AbstractProcessor {
      * helper types.
      */
     ArrayList<TypeModel> types =
-        new ArrayList<TypeModel>(undecoratedTypes.size());
+            new ArrayList<>(undecoratedTypes.size());
     for (TypeModel type : undecoratedTypes) {
       ClassContractCreator creator =
           new ClassContractCreator(diagnosticManager);
@@ -422,7 +411,7 @@ public class AnnotationProcessor extends AbstractProcessor {
       RoundEnvironment roundEnv) {
     Set<? extends Element> allElements = roundEnv.getRootElements();
     Set<TypeElement> contractedRootElements =
-        new HashSet<TypeElement>(allElements.size());
+            new HashSet<>(allElements.size());
 
     ContractFinder cf = new ContractFinder(utils);
     for (Element e : allElements) {

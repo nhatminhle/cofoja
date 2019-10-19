@@ -51,12 +51,12 @@ public class ReturnTypeTest extends TestCase {
     }
   }
 
-  private static interface I<T> {
+  private interface I<T> {
     @Ensures({
       "result != null",
       "result.equals(x)"
     })
-    public T f(int x);
+    T f(int x);
   }
 
   private static class C implements I<Integer> {

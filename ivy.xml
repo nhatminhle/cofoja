@@ -12,9 +12,9 @@
     <artifact name="cofoja+contracts" conf="contracts" />
   </publications>
   <dependencies>
-    <dependency org="org.ow2.asm" name="asm-commons" rev="7.1" conf="*->default" />
-    <dependency org="org.ow2.asm" name="asm-tree" rev="7.1" conf="*->default" />
-    <dependency org="org.ow2.asm" name="asm" rev="7.1" conf="*->default" />
-    <dependency org="junit" name="junit-dep" rev="[3.8,)" conf="test->default" />
+    <dependency org="org.ow2.asm" name="asm-commons" rev="7.2" conf="*->default" />
+    <dependency org="org.ow2.asm" name="asm-tree" rev="7.2" conf="*->default" />
+    <dependency org="org.ow2.asm" name="asm" rev="7.2" conf="*->default" />
+    <dependency org="junit" name="junit-dep" rev="[4.11,)" conf="test->default" />
   </dependencies>
 </ivy-module>

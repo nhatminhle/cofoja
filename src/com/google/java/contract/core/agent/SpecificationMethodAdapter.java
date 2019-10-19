@@ -91,29 +91,29 @@ public class SpecificationMethodAdapter extends AdviceAdapter {
    * Used to bracket the entire original method to catch any exception
    * that may arise and relay it to the exceptional postconditions.
    */
-  protected Label methodStart;
-  protected Label methodEnd;
+  protected final Label methodStart;
+  protected final Label methodEnd;
 
-  protected ContractAnalyzer contracts;
-  protected String className;
-  protected String methodName;
-  protected String methodDesc;
-  protected Type thisType;
+  protected final ContractAnalyzer contracts;
+  protected final String className;
+  protected final String methodName;
+  protected final String methodDesc;
+  protected final Type thisType;
 
-  protected boolean statik;
-  protected boolean isConstructor;
-  protected boolean isStaticInit;
+  protected final boolean statik;
+  protected final boolean isConstructor;
+  protected final boolean isStaticInit;
 
   protected int contextLocal;
   protected int checkInvariantsLocal;
-  protected List<Integer> oldValueLocals;
-  protected List<Integer> signalOldValueLocals;
+  protected final List<Integer> oldValueLocals;
+  protected final List<Integer> signalOldValueLocals;
 
-  protected SpecificationClassAdapter classAdapter;
+  protected final SpecificationClassAdapter classAdapter;
 
-  protected boolean withPreconditions;
-  protected boolean withPostconditions;
-  protected boolean withInvariants;
+  protected final boolean withPreconditions;
+  protected final boolean withPostconditions;
+  protected final boolean withInvariants;
 
   /**
    * Constructs a new SpecificationClassAdapter.
@@ -151,8 +151,8 @@ public class SpecificationMethodAdapter extends AdviceAdapter {
 
     contextLocal = -1;
     checkInvariantsLocal = -1;
-    oldValueLocals = new ArrayList<Integer>();
-    signalOldValueLocals = new ArrayList<Integer>();
+    oldValueLocals = new ArrayList<>();
+    signalOldValueLocals = new ArrayList<>();
 
     classAdapter = ca;
 

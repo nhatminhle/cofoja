@@ -23,14 +23,14 @@ import com.google.java.contract.Requires;
 import com.google.java.contract.core.model.ElementModifier;
 import com.google.java.contract.core.model.TypeModel;
 
-import java.util.List;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.ExecutableType;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
-import javax.lang.model.util.ElementScanner6;
+import javax.lang.model.util.ElementScanner8;
+import java.util.List;
 
 /**
  * An element visitor that extracts constructor arguments from a
@@ -41,10 +41,10 @@ import javax.lang.model.util.ElementScanner6;
  * @author nhat.minh.le@huoc.org (Nhat Minh Lê)
  */
 @Invariant("subtype != null")
-class SuperCallBuilder extends ElementScanner6<Void, Void> {
-  protected FactoryUtils utils;
-  protected DeclaredType typeMirror;
-  protected TypeModel subtype;
+class SuperCallBuilder extends ElementScanner8<Void, Void> {
+  protected final FactoryUtils utils;
+  protected final DeclaredType typeMirror;
+  protected final TypeModel subtype;
   protected ElementModifier constructorFound;
 
   /**

@@ -33,7 +33,7 @@ import java.util.List;
  */
 @Invariant("getMethodName() != null")
 public class MethodContractHandle extends ContractHandle {
-  protected String methodName;
+  protected final String methodName;
 
   /**
    * Constructs a new MethodContractHandle.

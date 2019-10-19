@@ -91,6 +91,8 @@
   <presetdef name="ujavac">
     <javac encoding="utf-8" debug="${debug}" includeantruntime="false" fork="true">
       <bootclasspath location="${rt.jar}" if:set="rt.jar" />
+      <compilerarg value="-Xlint:deprecation" />
+      <compilerarg value="-Xlint:unchecked" />
       <compilerarg value="-J--add-opens" if:set="add-opens-tools" />
       <compilerarg value="-Jjdk.compiler/com.sun.tools.javac.processing=ALL-UNNAMED"
                    if:set="add-opens-tools" />

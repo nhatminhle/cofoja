@@ -21,24 +21,16 @@ package com.google.java.contract.core.apt;
 import com.google.java.contract.Ensures;
 import com.google.java.contract.Invariant;
 import com.google.java.contract.Requires;
-import com.google.java.contract.core.model.ClassName;
-import com.google.java.contract.core.model.ContractAnnotationModel;
-import com.google.java.contract.core.model.ElementKind;
-import com.google.java.contract.core.model.ElementModel;
-import com.google.java.contract.core.model.TypeName;
+import com.google.java.contract.core.model.*;
 import com.google.java.contract.core.util.JavaUtils;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.util.ElementScanner6;
+import javax.lang.model.util.ElementScanner8;
+import java.util.*;
 
 /**
  * Abstract base class providing annotation processing facilities
@@ -49,10 +41,10 @@ import javax.lang.model.util.ElementScanner6;
  */
 @Invariant("utils != null")
 abstract class AbstractTypeBuilder
-    extends ElementScanner6<Void, ElementModel> {
-  protected FactoryUtils utils;
+    extends ElementScanner8<Void, ElementModel> {
+  protected final FactoryUtils utils;
 
-  protected DiagnosticManager diagnosticManager;
+  protected final DiagnosticManager diagnosticManager;
 
   @Requires("utils != null")
   protected AbstractTypeBuilder(FactoryUtils utils,
@@ -257,7 +249,7 @@ abstract class AbstractTypeBuilder
   @Ensures("result != null")
   @SuppressWarnings("unchecked")
   protected Set<String> getImportNames(Element element) {
-    HashSet<String> importNames = new HashSet<String>();
+    HashSet<String> importNames = new HashSet<>();
     if (JavaUtils.classExists("com.sun.source.util.Trees")) {
       try {
         Set<String> classImportNames = (Set<String>) Class

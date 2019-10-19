@@ -45,7 +45,7 @@ import java.util.List;
 })
 class SpecificationClassAdapter extends ClassVisitor {
   protected String className;
-  protected ContractAnalyzer contracts;
+  protected final ContractAnalyzer contracts;
 
   public SpecificationClassAdapter(ClassVisitor cv,
                                    ContractAnalyzer contracts) {
@@ -75,7 +75,7 @@ class SpecificationClassAdapter extends ClassVisitor {
   @Override
   public void visitEnd() {
     if (contracts != null) {
-      List<ClassContractHandle> synths = new ArrayList<ClassContractHandle>();
+      List<ClassContractHandle> synths = new ArrayList<>();
       synths.addAll(contracts.getClassHandles(ContractKind.ACCESS));
       synths.addAll(contracts.getClassHandles(ContractKind.LAMBDA));
       for (ClassContractHandle h : synths) {
