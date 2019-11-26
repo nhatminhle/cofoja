@@ -21,6 +21,7 @@ import com.google.java.contract.ContractImport;
 import com.google.java.contract.Ensures;
 import com.google.java.contract.Requires;
 
+import javax.tools.JavaFileObject.Kind;
 import java.io.File;
 import java.io.InputStream;
 import java.io.StringReader;
@@ -29,7 +30,6 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Map;
 import java.util.regex.Pattern;
-import javax.tools.JavaFileObject.Kind;
 
 /**
  * Utility methods related to the Java language.
@@ -325,9 +325,7 @@ public class JavaUtils {
       if (token2 == null) {
         return false;
       }
-      if (!token2.text.equals(text)) {
-        return false;
-      }
+      return token2.text.equals(text);
     }
     return true;
   }

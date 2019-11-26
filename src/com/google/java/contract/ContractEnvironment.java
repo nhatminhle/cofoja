@@ -42,7 +42,7 @@ public interface ContractEnvironment {
    */
   @Requires("pattern != null")
   @Ensures("hasPreconditionsEnabled(pattern)")
-  public void enablePreconditions(String pattern);
+  void enablePreconditions(String pattern);
 
   /**
    * Disables precondition checking for classes matched by pattern
@@ -53,7 +53,7 @@ public interface ContractEnvironment {
    */
   @Requires("pattern != null")
   @Ensures("!hasPreconditionsEnabled(pattern)")
-  public void disablePreconditions(String pattern);
+  void disablePreconditions(String pattern);
 
   /**
    * Enables postcondition checking for classes matched by pattern
@@ -64,7 +64,7 @@ public interface ContractEnvironment {
    */
   @Requires("pattern != null")
   @Ensures("hasPostconditionsEnabled(pattern)")
-  public void enablePostconditions(String pattern);
+  void enablePostconditions(String pattern);
 
   /**
    * Disables postcondition checking for classes matched by pattern
@@ -75,7 +75,7 @@ public interface ContractEnvironment {
    */
   @Requires("pattern != null")
   @Ensures("!hasPostconditionsEnabled(pattern)")
-  public void disablePostconditions(String pattern);
+  void disablePostconditions(String pattern);
 
   /**
    * Enables invariant checking for classes matched by pattern
@@ -86,7 +86,7 @@ public interface ContractEnvironment {
    */
   @Requires("pattern != null")
   @Ensures("hasInvariantsEnabled(pattern)")
-  public void enableInvariants(String pattern);
+  void enableInvariants(String pattern);
 
   /**
    * Disables invariant checking for classes matched by pattern
@@ -97,7 +97,7 @@ public interface ContractEnvironment {
    */
   @Requires("pattern != null")
   @Ensures("!hasInvariantsEnabled(pattern)")
-  public void disableInvariants(String pattern);
+  void disableInvariants(String pattern);
 
   /**
    * Returns {@code true} if {@code clazz} has preconditions
@@ -105,7 +105,7 @@ public interface ContractEnvironment {
    * preconditions at all.
    */
   @Requires("clazz != null")
-  public boolean hasPreconditionsEnabled(Class<?> clazz);
+  boolean hasPreconditionsEnabled(Class<?> clazz);
 
   /**
    * Returns {@code true} if all classes matched by {@code pattern}
@@ -113,7 +113,7 @@ public interface ContractEnvironment {
    * such a class has any preconditions at all.
    */
   @Requires("pattern != null")
-  public boolean hasPreconditionsEnabled(String pattern);
+  boolean hasPreconditionsEnabled(String pattern);
 
   /**
    * Returns {@code true} if {@code clazz} has postconditions
@@ -121,7 +121,7 @@ public interface ContractEnvironment {
    * postconditions at all.
    */
   @Requires("clazz != null")
-  public boolean hasPostconditionsEnabled(Class<?> clazz);
+  boolean hasPostconditionsEnabled(Class<?> clazz);
 
   /**
    * Returns {@code true} if all classes matched by {@code pattern}
@@ -129,7 +129,7 @@ public interface ContractEnvironment {
    * such a class has any postconditions at all.
    */
   @Requires("pattern != null")
-  public boolean hasPostconditionsEnabled(String pattern);
+  boolean hasPostconditionsEnabled(String pattern);
 
   /**
    * Returns {@code true} if {@code clazz} has invariants
@@ -137,7 +137,7 @@ public interface ContractEnvironment {
    * invariants at all.
    */
   @Requires("clazz != null")
-  public boolean hasInvariantsEnabled(Class<?> clazz);
+  boolean hasInvariantsEnabled(Class<?> clazz);
 
   /**
    * Returns {@code true} if all classes matched by {@code pattern}
@@ -145,7 +145,7 @@ public interface ContractEnvironment {
    * class has any invariants at all.
    */
   @Requires("pattern != null")
-  public boolean hasInvariantsEnabled(String pattern);
+  boolean hasInvariantsEnabled(String pattern);
 
   /**
    * Ignores classes matched by {@code pattern}. Ignored classes are
@@ -167,7 +167,7 @@ public interface ContractEnvironment {
    */
   @Requires("pattern != null")
   @Ensures("isIgnored(pattern)")
-  public void ignore(String pattern);
+  void ignore(String pattern);
 
   /**
    * Unignore classes matched by {@code pattern}. This method can be
@@ -178,7 +178,7 @@ public interface ContractEnvironment {
    */
   @Requires("pattern != null")
   @Ensures("!isIgnored(pattern)")
-  public void unignore(String pattern);
+  void unignore(String pattern);
 
   /**
    * Returns {@code true} if all classes matched by {@code pattern}
@@ -187,5 +187,5 @@ public interface ContractEnvironment {
    * @see #ignore(String)
    */
   @Requires("pattern != null")
-  public boolean isIgnored(String pattern);
+  boolean isIgnored(String pattern);
 }

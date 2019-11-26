@@ -39,7 +39,7 @@ public class JavaTokenizer implements Iterator<JavaTokenizer.Token> {
   /**
    * The kind of a token.
    */
-  public static enum TokenKind {
+  public enum TokenKind {
     /**
      * An identifier or keyword.
      */
@@ -63,13 +63,13 @@ public class JavaTokenizer implements Iterator<JavaTokenizer.Token> {
     /**
      * A sequence of whitespace.
      */
-    SPACE;
+    SPACE
   }
 
   /**
    * A token returned by an instance of JavaTokenizer.
    */
-  public class Token {
+  public static class Token {
     public final TokenKind kind;
     public final String text;
     public final int offset;
@@ -84,7 +84,7 @@ public class JavaTokenizer implements Iterator<JavaTokenizer.Token> {
   /**
    * The source of characters to tokenize.
    */
-  protected PushbackReader reader;
+  protected final PushbackReader reader;
 
   /**
    * The next token returned by this tokenizer, or {@code null} if
@@ -181,7 +181,7 @@ public class JavaTokenizer implements Iterator<JavaTokenizer.Token> {
               buffer.append((char) c);
             } while (c != '\n');
             nextToken = new Token(TokenKind.COMMENT, buffer.toString(),
-                                  startOffset);
+                    startOffset);
             break;
           case '*':
             buffer.append((char) c);
@@ -197,12 +197,12 @@ public class JavaTokenizer implements Iterator<JavaTokenizer.Token> {
               }
             }
             nextToken = new Token(TokenKind.COMMENT, buffer.toString(),
-                                  startOffset);
+                    startOffset);
             break;
           default:
             unreadChar(c);
             nextToken = new Token(TokenKind.SYMBOL, buffer.toString(),
-                                  startOffset);
+                    startOffset);
         }
         break;
 
@@ -239,11 +239,11 @@ public class JavaTokenizer implements Iterator<JavaTokenizer.Token> {
           }
           unreadChar(c);
           nextToken = new Token(TokenKind.SPACE, buffer.toString(),
-                                startOffset);
+                  startOffset);
         } else {
           /* Symbol. */
           nextToken = new Token(TokenKind.SYMBOL, buffer.toString(),
-                                startOffset);
+                  startOffset);
         }
     }
     return true;

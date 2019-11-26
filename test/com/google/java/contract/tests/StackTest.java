@@ -126,7 +126,7 @@ public class StackTest extends TestCase {
 
   @Override
   public void setUp() {
-    stack = new ArrayListStack<Integer>();
+    stack = new ArrayListStack<>();
   }
 
   public void testNormal() {
@@ -152,7 +152,7 @@ public class StackTest extends TestCase {
 
   public void testBogusInvariant() {
     try {
-      Stack<Integer> bogusInvariantStack = new BogusInvariantStack<Integer>();
+      Stack<Integer> bogusInvariantStack = new BogusInvariantStack<>();
       fail();
     } catch (InvariantError expected) {
       assertEquals("[size() >= 0]", expected.getMessages().toString());
@@ -161,7 +161,7 @@ public class StackTest extends TestCase {
 
   public void testBogusPostPush() {
     Stack<Integer> bogusPostconditionsStack =
-        new BogusPostconditionsStack<Integer>();
+            new BogusPostconditionsStack<>();
     try {
       bogusPostconditionsStack.push(1);
       fail();
@@ -172,7 +172,7 @@ public class StackTest extends TestCase {
   }
 
   public void testBogusPostPush1() {
-    Stack<Integer> countingStack = new BogusCountingStack<Integer>();
+    Stack<Integer> countingStack = new BogusCountingStack<>();
     try {
       countingStack.push(1);
       fail();
@@ -182,7 +182,7 @@ public class StackTest extends TestCase {
   }
 
   public void testIneffectiveBogusPostPush() {
-    Stack<Integer> lastElementStack = new BogusLastElementStack<Integer>();
+    Stack<Integer> lastElementStack = new BogusLastElementStack<>();
     lastElementStack.push(1);
     lastElementStack.push(2);
     lastElementStack.pop();

@@ -17,11 +17,13 @@
  */
 package com.google.java.contract.util;
 
+import java.util.function.Predicate;
+
 /**
  * Utilities for iterables.
  *
  * <p>These methods are intentionally name-compatible with
- * {@link com.google.common.collect.Iterables}, so as to make it easy
+ * com.google.common.collect.Iterables, so as to make it easy
  * to switch between them.
  *
  * @author nhat.minh.le@huoc.org (Nhat Minh Lê)
@@ -35,7 +37,7 @@ public final class Iterables {
    *
    * <p><b>Warning:</b> this method accepts a {@code null} iterable
    * object and returns {@code false}. The similarly-named method in
-   * {@link com.google.common.collect.Iterables} does <em>not</em> take
+   * com.google.common.collect.Iterables does <em>not</em> take
    * {@code null} as input.
    */
   public static <T> boolean all(Iterable<T> it, Predicate<? super T> p) {
@@ -43,7 +45,7 @@ public final class Iterables {
       return false;
     }
     for (T elem : it) {
-      if (!p.apply(elem)) {
+      if (!p.test(elem)) {
         return false;
       }
     }
@@ -55,7 +57,7 @@ public final class Iterables {
    *
    * <p><b>Warning:</b> this method accepts a {@code null} iterable
    * object and returns {@code false}. The similarly-named method in
-   * {@link com.google.common.collect.Iterables} does <em>not</em> take
+   * com.google.common.collect.Iterables does <em>not</em> take
    * {@code null} as input.
    */
   public static <T> boolean any(Iterable<T> it, Predicate<? super T> p) {
@@ -63,7 +65,7 @@ public final class Iterables {
       return false;
     }
     for (T elem : it) {
-      if (p.apply(elem)) {
+      if (p.test(elem)) {
         return true;
       }
     }

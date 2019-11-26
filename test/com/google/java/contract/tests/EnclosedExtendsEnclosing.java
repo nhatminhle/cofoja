@@ -28,7 +28,7 @@ import com.google.java.contract.Invariant;
 public class EnclosedExtendsEnclosing {
   @Invariant("field != 0")
   static class Enclosed extends EnclosedExtendsEnclosing {
-    private int field;
+    private final int field;
     Enclosed(int field) {
       this.field = field;
     }

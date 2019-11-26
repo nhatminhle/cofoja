@@ -55,13 +55,13 @@ import com.google.java.contract.core.util.ElementScanner;
   "transformer != null"
 })
 public class ClassContractCreator extends ElementScanner {
-  protected DiagnosticManager diagnosticManager;
+  protected final DiagnosticManager diagnosticManager;
 
   protected TypeModel type;
   protected TypeModel helperType;
   protected ContractMethodModel invariant;
 
-  protected ContractExpressionTransformer transformer;
+  protected final ContractExpressionTransformer transformer;
 
   /**
    * Constructs a new ClassContractCreator.

@@ -25,7 +25,7 @@ import com.google.java.contract.ContractEnvironment;
  * @author nhat.minh.le@huoc.org (Nhat Minh Lê)
  */
 public class RuntimeContractEnvironment implements ContractEnvironment {
-  protected BlacklistManager blacklistManager;
+  protected final BlacklistManager blacklistManager;
 
   public RuntimeContractEnvironment() {
     blacklistManager = BlacklistManager.getInstance();

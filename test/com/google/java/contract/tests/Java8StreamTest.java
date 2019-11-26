@@ -36,12 +36,12 @@ import java.util.List;
 public class Java8StreamTest extends TestCase {
   @Invariant("xs.stream().allMatch(x -> x >= 0)")
   private static class A {
-    protected List<Integer> xs;
-    private int k;
+    protected final List<Integer> xs;
+    private final int k;
 
     public A(Collection<Integer> xs, int k) {
       /* Bogus if xs contains negative elements. */
-      this.xs = new ArrayList(xs);
+      this.xs = new ArrayList<>(xs);
       this.k = k;
     }
 

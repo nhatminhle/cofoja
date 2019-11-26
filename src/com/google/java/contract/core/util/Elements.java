@@ -50,7 +50,7 @@ public class Elements {
   })
   public static void copyParameters(MethodModel method,
                                     List<? extends VariableModel> parameters) {
-    ArrayList<VariableModel> list = new ArrayList<VariableModel>(parameters);
+    ArrayList<VariableModel> list = new ArrayList<>(parameters);
     for (VariableModel param : list) {
       method.addParameter(new VariableModel(param));
     }
@@ -69,7 +69,7 @@ public class Elements {
   public static <T extends ElementModel> List<? extends T> filter(
       List<? extends ElementModel> elements, Class<T> clazz,
       ElementKind... kinds) {
-    ArrayList<T> result = new ArrayList<T>();
+    ArrayList<T> result = new ArrayList<>();
     List<ElementKind> list = Arrays.asList(kinds);
     for (ElementModel element : elements) {
       if (list.contains(element.getKind())

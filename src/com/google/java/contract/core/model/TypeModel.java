@@ -72,7 +72,7 @@ public class TypeModel extends GenericElementModel {
   /**
    * The values of import statements in effect in this source file.
    */
-  protected Set<String> importNames;
+  protected final Set<String> importNames;
 
   /**
    * Constructs a new TypeModel of the specified kind, with the
@@ -86,9 +86,9 @@ public class TypeModel extends GenericElementModel {
   public TypeModel(ElementKind kind, ClassName name) {
     super(kind, name.getSimpleName());
     this.name = name;
-    interfaces = new HashSet<ClassName>();
-    superArguments = new ArrayList<TypeName>();
-    importNames = new HashSet<String>();
+    interfaces = new HashSet<>();
+    superArguments = new ArrayList<>();
+    importNames = new HashSet<>();
   }
 
   /**
@@ -100,9 +100,9 @@ public class TypeModel extends GenericElementModel {
   public TypeModel(TypeModel that) {
     super(that);
     name = that.name;
-    interfaces = new HashSet<ClassName>(that.interfaces);
-    superArguments = new ArrayList<TypeName>(that.superArguments);
-    importNames = new HashSet<String>(that.importNames);
+    interfaces = new HashSet<>(that.interfaces);
+    superArguments = new ArrayList<>(that.superArguments);
+    importNames = new HashSet<>(that.importNames);
   }
 
   @Override

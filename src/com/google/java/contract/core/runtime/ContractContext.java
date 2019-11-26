@@ -42,19 +42,14 @@ public class ContractContext {
    */
   private static final int ENTERED_DEFAULT_SIZE = 100;
 
-  static ThreadLocal<ContractContext> context =
-      new ThreadLocal<ContractContext>() {
-    @Override
-    protected ContractContext initialValue() {
-      return new ContractContext();
-    }
-  };
+  static final ThreadLocal<ContractContext> context =
+          ThreadLocal.withInitial(ContractContext::new);
 
   protected boolean busy;
-  protected IdentityHashMap<Object, Void> entered;
+  protected final IdentityHashMap<Object, Void> entered;
 
   protected ContractContext() {
-    entered = new IdentityHashMap<Object, Void>(ENTERED_DEFAULT_SIZE);
+    entered = new IdentityHashMap<>(ENTERED_DEFAULT_SIZE);
   }
 
   /**

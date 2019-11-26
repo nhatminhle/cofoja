@@ -33,7 +33,7 @@ import java.io.FileNotFoundException;
 public class ConstructorTest extends TestCase {
   @Invariant("a >= 0")
   private static class A {
-    protected int a;
+    protected final int a;
 
     public A(int x) {
       /* Bogus for x < 0. */

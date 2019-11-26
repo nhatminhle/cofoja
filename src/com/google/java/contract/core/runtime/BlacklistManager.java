@@ -33,10 +33,9 @@ import com.google.java.contract.core.util.PatternMap;
 public class BlacklistManager {
   protected static BlacklistManager instance = null;
 
-  protected PatternMap<Boolean> blacklist = new PatternMap<Boolean>();
+  protected final PatternMap<Boolean> blacklist = new PatternMap<>();
 
   protected BlacklistManager() {
-    blacklist = new PatternMap<Boolean>();
     blacklist.put("java.*", true);
     blacklist.put("javax.*", true);
     blacklist.put("com.sun.*", true);

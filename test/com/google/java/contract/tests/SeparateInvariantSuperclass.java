@@ -27,7 +27,7 @@ import com.google.java.contract.Invariant;
 @Invariant("x != 0")
 public class SeparateInvariantSuperclass {
   @SuppressWarnings("unused")
-  protected int x = 0;
+  protected int x;
 
   public SeparateInvariantSuperclass() {
     x = 1;

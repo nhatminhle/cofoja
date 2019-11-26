@@ -40,7 +40,7 @@ import javax.lang.model.element.TypeElement;
 class TypeFactory {
   protected URLClassLoader sourceDependencyLoader;
 
-  protected FactoryUtils utils;
+  protected final FactoryUtils utils;
 
   @Requires("utils != null")
   TypeFactory(FactoryUtils utils,

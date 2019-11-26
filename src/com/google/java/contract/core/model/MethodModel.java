@@ -43,7 +43,7 @@ public class MethodModel extends GenericElementModel {
   /**
    * The list of exceptions that can be thrown by this method.
    */
-  protected Set<TypeName> exceptions;
+  protected final Set<TypeName> exceptions;
 
   /**
    * The return type of this method, or {@code null} if this is a
@@ -69,7 +69,7 @@ public class MethodModel extends GenericElementModel {
   })
   public MethodModel(ElementKind kind, String name, TypeName returnType) {
     super(kind, name);
-    exceptions = new HashSet<TypeName>();
+    exceptions = new HashSet<>();
     this.returnType = returnType;
     variadic = false;
   }
@@ -82,7 +82,7 @@ public class MethodModel extends GenericElementModel {
   @Ensures("getEnclosingElement() == null")
   public MethodModel(MethodModel that) {
     super(that);
-    exceptions = new HashSet<TypeName>(that.exceptions);
+    exceptions = new HashSet<>(that.exceptions);
     returnType = that.returnType;
     variadic = false;
   }
@@ -97,7 +97,7 @@ public class MethodModel extends GenericElementModel {
    */
   public MethodModel() {
     super(ElementKind.CONSTRUCTOR, "<init>");
-    exceptions = new HashSet<TypeName>();
+    exceptions = new HashSet<>();
     returnType = null;
     variadic = false;
   }

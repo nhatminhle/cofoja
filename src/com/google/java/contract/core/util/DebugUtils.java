@@ -34,8 +34,8 @@ import javax.tools.JavaFileObject;
 public class DebugUtils {
   private static String dumpDirectory = "contracts_for_java.out";
 
-  private static Map<String, Boolean> loggingEnabled =
-      new HashMap<String, Boolean>();
+  private static final Map<String, Boolean> loggingEnabled =
+          new HashMap<>();
 
   @Ensures("result != null")
   public static String getDumpDirectory() {

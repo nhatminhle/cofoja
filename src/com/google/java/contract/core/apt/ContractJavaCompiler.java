@@ -68,7 +68,7 @@ public class ContractJavaCompiler {
   /**
    * Internal compiler to delegate to.
    */
-  protected JavaCompiler javaCompiler;
+  protected final JavaCompiler javaCompiler;
 
   protected ContractJavaFileManager fileManager;
 
@@ -115,7 +115,7 @@ public class ContractJavaCompiler {
   })
   protected void setPath(Location location, String path) throws IOException {
     String[] parts = path.split(Pattern.quote(File.pathSeparator));
-    ArrayList<File> dirs = new ArrayList<File>(parts.length);
+    ArrayList<File> dirs = new ArrayList<>(parts.length);
     for (String part : parts) {
       dirs.add(new File(part));
     }

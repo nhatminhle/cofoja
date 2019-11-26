@@ -32,7 +32,7 @@ import junit.framework.TestCase;
 public class GenericsTest extends TestCase {
   @Invariant("a.length() >= 2")
   private static class A<T> {
-    protected String a;
+    protected final String a;
 
     public A(T x) {
       /* Bogus for some values of x (for example, ""). */
@@ -55,7 +55,7 @@ public class GenericsTest extends TestCase {
   }
 
   private static class S<T> {
-    private T x;
+    private final T x;
 
     public S(T x) {
       this.x = x;
@@ -74,17 +74,17 @@ public class GenericsTest extends TestCase {
   }
 
   private static class D<T> {
-    private A<S<T>> a;
+    private final A<S<T>> a;
 
     public D(T x) {
-      a = new C<S<T>>(new S<T>(x));
+      a = new C<>(new S<>(x));
     }
   }
 
-  private static interface I {
+  private interface I {
     @Requires("x.toString().length() >= 1")
     @Ensures("result >= 1")
-    public <T> int f(T x);
+    <T> int f(T x);
   }
 
   private static class E implements I {
@@ -94,10 +94,10 @@ public class GenericsTest extends TestCase {
     }
   }
 
-  private static interface J<T> {
+  private interface J<T> {
     @Requires("x.toString().length() >= 2")
     @Ensures("result >= 2")
-    public int g(T x);
+    int g(T x);
   }
 
   private static class F implements J<Integer> {
@@ -137,12 +137,12 @@ public class GenericsTest extends TestCase {
   }
 
   public void testC() {
-    C<S<Integer>> c = new C<S<Integer>>(new S<Integer>(283));
+    C<S<Integer>> c = new C<>(new S<>(283));
   }
 
   public void testCBogus() {
     try {
-      C<S<Integer>> c = new C<S<Integer>>(new S<Integer>(3));
+      C<S<Integer>> c = new C<>(new S<>(3));
       fail();
     } catch (InvariantError expected) {
       assertEquals("[a.length() >= 2]", expected.getMessages().toString());
@@ -150,12 +150,12 @@ public class GenericsTest extends TestCase {
   }
 
   public void testD() {
-    D<Integer> d = new D<Integer>(new Integer(7892));
+    D<Integer> d = new D<>(7892);
   }
 
   public void testDBogus() {
     try {
-      D<Integer> d = new D<Integer>(new Integer(4));
+      D<Integer> d = new D<>(4);
       fail();
     } catch (InvariantError expected) {
       assertEquals("[a.length() >= 2]", expected.getMessages().toString());

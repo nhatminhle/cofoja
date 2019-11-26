@@ -62,19 +62,19 @@ public class SourceDependencyParser {
   /**
    * The source file being parsed.
    */
-  protected Reader source;
+  protected final Reader source;
 
   /**
    * A set of import targets that are in effect in the source file.
    */
-  protected Set<String> importNames;
+  protected final Set<String> importNames;
 
   /**
    * The successive positions of contracts in the source file, in each
    * top-level class. Each clause has an entry in the list. Each entry
    * for a top-level class includes contracts in nested classes.
    */
-  protected Map<ClassName, List<Long>> contractLineNumbers;
+  protected final Map<ClassName, List<Long>> contractLineNumbers;
 
   /**
    * Whether {@code source} has been parsed yet.
@@ -93,8 +93,8 @@ public class SourceDependencyParser {
    */
   public SourceDependencyParser(Reader source) {
     this.source = source;
-    importNames = new HashSet<String>();
-    contractLineNumbers = new HashMap<ClassName, List<Long>>();
+    importNames = new HashSet<>();
+    contractLineNumbers = new HashMap<>();
     parsed = false;
   }
 
@@ -113,7 +113,7 @@ public class SourceDependencyParser {
       BalancedTokenizer tokenizer = new BalancedTokenizer(source);
       String packageName = null;
       ClassName className = null;
-      ArrayList<Long> orphanLineNumbers = new ArrayList<Long>();
+      ArrayList<Long> orphanLineNumbers = new ArrayList<>();
       while (tokenizer.hasNext()) {
         JavaTokenizer.Token token = tokenizer.next();
         switch (token.kind) {
@@ -134,7 +134,7 @@ public class SourceDependencyParser {
                 }
                 className = new ClassName(name.replace('.', '/'));
                 contractLineNumbers
-                    .put(className, new ArrayList<Long>(orphanLineNumbers));
+                    .put(className, new ArrayList<>(orphanLineNumbers));
                 orphanLineNumbers.clear();
                 JavaUtils.skipPast(tokenizer, "{");
               }

@@ -94,7 +94,7 @@ public abstract class ContractAssertionError extends AssertionError {
   }
 
   public List<String> getMessages() {
-    ArrayList<String> list = new ArrayList<String>();
+    ArrayList<String> list = new ArrayList<>();
     Throwable error = this;
     do {
       list.add(error.getMessage());

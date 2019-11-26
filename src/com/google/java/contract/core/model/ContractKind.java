@@ -83,7 +83,7 @@ public enum ContractKind {
   /**
    * A contract helper, for indirect contract evaluation.
    *
-   * @see ContractCreation
+   * @see com.google.java.contract.core.apt.ContractCreation
    */
   HELPER;
 

@@ -72,7 +72,7 @@ public class SelectiveContractsTest extends TestCase {
   }
 
   @Invariant("false")
-  private static interface I {
+  private interface I {
   }
 
   /* Missing @Contracted. */

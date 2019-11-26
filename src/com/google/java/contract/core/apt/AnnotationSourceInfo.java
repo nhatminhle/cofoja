@@ -42,10 +42,10 @@ import javax.lang.model.element.Element;
   "!code.contains(null)"
 })
 public class AnnotationSourceInfo {
-  protected Element element;
-  protected AnnotationMirror annotationMirror;
-  protected AnnotationValue annotationValue;
-  protected List<String> code;
+  protected final Element element;
+  protected final AnnotationMirror annotationMirror;
+  protected final AnnotationValue annotationValue;
+  protected final List<String> code;
 
   @Requires({
     "element != null",
@@ -66,7 +66,7 @@ public class AnnotationSourceInfo {
     this.element = element;
     this.annotationMirror = annotationMirror;
     this.annotationValue = annotationValue;
-    this.code = new ArrayList<String>(code);
+    this.code = new ArrayList<>(code);
   }
 
   @Ensures("result != null")

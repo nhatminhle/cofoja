@@ -30,7 +30,7 @@ import junit.framework.TestCase;
 public class InnerAnnotationTest extends TestCase {
   @Invariant("true")
   private static class DefinesInnerAnnotation {
-    public static @interface MyAnnotation {
+    public @interface MyAnnotation {
       String value() default "none";
     }
     @MyAnnotation

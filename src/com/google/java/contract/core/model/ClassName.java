@@ -20,7 +20,8 @@ package com.google.java.contract.core.model;
 import com.google.java.contract.Ensures;
 import com.google.java.contract.Invariant;
 import com.google.java.contract.Requires;
-import com.google.java.contract.util.Predicate;
+
+import java.util.function.Predicate;
 
 /**
  * A class name. This class supports the following formats:
@@ -52,7 +53,7 @@ public class ClassName extends TypeName {
   protected String simpleName;
   protected String qualifiedName;
   protected String semiQualifiedName;
-  protected String binaryName;
+  protected final String binaryName;
 
   /**
    * Constructs a new ClassName from its binary name. Other forms are
@@ -225,12 +226,7 @@ public class ClassName extends TypeName {
   }
 
   protected static final Predicate<String> IS_SIMPLE_NAME =
-      new Predicate<String>() {
-    @Override
-    public boolean apply(String name) {
-      return isSimpleName(name);
-    }
-  };
+          ClassName::isSimpleName;
 
   public static Predicate<String> isSimpleName() {
     return IS_SIMPLE_NAME;
@@ -258,12 +254,7 @@ public class ClassName extends TypeName {
   }
 
   private static final Predicate<String> IS_QUALIFIED_NAME =
-      new Predicate<String>() {
-    @Override
-    public boolean apply(String name) {
-      return isQualifiedName(name);
-    }
-  };
+          ClassName::isQualifiedName;
 
   public static Predicate<String> isQualifiedName() {
     return IS_QUALIFIED_NAME;
@@ -298,12 +289,7 @@ public class ClassName extends TypeName {
   }
 
   private static final Predicate<String> IS_BINARY_NAME =
-      new Predicate<String>() {
-    @Override
-    public boolean apply(String name) {
-      return isBinaryName(name);
-    }
-  };
+          ClassName::isBinaryName;
 
   public static Predicate<String> isBinaryName() {
     return IS_BINARY_NAME;

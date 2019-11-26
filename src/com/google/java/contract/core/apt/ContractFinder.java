@@ -22,20 +22,13 @@ import com.google.java.contract.Invariant;
 import com.google.java.contract.Requires;
 import com.google.java.contract.core.runtime.BlacklistManager;
 
+import javax.lang.model.element.*;
+import javax.lang.model.type.TypeMirror;
+import javax.lang.model.util.ElementScanner8;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.lang.model.element.AnnotationMirror;
-import javax.lang.model.element.Element;
-import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.PackageElement;
-import javax.lang.model.element.TypeElement;
-import javax.lang.model.element.TypeParameterElement;
-import javax.lang.model.element.VariableElement;
-import javax.lang.model.type.TypeMirror;
-import javax.lang.model.util.ElementScanner6;
 
 /**
  * Recursively scans the type tree looking for contract annotations. Results
@@ -45,15 +38,15 @@ import javax.lang.model.util.ElementScanner6;
  */
 @Invariant("this.contractedElements != null")
 public class ContractFinder
-    extends ElementScanner6<Boolean, Void> {
-  private FactoryUtils utils;
-  private Map<TypeElement, Boolean> contractedElements;
-  private BlacklistManager blackList;
+    extends ElementScanner8<Boolean, Void> {
+  private final FactoryUtils utils;
+  private final Map<TypeElement, Boolean> contractedElements;
+  private final BlacklistManager blackList;
 
   @Requires("utils != null")
   public ContractFinder(FactoryUtils utils) {
     this.utils = utils;
-    this.contractedElements = new HashMap<TypeElement, Boolean>();
+    this.contractedElements = new HashMap<>();
     this.blackList = BlacklistManager.getInstance();
   }
 

@@ -31,29 +31,29 @@ public interface ElementVisitor {
    * Visits a {@link TypeModel} object.
    */
   @Requires("type != null")
-  public void visitType(TypeModel type);
+  void visitType(TypeModel type);
 
   /**
    * Visits a {@link VariableModel} object.
    */
   @Requires("variable != null")
-  public void visitVariable(VariableModel variable);
+  void visitVariable(VariableModel variable);
 
   /**
    * Visits an {@link MethodModel} object.
    */
   @Requires("method != null")
-  public void visitMethod(MethodModel method);
+  void visitMethod(MethodModel method);
 
   /**
    * Visits a {@link ContractMethodModel} object.
    */
   @Requires("contract != null")
-  public void visitContractMethod(ContractMethodModel contract);
+  void visitContractMethod(ContractMethodModel contract);
 
   /**
    * Visits a {@link ContractAnnotationModel} object.
    */
   @Requires("annotation != null")
-  public void visitContractAnnotation(ContractAnnotationModel annotation);
+  void visitContractAnnotation(ContractAnnotationModel annotation);
 }

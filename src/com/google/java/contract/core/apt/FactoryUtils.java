@@ -21,14 +21,8 @@ package com.google.java.contract.core.apt;
 import com.google.java.contract.Ensures;
 import com.google.java.contract.Invariant;
 import com.google.java.contract.Requires;
-import com.google.java.contract.core.model.ClassName;
-import com.google.java.contract.core.model.ElementKind;
-import com.google.java.contract.core.model.ElementModifier;
-import com.google.java.contract.core.model.QualifiedElementModel;
-import com.google.java.contract.core.model.TypeName;
+import com.google.java.contract.core.model.*;
 
-import java.util.Iterator;
-import java.util.List;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
@@ -38,6 +32,8 @@ import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Utility methods for dealing with {@link javax.lang.model} and their
@@ -51,9 +47,9 @@ import javax.lang.model.util.Types;
   "typeUtils != null"
 })
 class FactoryUtils {
-  ProcessingEnvironment processingEnv;
-  Elements elementUtils;
-  Types typeUtils;
+  final ProcessingEnvironment processingEnv;
+  final Elements elementUtils;
+  final Types typeUtils;
 
   @Requires("processingEnv != null")
   @Ensures({
@@ -140,7 +136,7 @@ class FactoryUtils {
    * Gets the contract kind of an annotation given its qualified name.
    * Returns null if the annotation is not a contract annotation.
    *
-   * @param annotationName the fully qualified name of the annotation
+   * @param annotation the fully qualified name of the annotation
    * @return the contract type, null if not contracts
    */
   ElementKind getAnnotationKindForName(AnnotationMirror annotation) {

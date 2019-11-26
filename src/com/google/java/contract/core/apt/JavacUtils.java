@@ -77,7 +77,7 @@ class JavacUtils {
         (AssignmentTree) annotationTree.getArguments().get(0);
     ExpressionTree exprTree = assignTree.getExpression();
 
-    ArrayList<Long> lines = new ArrayList<Long>();
+    ArrayList<Long> lines = new ArrayList<>();
     if (exprTree.getKind() == Kind.STRING_LITERAL) {
       long pos = positions.getStartPosition(unitTree, exprTree);
       lines.add(lineMap.getLineNumber(pos));
@@ -115,7 +115,7 @@ class JavacUtils {
 
     CompilationUnitTree unitTree = path.getCompilationUnit();
 
-    HashSet<String> importNames = new HashSet<String>();
+    HashSet<String> importNames = new HashSet<>();
     for (ImportTree importTree : unitTree.getImports()) {
       StringBuilder buffer = new StringBuilder();
       if (importTree.isStatic()) {

@@ -32,12 +32,12 @@ import junit.framework.TestCase;
  * @author chatain@google.com (Leonardo Chatain)
  */
 public class FinalFieldsTest extends TestCase {
-  private static interface FinalFieldInterface {
-    public final int FIELD = 42;
+  private interface FinalFieldInterface {
+    int FIELD = 42;
     @Requires("FIELD == 42")
-    public void success();
+    void success();
     @Requires("FIELD != 42")
-    public void fail();
+    void fail();
   }
 
   public void testFinalField() {

@@ -40,7 +40,7 @@ public class ContractedAnnotationTest extends TestCase {
    */
   @Retention(RetentionPolicy.RUNTIME)
   @Invariant("false")
-  private static @interface MyAnnotation {
+  private @interface MyAnnotation {
     @Requires("false")
     String value() default "none";
   }

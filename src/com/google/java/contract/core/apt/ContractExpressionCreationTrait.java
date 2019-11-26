@@ -32,7 +32,7 @@ import java.util.List;
 @Invariant("transformer != null")
 class ContractExpressionCreationTrait
     extends SimpleContractCreationTrait {
-  protected ContractExpressionTransformer transformer;
+  protected final ContractExpressionTransformer transformer;
 
   /**
    * Constructs a new ContractExpressionTransformer using

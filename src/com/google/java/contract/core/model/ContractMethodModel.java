@@ -48,7 +48,7 @@ public class ContractMethodModel extends MethodModel {
   /**
    * The kind of contract this method implements.
    */
-  protected ContractKind contractKind;
+  protected final ContractKind contractKind;
 
   /**
    * The ID of this contract method.
@@ -58,7 +58,7 @@ public class ContractMethodModel extends MethodModel {
   /**
    * The body of this method, as strings of code.
    */
-  protected List<String> statements;
+  protected final List<String> statements;
 
   /**
    * A fixed prologue.
@@ -74,7 +74,7 @@ public class ContractMethodModel extends MethodModel {
    * The contracted method this contract applies to, or {@code null}
    * if this is a class-wide contract.
    */
-  protected MethodModel contractedMethod;
+  protected final MethodModel contractedMethod;
 
   /**
    * The line numbers associated with the original source annotation
@@ -101,7 +101,7 @@ public class ContractMethodModel extends MethodModel {
     super(ElementKind.CONTRACT_METHOD, name, returnType);
 
     if (contracted != null) {
-      typeParameters = new ArrayList<TypeName>(contracted.getTypeParameters());
+      typeParameters = new ArrayList<>(contracted.getTypeParameters());
       Elements.copyParameters(this, contracted.getParameters());
       modifiers = EnumSet.copyOf(contracted.getModifiers());
     }
@@ -110,7 +110,7 @@ public class ContractMethodModel extends MethodModel {
     contractKind = kind;
     id = -1;
 
-    statements = new ArrayList<String>();
+    statements = new ArrayList<>();
     prologue = null;
     epilogue = null;
 
@@ -130,7 +130,7 @@ public class ContractMethodModel extends MethodModel {
     contractKind = that.contractKind;
     id = that.id;
 
-    statements = new ArrayList<String>(that.statements);
+    statements = new ArrayList<>(that.statements);
     prologue = that.prologue;
     epilogue = that.epilogue;
 

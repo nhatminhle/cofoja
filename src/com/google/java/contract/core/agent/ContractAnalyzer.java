@@ -61,8 +61,8 @@ import java.util.Map;
       "Predicates.<MethodContractHandle>all(Predicates.nonNull()))"
 })
 class ContractAnalyzer extends ClassVisitor {
-  protected List<ClassContractHandle> classHandles;
-  protected Map<String, ArrayList<MethodContractHandle>> methodHandles;
+  protected final List<ClassContractHandle> classHandles;
+  protected final Map<String, ArrayList<MethodContractHandle>> methodHandles;
 
   protected String className;
   protected MethodNode lastMethodNode;
@@ -72,9 +72,9 @@ class ContractAnalyzer extends ClassVisitor {
    * intended to be filled through its visitor interface.
    */
   ContractAnalyzer() {
-    super(Opcodes.ASM5);
-    classHandles = new ArrayList<ClassContractHandle>();
-    methodHandles = new HashMap<String, ArrayList<MethodContractHandle>>();
+    super(Opcodes.ASM7);
+    classHandles = new ArrayList<>();
+    methodHandles = new HashMap<>();
   }
 
   /**
@@ -90,7 +90,7 @@ class ContractAnalyzer extends ClassVisitor {
   })
   List<ClassContractHandle> getClassHandles(ContractKind kind) {
     ArrayList<ClassContractHandle> matched =
-        new ArrayList<ClassContractHandle>();
+            new ArrayList<>();
     for (ClassContractHandle h : classHandles) {
       if (kind.equals(h.getKind())) {
         matched.add(h);
@@ -127,7 +127,7 @@ class ContractAnalyzer extends ClassVisitor {
     }
 
     ArrayList<MethodContractHandle> matched =
-        new ArrayList<MethodContractHandle>();
+            new ArrayList<>();
     for (MethodContractHandle h : candidates) {
       if (kind.equals(h.getKind())
           && descArgumentsMatch(desc, h.getContractMethod().desc, extraCount)) {
@@ -147,7 +147,7 @@ class ContractAnalyzer extends ClassVisitor {
   @Requires("kind != null")
   ClassContractHandle getClassHandle(ContractKind kind) {
     ArrayList<ClassContractHandle> matched =
-        new ArrayList<ClassContractHandle>();
+            new ArrayList<>();
     for (ClassContractHandle h : classHandles) {
       if (kind.equals(h.getKind())) {
         return h;
@@ -281,7 +281,7 @@ class ContractAnalyzer extends ClassVisitor {
   protected List<MethodContractHandle> internMethod(String name) {
     ArrayList<MethodContractHandle> handles = methodHandles.get(name);
     if (handles == null) {
-      handles = new ArrayList<MethodContractHandle>();
+      handles = new ArrayList<>();
       methodHandles.put(name, handles);
     }
     return handles;

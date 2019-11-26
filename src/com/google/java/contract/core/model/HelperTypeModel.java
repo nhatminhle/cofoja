@@ -22,7 +22,6 @@ import com.google.java.contract.Requires;
 import com.google.java.contract.core.util.JavaUtils;
 
 import java.util.Collections;
-import java.util.Iterator;
 
 /**
  * A helper type, used to implement interface contracts.
@@ -55,12 +54,7 @@ public class HelperTypeModel extends TypeModel {
     interfaces = Collections.singleton(original.getName());
     superArguments = Collections.emptyList();
 
-    Iterator<ElementModel> iter = enclosedElements.iterator();
-    while (iter.hasNext()) {
-      if (iter.next().getKind().isType()) {
-        iter.remove();
-      }
-    }
+    enclosedElements.removeIf(elementModel -> elementModel.getKind().isType());
   }
 
   @Requires("that != null")

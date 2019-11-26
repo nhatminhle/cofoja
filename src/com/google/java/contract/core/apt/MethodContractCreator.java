@@ -18,29 +18,16 @@
  */
 package com.google.java.contract.core.apt;
 
-import static com.google.java.contract.core.apt.ContractCreation.createContractMethods;
-
 import com.google.java.contract.Ensures;
 import com.google.java.contract.Invariant;
 import com.google.java.contract.Requires;
-import com.google.java.contract.core.model.ClassName;
-import com.google.java.contract.core.model.ContractAnnotationModel;
-import com.google.java.contract.core.model.ContractKind;
-import com.google.java.contract.core.model.ContractMethodModel;
-import com.google.java.contract.core.model.ElementKind;
-import com.google.java.contract.core.model.ElementModifier;
-import com.google.java.contract.core.model.MethodModel;
-import com.google.java.contract.core.model.TypeModel;
-import com.google.java.contract.core.model.TypeName;
-import com.google.java.contract.core.model.VariableModel;
+import com.google.java.contract.core.model.*;
 import com.google.java.contract.core.util.ElementScanner;
 import com.google.java.contract.core.util.JavaUtils;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.*;
+
+import static com.google.java.contract.core.apt.ContractCreation.createContractMethods;
 
 /**
  * Element visitor responsible for decorating a {@link TypeModel}
@@ -58,7 +45,7 @@ public class MethodContractCreator extends ElementScanner {
   /**
    * Creation trait for preconditions.
    */
-  protected class PreMethodCreationTrait
+  protected static class PreMethodCreationTrait
       extends ContractExpressionCreationTrait {
     @Requires("transformer != null")
     public PreMethodCreationTrait(
@@ -178,10 +165,10 @@ public class MethodContractCreator extends ElementScanner {
       List<String> assocs = annotation.getValues();
       int n = assocs.size() / 2;
 
-      ArrayList<String> code = new ArrayList<String>(n);
-      ArrayList<String> msg = new ArrayList<String>(n);
-      ArrayList<String> src = new ArrayList<String>(n);
-      ArrayList<Long> lines = new ArrayList<Long>(n);
+      ArrayList<String> code = new ArrayList<>(n);
+      ArrayList<String> msg = new ArrayList<>(n);
+      ArrayList<String> src = new ArrayList<>(n);
+      ArrayList<Long> lines = new ArrayList<>(n);
 
       Iterator<String> it = assocs.iterator();
       Iterator<Long> itLineNumber = annotation.getLineNumbers().iterator();
@@ -235,16 +222,16 @@ public class MethodContractCreator extends ElementScanner {
     }
   }
 
-  protected DiagnosticManager diagnosticManager;
+  protected final DiagnosticManager diagnosticManager;
 
   protected MethodModel method;
   protected ContractMethodModel preMethod;
   protected ContractMethodModel postMethod;
   protected ContractMethodModel postSignalMethod;
 
-  protected ContractExpressionTransformer preTransformer;
-  protected ContractExpressionTransformer postTransformer;
-  protected ContractExpressionTransformer postSignalTransformer;
+  protected final ContractExpressionTransformer preTransformer;
+  protected final ContractExpressionTransformer postTransformer;
+  protected final ContractExpressionTransformer postSignalTransformer;
 
   /**
    * Constructs a new MethodContractCreator.
@@ -340,7 +327,7 @@ public class MethodContractCreator extends ElementScanner {
       Long lineNumber) {
     MethodModel helper =
         ContractCreation.createBlankContractHelper(kind, annotation,
-                                                   "$" + Integer.toString(pos));
+                                                   "$" + pos);
     helper.setReturnType(new ClassName("java/lang/Object"));
 
     if (helper.getKind() == ElementKind.CONTRACT_METHOD) {

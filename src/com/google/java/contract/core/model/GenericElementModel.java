@@ -52,7 +52,7 @@ public abstract class GenericElementModel extends QualifiedElementModel {
   })
   protected GenericElementModel(ElementKind kind, String name) {
     super(kind, name);
-    typeParameters = new ArrayList<TypeName>();
+    typeParameters = new ArrayList<>();
   }
 
   /**
@@ -62,7 +62,7 @@ public abstract class GenericElementModel extends QualifiedElementModel {
   @Requires("that != null")
   protected GenericElementModel(GenericElementModel that) {
     super(that);
-    typeParameters = new ArrayList<TypeName>(that.typeParameters);
+    typeParameters = new ArrayList<>(that.typeParameters);
   }
 
   @Override

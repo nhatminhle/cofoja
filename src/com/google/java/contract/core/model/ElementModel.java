@@ -22,12 +22,12 @@ import com.google.java.contract.ContractImport;
 import com.google.java.contract.Ensures;
 import com.google.java.contract.Invariant;
 import com.google.java.contract.Requires;
-import com.google.java.contract.util.Predicate;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.function.Predicate;
 
 /**
  * An abstract model element.
@@ -69,7 +69,7 @@ public abstract class ElementModel implements Cloneable {
    * the only such container. Specialized, partial subsets of enclosed
    * elements, if any, must be kept synchronized with this field.
    */
-  protected List<ElementModel> enclosedElements;
+  protected final List<ElementModel> enclosedElements;
 
   /**
    * An object intended to hold information on the source of this
@@ -89,7 +89,7 @@ public abstract class ElementModel implements Cloneable {
     this.kind = kind;
     simpleName = name;
     enclosingElement = null;
-    enclosedElements = new ArrayList<ElementModel>();
+    enclosedElements = new ArrayList<>();
     sourceInfo = null;
   }
 
@@ -104,9 +104,9 @@ public abstract class ElementModel implements Cloneable {
     simpleName = that.simpleName;
     enclosingElement = null;
     enclosedElements =
-        new ArrayList<ElementModel>(that.enclosedElements.size());
+            new ArrayList<>(that.enclosedElements.size());
     ArrayList<ElementModel> elements =
-        new ArrayList<ElementModel>(that.enclosedElements);
+            new ArrayList<>(that.enclosedElements);
     for (ElementModel element : elements) {
       try {
         addEnclosedElement(element.clone());
@@ -248,12 +248,7 @@ public abstract class ElementModel implements Cloneable {
   }
 
   private final Predicate<ElementModel> isValidEnclosedElementPredicate =
-      new Predicate<ElementModel>() {
-    @Override
-    public boolean apply(ElementModel element) {
-      return isValidEnclosedElement(element);
-    }
-  };
+          this::isValidEnclosedElement;
 
   public Predicate<ElementModel> isValidEnclosedElement() {
     return isValidEnclosedElementPredicate;
